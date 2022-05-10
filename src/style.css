@@ -1,0 +1,180 @@
+/* Import from Google Fonts */
+
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
+
+/* Layout and global styles */
+
+@page {
+  size: 21.0cm 29.7cm;
+  size : portrait;
+  margin: 2cm;
+  orphans:4; 
+  widows:2;
+}
+
+@page rotated { 
+  size : landscape 
+}
+
+h1, h2, h3, h4, h5, h6 {
+  page-break-inside: avoid !important;
+  page-break-after: avoid !important;
+}
+
+h1 {
+  font-size: 24pt;
+  text-align: center;
+}
+
+h2 {
+  font-size: 20pt;
+}
+
+h3 {
+  font-size: 18pt;
+}
+
+h4 {
+  font-size: 16pt;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 11pt;
+  margin: 1.5cm;
+  counter-reset: section;
+  counter-reset: question;
+}
+
+.newpage {
+  page-break-before: always;
+}
+
+.newpager {
+  page-break-before: right;
+}
+
+/* Sections */
+
+section {
+  margin-bottom: 4rem;
+}
+
+.dmp-section .question + .question {
+  margin-top: 1cm;
+}
+
+/* First page header */
+
+header {
+  padding-top: 40px;
+  width: 100vw;
+  height: 250px;
+  page-break-after: avoid;
+  position: relative;
+  /* border-bottom: 1px solid black; */
+}
+
+header div {
+  position: absolute;
+  bottom: 0;
+}
+
+header table.h {
+  table-layout: fixed;
+  width: 100%;  
+}
+
+header .imgl {
+  display: block;
+  margin-left: 0;
+  margin-right: auto;
+  width: auto;
+  height: 60px;
+}
+header .imgr {
+  display: block;
+  margin-left: auto;
+  margin-right: 0;
+  width: auto;
+  height: 60px;
+}
+
+dl::after {
+  content: ' ';
+  display: table;
+  clear: both;
+}
+
+dl dt {
+  display: block;
+  width: 25%;
+  margin: 0;
+  margin-bottom: 0.5rem;
+  float: left;
+  
+  font-weight: bold;
+  padding: 5px;
+  text-align: left;
+}
+
+dl dt::after {
+  content: ":";
+}
+
+dl dd {
+  display: block;
+  width: 70%;
+  margin-left: 26%;
+  margin-bottom: 0.5rem;
+  padding: 5px;
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+dl dd ul {
+  padding: 0;
+  margin: 0;
+}
+
+
+dl dd ul li {
+  list-style: none;
+}
+
+dl dd ul li:not(:last-child) {
+  margin-bottom: 0.5rem;
+}
+
+dl .contact-name {
+  font-weight: bold;
+}
+
+/* Abstract */
+
+.abstract {
+  page-break-after: always;
+}
+
+.abstract p {
+  text-align: justify;
+}
+
+/* custom */
+
+.mini-orcid-icon-16 {
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAAsSAAALEgHS3X78AAABnElEQVQ4y52UvUtCURjGf968lmQhFGXYEH3QUg0JhkPR4l5T0IUosMGxv6C1KdpahCZbGxscGiXBloIKo0ESEYpEM71+3NvgvXW0j3vp2c57zvPjPQ/nPWCheDrkiKdDDqtzjl/MQSAChAG/Uc4BCSCmBJKpP0HxdGgQOAY2LRo4BaJKIFn6BjIgCSDolPrQ9Caa3vwLlgLCJkwSNo6BIEBoYp8537ZVLEHD89WRkcmlWex3+WhqNeqtMrLk/nTWWxVA7wYuKYFkymksIuLO/FiEYjXDazXD6tQhJTWLLLmRezxkns+4zsfQdQ3B+wkK/9Z/Sc1yfrsFgFseYnnyAE1vcJM/QfSaGfmxoWrjhaunI2aG18WyvztsW6rUC/Q6vd/qJihnFzTuXeG5ciOWcgBmRglg9yejLLkZHVhEcrgY8SwwPbzGxcOeeCQhgmIi6LV6z5uaR20WKdYemR3ZQNMalNUs53c7vNcLIigGnS87jvVodOtUCSSV7rCjtJ+9XaUMT0fYGDMTpj2Qlp0gzFnH1UT95xuxlN2P7QOpwZChGlWkWQAAAABJRU5ErkJggg==) no-repeat;
+  background-size: 0.5cm 0.5cm;
+  width: 0.5cm;
+  height: 0.5cm;
+  display: inline-block;
+  margin: -2px 0 -2px 2px;
+}
+
+div#dmp-content {
+  page-break-before: always;
+}

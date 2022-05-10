@@ -1,0 +1,89 @@
+{
+    "templateId": "nerc-dmp",
+    "organizationId": "UKCEH",
+    "version": "0.0.3",
+    "name": "NERC DMP",
+    "description": "DMP to satisfy NERC requirements",
+    "license": "Apache-2.0",
+    "metamodelVersion": 9,
+    "recommendedPackageId": "ukceh:ukceh-dmp:0.0.5",
+    "allowedPackages": [
+        {
+            "orgId": "ukceh",
+            "kmId": "ukceh-dmp",
+            "minVersion": "0.0.5",
+            "maxVersion": "0.0.10"
+        }
+    ],
+    "formats": [
+        {
+            "uuid": "0471b394-4328-4dd0-81bc-d8796fed1edf",
+            "name": "HTML",
+            "shortName": "html",
+            "icon": "fas fa-file",
+            "color": "#f15722",
+            "steps": [
+                {
+                    "name": "jinja",
+                    "options": {
+                        "template": "src/index.html.j2",
+                        "content-type": "text/html",
+                        "extension": "html"
+                    }
+                }
+            ]
+        },
+        {
+            "uuid": "583c2ce3-277e-4503-8ad5-1af0ff57e75a",
+            "name": "PDF",
+            "shortName": "pdf",
+            "icon": "fas fa-file",
+            "color": "#f15722",
+            "steps": [
+                {
+                    "name": "jinja",
+                    "options": {
+                        "template": "src/index.html.j2",
+                        "content-type": "text/html",
+                        "extension": "html"
+                    }
+                },
+                {
+                    "name": "wkhtmltopdf",
+                    "options": {}
+                }
+            ]
+        },
+        {
+            "uuid": "9b7f3dfe-cd64-4a44-b766-3de5865c5b41",
+            "name": "MS Word",
+            "shortName": "word",
+            "icon": "fas fa-file",
+            "color": "#f15722",
+            "steps": [
+                {
+                    "name": "jinja",
+                    "options": {
+                        "template": "src/index.html.j2",
+                        "content-type": "text/html",
+                        "extension": "html"
+                    }
+                },
+                {
+                    "name": "pandoc",
+                    "options": {
+                        "from": "html",
+                        "to": "docx"
+                    }
+                }
+            ]
+        }
+    ],
+    "_tdk": {
+        "version": "3.3.0",
+        "readmeFile": "README.md",
+        "files": [
+            "src/*"
+        ]
+    }
+}
