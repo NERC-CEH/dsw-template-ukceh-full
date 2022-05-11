@@ -15,7 +15,7 @@ Please make sure the template runs without error before pushing to this reposito
 
 #### Creating a new template
 1. Create a new branch from the commit you want to base the template on, and make sure this new branch is checked out.
-2. **Rename** the template file (e.g. ``src/nerc-dmp-template.html.j2``) to a suitable name for the new template.
+2. **Rename** the template file (e.g. ``src/ukceh-dmp-template.html.j2``) to a suitable name for the new template.
 3. Edit the following fields in **template.json**:
 
     templateID  
@@ -25,7 +25,7 @@ Please make sure the template runs without error before pushing to this reposito
 
 4. Edit the line referencing the template file in ``src/index.html.j2``, changing to the name of the new template file.
 
-    e.g. ``{% include "src/nerc-dmp-template.html.j2" with context %}``
+    e.g. ``{% include "src/ukceh-dmp-template.html.j2" with context %}``
     
 5. Make any changes to the template, **commit** and **push** to a new branch of the same name on GitHub.
 
