@@ -195,8 +195,123 @@
 {# ---- Section ---- #}
 
 <div class="question">
-	<h3>2. Project Involvement</h3>	
+	<h3>2. Re-using data </h3>	
+	{% set datasetUsedPath = [uuids.reUsingDataCUuid, uuids.willTheProjectUseAnyPreExistingOrThirdPartyDataQUuid]|reply_path %}
+	{% set datasetUsedReply = replies[datasetUsedPath]|reply_str_value %}
+	{% set datasetUsedListPath = [datasetUsedPath, uuids.yes_3AUuid, uuids.whatExistingDataResourcesWillYouUseQLUuid]|reply_path %}
+	{% set datasetUsedListReply = replies[datasetUsedListPath]|reply_items %}
 
+	{% if datasetUsedReply == uuids.no_3AUuid %}
+		{% set datasetIntroText = "No third party or existing datasets will used for this project."%}
+		{{datasetIntroText}}
+
+	{% elif datasetUsedReply == uuids.yes_3AUuid%}
+		{% set datasetIntroText = "Third party or existing datasets that will be used for this project:"%}
+		{{datasetIntroText}}
+	
+		{% if datasetUsedListReply|length > 0 %}
+			<ul>
+			{% for itemUuid in datasetUsedListReply%}
+				{% set datasetUsedTitlePath = [datasetUsedListPath, itemUuid, uuids.datasetOrDatabaseQUuid]|reply_path %}
+				{% set datasetUsedTitleReply = replies[datasetUsedTitlePath] %}
+				{% if datasetUsedTitleReply %}
+					<p><strong>Dataset/Database used title - </strong>{{datasetUsedTitleReply.value.value.value}}</p>
+				{% endif %}
+
+				{% set datasetUsedDescriptionPath = [datasetUsedListPath, itemUuid, uuids.descriptionOfDataQUuid]|reply_path %}
+				{% set datasetUsedDescriptionReply = replies[datasetUsedDescriptionPath]|reply_str_value %}
+				<p><strong>Brief description</strong> {{datasetUsedDescriptionReply}}</p>
+
+				{% set datasetUsedIPRPath = [datasetUsedListPath, itemUuid, uuids.whichOrganisationSHoldTheIntellectualPropertyRightsIprToThisDataset_1QUuid]|reply_path %}	
+				{% set datasetUsedFormatReply = replies[datasetUsedIPRPath]|reply_str_value %}
+				<p><strong>Data owner/IPR</strong> {{datasetUsedFormatReply}}</p>
+
+				{% set datasetUsedApproximateSizePath = [datasetUsedListPath, itemUuid, uuids.whatIsTheApproximateSizeOfTheDataset_1QUuid]|reply_path %}
+				{% set datasetUsedApproximateSizeReply = replies[datasetUsedApproximateSizePath]|reply_str_value %}
+				{% if datasetUsedApproximateSizeReply %}
+					<p><strong>Size/Quantity</strong> {{km.entities.answers[datasetUsedApproximateSizeReply].label}}</p>
+				{% else %}
+					<p><strong>Size/Quantity</strong> <span style="color: red;">{{missingInformationText}}</span></p>
+				{% endif %}	
+
+				{% set datasetUsedAvailabilityPath = [datasetUsedListPath, itemUuid, uuids.whereAreTheDataAvailableQUuid]|reply_path %}
+				{% set datasetUsedAvailabilityReply = replies[datasetUsedAvailabilityPath]|reply_items %}
+				
+				<p><strong>Data are available from: </strong>
+				{% set datasetUsedAvailabilityList = [] %}
+				{% for itemUuid in datasetUsedAvailabilityReply %}
+					{%set datasetUsedAvailabilityList = datasetUsedAvailabilityList.append(km.entities.choices[itemUuid].label)%}
+				{% endfor %}
+
+				{% if datasetUsedAvailabilityList| length > 0 %}
+					{{datasetUsedAvailabilityList|join(", ")}}
+				{% else %}
+					<span style="color: red;">{{missingInformationText}}</span>
+				{% endif %}
+				</p>
+
+				{% set datasetUsedConditionsPath = [datasetUsedListPath, itemUuid, uuids.whatAreTheConditionsOfUseForTheseDataQUuid]|reply_path %}
+				{% set datasetUsedConditionsReply = replies[datasetUsedConditionsPath]|reply_str_value %}
+				{% if datasetUsedConditionsReply %}
+					<p><strong>Conditions of use</strong> {{km.entities.answers[datasetUsedConditionsReply].label}}
+					{% if datasetUsedConditionsReply == uuids.itIsAvailableUnderSomeRestrictionsWhichWeWillFollowInOurProjectAUuid %}
+						{% set whatConditionsPath = [datasetUsedConditionsPath, uuids.itIsAvailableUnderSomeRestrictionsWhichWeWillFollowInOurProjectAUuid, uuids.whatConditionsQUuid]|reply_path %}
+						{% set whatConditionsReply = replies[whatConditionsPath]|reply_str_value %}
+						<p style="text-indent: 40px"><strong>What conditions</strong> {{whatConditionsReply}}</p>
+					{% endif %}
+				{% else %}
+					<p><strong>Conditions of use:</strong> {{missingInformationText}}
+				{% endif %}	
+
+				{% set datasetUsedFormatPath = [datasetUsedListPath, itemUuid, uuids.doYouKnowInWhatFormatTheDataAreAvailableQUuid]|reply_path %}
+				{% set datasetUsedFormatReply = replies[datasetUsedFormatPath]|reply_str_value %}
+				{% if datasetUsedFormatReply == uuids.yesAndICanDirectlyUseItAUuid %}
+					{% set formatText = "We know the format of this data, it is suitable for our work and we can use it directly." %}
+				{% elif datasetUsedFormatReply == uuids.yesButIWillNeedToConvertItToAnotherFormatBeforeUsingAUuid %}
+					{% set formatText = "We know the format of this data, it is suitable for our work but we need to convert it to another format before using." %}	
+				{% endif %}
+				<p>{{formatText}}</p>
+
+				{# Dataset version text generation section #}
+				{% set datasetUsedVersionPath = [datasetUsedListPath, itemUuid, uuids.isTheDatasetOrDatabaseVersionedQUuid]|reply_path %}
+				{% set datasetUsedVersionReply = replies[datasetUsedVersionPath]|reply_str_value %}
+
+				{% set datasetUsedVersionList = [] %}
+				{% if datasetUsedVersionReply == uuids.no_4AUuid %}
+					{% set datasetVersionFinalText = "This dataset is not versioned. " %}
+				{% elif datasetUsedVersionReply == uuids.yes_4AUuid %}
+					{% set datasetVersionText = "This dataset is versioned. " %}
+
+					{% set datasetUsedVersionUsedPath = [datasetUsedVersionPath, uuids.yes_4AUuid, uuids.whichVersionWillYouUseQUuid]|reply_path %}
+					{% set datasetUsedVersionUsedReply = replies[datasetUsedVersionUsedPath]|reply_str_value %}
+					{% set datasetUsedVersionUsedText = "We are using the following version: " + datasetUsedVersionUsedReply + ". " %}
+
+					{% set datasetUsedVersionChangePath = [datasetUsedVersionPath, uuids.yes_4AUuid, uuids.willYouChangeVersionIfItUpdatesQUuid]|reply_path %}
+					{% set datasetUsedVersionChangeReply = replies[datasetUsedVersionChangePath]|reply_str_value %}
+					{% if datasetUsedVersionChangeReply == uuids.willStayWithTheOldVersionAUuid %}
+						{% set datasetUsedVersionOldPath = [datasetUsedVersionChangePath, uuids.willStayWithTheOldVersionAUuid, uuids.howWillTheOldVersionBeAvailableQUuid]|reply_path %}
+						{% set datasetUsedVersionOldReply = replies[datasetUsedVersionOldPath]|reply_str_value %}
+						{% set datasetUsedVersionChangeText = "We will not change version if the dataset updates, because " +  km.entities.answers[datasetUsedVersionOldReply].label + ". " %}
+					{% else %}
+						{% set datasetUsedVersionChangeText = "We will change version if the dataset updates. " +  km.entities.answers[datasetUsedVersionChangeReply].label + ". " %}
+					{% endif %}	
+					{% set datasetVersionFinalText = datasetVersionText + datasetUsedVersionUsedText + datasetUsedVersionChangeText %}
+
+				{% endif %}	
+				<p>{{datasetVersionFinalText}}</p>
+
+				{% set datasetUsedMakeAvailablePath = [datasetUsedListPath, itemUuid, uuids.howWillYouMakeSureTheSameDataWillBeAvailableForOthersToReproduceYourResultsQUuid]|reply_path %}
+				{% set datasetUsedMakeAvailableReply = replies[datasetUsedMakeAvailablePath]|reply_str_value %}
+				{% if datasetUsedMakeAvailableReply%}
+					<p><strong>Availability of data version</strong> {{km.entities.answers[datasetUsedMakeAvailableReply].label}}</p>
+				{% else %}
+					<p><strong>Availability of data version</strong> {{missingInformationText}}</p>
+				{% endif %}	
+			<hr/>	
+			{% endfor %}
+		{% endif %}
+		</ul>
+	{% endif %}		
 
 </div>
 
@@ -1271,123 +1386,7 @@
 		{% endif %}
 	{% endif %}
 
-	<h4>4.5 Primary datasets this project plans to use</h4>
-	{% set datasetUsedPath = [uuids.reUsingDataCUuid, uuids.willTheProjectUseAnyPreExistingOrThirdPartyDataQUuid]|reply_path %}
-	{% set datasetUsedReply = replies[datasetUsedPath]|reply_str_value %}
-	{% set datasetUsedListPath = [datasetUsedPath, uuids.yes_3AUuid, uuids.whatExistingDataResourcesWillYouUseQLUuid]|reply_path %}
-	{% set datasetUsedListReply = replies[datasetUsedListPath]|reply_items %}
-
-	{% if datasetUsedReply == uuids.no_3AUuid %}
-		{% set datasetIntroText = "No third party or existing datasets will used for this project."%}
-		{{datasetIntroText}}
-
-	{% elif datasetUsedReply == uuids.yes_3AUuid%}
-		{% set datasetIntroText = "Third party or existing datasets that will be used for this project:"%}
-		{{datasetIntroText}}
 	
-		{% if datasetUsedListReply|length > 0 %}
-			<ul>
-			{% for itemUuid in datasetUsedListReply%}
-				{% set datasetUsedTitlePath = [datasetUsedListPath, itemUuid, uuids.datasetOrDatabaseQUuid]|reply_path %}
-				{% set datasetUsedTitleReply = replies[datasetUsedTitlePath] %}
-				{% if datasetUsedTitleReply %}
-					<p><strong>Dataset/Database used title - </strong>{{datasetUsedTitleReply.value.value.value}}</p>
-				{% endif %}
-
-				{% set datasetUsedDescriptionPath = [datasetUsedListPath, itemUuid, uuids.descriptionOfDataQUuid]|reply_path %}
-				{% set datasetUsedDescriptionReply = replies[datasetUsedDescriptionPath]|reply_str_value %}
-				<p><strong>Brief description</strong> {{datasetUsedDescriptionReply}}</p>
-
-				{% set datasetUsedIPRPath = [datasetUsedListPath, itemUuid, uuids.whichOrganisationSHoldTheIntellectualPropertyRightsIprToThisDataset_1QUuid]|reply_path %}	
-				{% set datasetUsedFormatReply = replies[datasetUsedIPRPath]|reply_str_value %}
-				<p><strong>Data owner/IPR</strong> {{datasetUsedFormatReply}}</p>
-
-				{% set datasetUsedApproximateSizePath = [datasetUsedListPath, itemUuid, uuids.whatIsTheApproximateSizeOfTheDataset_1QUuid]|reply_path %}
-				{% set datasetUsedApproximateSizeReply = replies[datasetUsedApproximateSizePath]|reply_str_value %}
-				{% if datasetUsedApproximateSizeReply %}
-					<p><strong>Size/Quantity</strong> {{km.entities.answers[datasetUsedApproximateSizeReply].label}}</p>
-				{% else %}
-					<p><strong>Size/Quantity</strong> <span style="color: red;">{{missingInformationText}}</span></p>
-				{% endif %}	
-
-				{% set datasetUsedAvailabilityPath = [datasetUsedListPath, itemUuid, uuids.whereAreTheDataAvailableQUuid]|reply_path %}
-				{% set datasetUsedAvailabilityReply = replies[datasetUsedAvailabilityPath]|reply_items %}
-				
-				<p><strong>Data are available from: </strong>
-				{% set datasetUsedAvailabilityList = [] %}
-				{% for itemUuid in datasetUsedAvailabilityReply %}
-					{%set datasetUsedAvailabilityList = datasetUsedAvailabilityList.append(km.entities.choices[itemUuid].label)%}
-				{% endfor %}
-
-				{% if datasetUsedAvailabilityList| length > 0 %}
-					{{datasetUsedAvailabilityList|join(", ")}}
-				{% else %}
-					<span style="color: red;">{{missingInformationText}}</span>
-				{% endif %}
-				</p>
-
-				{% set datasetUsedConditionsPath = [datasetUsedListPath, itemUuid, uuids.whatAreTheConditionsOfUseForTheseDataQUuid]|reply_path %}
-				{% set datasetUsedConditionsReply = replies[datasetUsedConditionsPath]|reply_str_value %}
-				{% if datasetUsedConditionsReply %}
-					<p><strong>Conditions of use</strong> {{km.entities.answers[datasetUsedConditionsReply].label}}
-					{% if datasetUsedConditionsReply == uuids.itIsAvailableUnderSomeRestrictionsWhichWeWillFollowInOurProjectAUuid %}
-						{% set whatConditionsPath = [datasetUsedConditionsPath, uuids.itIsAvailableUnderSomeRestrictionsWhichWeWillFollowInOurProjectAUuid, uuids.whatConditionsQUuid]|reply_path %}
-						{% set whatConditionsReply = replies[whatConditionsPath]|reply_str_value %}
-						<p style="text-indent: 40px"><strong>What conditions</strong> {{whatConditionsReply}}</p>
-					{% endif %}
-				{% else %}
-					<p><strong>Conditions of use:</strong> {{missingInformationText}}
-				{% endif %}	
-
-				{% set datasetUsedFormatPath = [datasetUsedListPath, itemUuid, uuids.doYouKnowInWhatFormatTheDataAreAvailableQUuid]|reply_path %}
-				{% set datasetUsedFormatReply = replies[datasetUsedFormatPath]|reply_str_value %}
-				{% if datasetUsedFormatReply == uuids.yesAndICanDirectlyUseItAUuid %}
-					{% set formatText = "We know the format of this data, it is suitable for our work and we can use it directly." %}
-				{% elif datasetUsedFormatReply == uuids.yesButIWillNeedToConvertItToAnotherFormatBeforeUsingAUuid %}
-					{% set formatText = "We know the format of this data, it is suitable for our work but we need to convert it to another format before using." %}	
-				{% endif %}
-				<p>{{formatText}}</p>
-
-				{# Dataset version text generation section #}
-				{% set datasetUsedVersionPath = [datasetUsedListPath, itemUuid, uuids.isTheDatasetOrDatabaseVersionedQUuid]|reply_path %}
-				{% set datasetUsedVersionReply = replies[datasetUsedVersionPath]|reply_str_value %}
-
-				{% set datasetUsedVersionList = [] %}
-				{% if datasetUsedVersionReply == uuids.no_4AUuid %}
-					{% set datasetVersionFinalText = "This dataset is not versioned. " %}
-				{% elif datasetUsedVersionReply == uuids.yes_4AUuid %}
-					{% set datasetVersionText = "This dataset is versioned. " %}
-
-					{% set datasetUsedVersionUsedPath = [datasetUsedVersionPath, uuids.yes_4AUuid, uuids.whichVersionWillYouUseQUuid]|reply_path %}
-					{% set datasetUsedVersionUsedReply = replies[datasetUsedVersionUsedPath]|reply_str_value %}
-					{% set datasetUsedVersionUsedText = "We are using the following version: " + datasetUsedVersionUsedReply + ". " %}
-
-					{% set datasetUsedVersionChangePath = [datasetUsedVersionPath, uuids.yes_4AUuid, uuids.willYouChangeVersionIfItUpdatesQUuid]|reply_path %}
-					{% set datasetUsedVersionChangeReply = replies[datasetUsedVersionChangePath]|reply_str_value %}
-					{% if datasetUsedVersionChangeReply == uuids.willStayWithTheOldVersionAUuid %}
-						{% set datasetUsedVersionOldPath = [datasetUsedVersionChangePath, uuids.willStayWithTheOldVersionAUuid, uuids.howWillTheOldVersionBeAvailableQUuid]|reply_path %}
-						{% set datasetUsedVersionOldReply = replies[datasetUsedVersionOldPath]|reply_str_value %}
-						{% set datasetUsedVersionChangeText = "We will not change version if the dataset updates, because " +  km.entities.answers[datasetUsedVersionOldReply].label + ". " %}
-					{% else %}
-						{% set datasetUsedVersionChangeText = "We will change version if the dataset updates. " +  km.entities.answers[datasetUsedVersionChangeReply].label + ". " %}
-					{% endif %}	
-					{% set datasetVersionFinalText = datasetVersionText + datasetUsedVersionUsedText + datasetUsedVersionChangeText %}
-
-				{% endif %}	
-				<p>{{datasetVersionFinalText}}</p>
-
-				{% set datasetUsedMakeAvailablePath = [datasetUsedListPath, itemUuid, uuids.howWillYouMakeSureTheSameDataWillBeAvailableForOthersToReproduceYourResultsQUuid]|reply_path %}
-				{% set datasetUsedMakeAvailableReply = replies[datasetUsedMakeAvailablePath]|reply_str_value %}
-				{% if datasetUsedMakeAvailableReply%}
-					<p><strong>Availability of data version</strong> {{km.entities.answers[datasetUsedMakeAvailableReply].label}}</p>
-				{% else %}
-					<p><strong>Availability of data version</strong> {{missingInformationText}}</p>
-				{% endif %}	
-			<hr/>	
-			{% endfor %}
-		{% endif %}
-		</ul>
-	{% endif %}			
 </div>
 
 
