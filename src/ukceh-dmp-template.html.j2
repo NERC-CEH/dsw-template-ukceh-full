@@ -41,7 +41,7 @@
 {# ---- Section ---- #}
 
 <div class="question">
-	<h3>1. General Information</h3>
+	<h3>1. Project Information</h3>
 	{% set acronymPath = [uuids.projectInformationCUuid, uuids.projectAcronymOrShortNameQUuid]|reply_path %}
 	{% set acronymReply = replies[acronymPath]|reply_str_value %}
 	{% set funderPath = [uuids.projectInformationCUuid, uuids.fundingQLUuid]|reply_path %}
@@ -93,16 +93,8 @@
 				<li><a href="https://gdpr-info.eu/" target="_blank">General Data Protection Regulation (GDPR)</a></li>
 			</ul>
 		</dd>
-	</dl>	
-</div>
-
-{# ---- Section ---- #}
-
-<div class="question">
-	<h3>2. Project Involvement</h3>	
 
 	{# Contributors #}
-
 	{% set contributorsPath = [uuids.projectInformationCUuid, uuids.contributorsQLUuid]|reply_path %}
 	{% set contributorsReply = replies[contributorsPath]|reply_items %}
 
@@ -155,16 +147,19 @@
 		{# key and .items() are required arguments when looping through a dictionary #}
 		{# or python3/jinja will mistake it for a list #}
 		{# otherwise the same method, can access values with dict.item or dict["item"]#}
-		<ul style = "list-style-type:none;">
-		{% for key, role in roleDict.items() %}
-			<li><b>{{role.headerText}}:</b>
-			{% if role.contributorInfo | length > 0 %}	
-				{{role.contributorInfo | join(", ")}}</li>
-			{% else %}
-				<span style="color: red;">{{missingInformationText}}</span></li>
-			{% endif %}
-		{% endfor %} 	
-		</ul>
+		<dt>Contributors</dt>
+			<dd>
+				<ul style = "list-style-type:none;">
+				{% for key, role in roleDict.items() %}
+					<li><b>{{role.headerText}}:</b>
+					{% if role.contributorInfo | length > 0 %}	
+						{{role.contributorInfo | join(", ")}}</li>
+					{% else %}
+						<span style="color: red;">{{missingInformationText}}</span></li>
+					{% endif %}
+				{% endfor %} 	
+				</ul>
+			</dd>	
 	{% endif %}
 
 	{# Partners and subcontractors #}
@@ -193,7 +188,16 @@
 			
 		{% endfor %}
 		</ul>
-	{% endif %}
+	{% endif %}	
+	</dl>
+</div>
+
+{# ---- Section ---- #}
+
+<div class="question">
+	<h3>2. Project Involvement</h3>	
+
+
 </div>
 
 {# ---- Section ---- #}
