@@ -122,18 +122,19 @@
 						{% set fundingStatusPath = [funderPath, itemUuid, uuids.fundingStatusQUuid]|reply_path %}
 						{% set fundingStatusReply = replies[fundingStatusPath]|reply_str_value %}
 						{% set fundingStatus = 'Unknown' %}
+						{% set grantPath = [funderPath, itemUuid, uuids.grantNumberQUuid]|reply_path %}
+						{% set grantReply = replies[grantPath]|reply_str_value %}						
 
 						{% if fundingStatusReply %}
 							{% set fundingStatus = km.entities.answers[fundingStatusReply].label %}
 							{% if fundingStatusReply == uuids.grantedAUuid %}
-								<li>{{ funderNameReply.value.value.value }} (status: <span style="color: green;">{{fundingStatus}}</span>)</li>
+								<li>{{ funderNameReply.value.value.value }} (status: <span style="color: green;">{{fundingStatus}}</span>, grant number: {{grantReply}})</li>
 							{% elif fundingStatusReply == uuids.rejectedAUuid %}
-								<li>{{ funderNameReply.value.value.value }} (status: <span style="color: red;">{{fundingStatus}}</span>)</li>
+								<li>{{ funderNameReply.value.value.value }} (status: <span style="color: red;">{{fundingStatus}}</span>, grant number: {{grantReply}})</li>
 							{% elif fundingStatusReply == uuids.appliedAUuid or fundingStatusReply == uuids.plannedAUuid %}
-								<li>{{ funderNameReply.value.value.value }} (status: <span style="color: orange;">{{fundingStatus}}</span>)</li>
+								<li>{{ funderNameReply.value.value.value }} (status: <span style="color: orange;">{{fundingStatus}}</span>, grant number: {{grantReply}})</li>
 							{% endif %}
 						{% endif %}
-						
 					{% endfor %}
 				</ul>
 			{% endif %}
@@ -356,8 +357,31 @@
 			{% endfor %}
 		{% endif %}
 		</ul>
-	{% endif %}		
+	{% endif %}
+</div>	
 
+<div>
+	{# Models section #}
+	{% set modelsUsedPath = [uuids.reUsingDataCUuid, uuids.willTheProjectUseAnyPreExistingOrThirdPartyModelsQUuid]|reply_path %}
+	{% set modelsUsedReply = replies[modelsUsedPath]|reply_str_value %}
+	{% set modelsLicensingCostPath = [modelsUsedPath, uuids.yes_10AUuid, uuids.areYouAwareOfAnyCostOrLicensingImplicationsForTheExistingModelsYouPlanToUseQUuid]|reply_path %}
+	{% set modelsLicensingCostReply = replies [modelsLicensingCostPath] |reply_str_value %}
+	{% set modelsUsedListPath = [modelsUsedPath, uuids.yes_10AUuid, uuids.whatExistingModelsWillYouUseQLUuid]|reply_path %}
+	{% set modelsUsedListReply = replies[modelsUsedListPath]|reply_items %}
+
+	{% if modelsUsedReply == uuids.no_10AUuid %}
+		{% set modelsIntroText = "No third party or existing models will used for this project."%}
+		<p>{{datasetIntroText}}</p>
+	{% elif modelsUsedReply == uuids.yes_10AUuid %}
+		{% if modelsLicensingCostReply == uuids.no_3_2AUuid %}
+			{% set modelCostText = "We have not planned or budgeted for any costs of models that are brought into the project, such as the purchasing of a license or storing large volumes of data." %}
+		{% elif modelsLicensingCostReply == uuids.yes_3_2AUuid %}
+			{% set modelCostText = "We have planned and budgeted for any costs of models that are brought into the project, such as the purchasing of a license or storing large volumes of data." %}
+		{% endif %}
+
+		{% set datasetIntroText = "Third party or existing models will be used for this project."%}
+		<p>{{datasetIntroText}} {{modelCostText}}</p>
+	{% endif %}	
 </div>
 
 {# ---- Section ---- #}
@@ -465,7 +489,7 @@
 			{% set dataFormatsReply = replies[dataFormatsPath]|reply_items %}
 
 			{% if dataFormatsReply|length > 0 %}
-			The data produced by this project will be in the following formats:	
+			<p>The data produced by this project will be in the following formats:</p>	
 				{% for itemUuid in dataFormatsReply %}
 					{% set dataFormatPath = [dataFormatsPath, itemUuid, uuids.dataFormatQUuid]|reply_path %}
 					{% set dataFormatReply = replies[dataFormatPath] %}
