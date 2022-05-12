@@ -379,8 +379,85 @@
 			{% set modelCostText = "We have planned and budgeted for any costs of models that are brought into the project, such as the purchasing of a license or storing large volumes of data." %}
 		{% endif %}
 
-		{% set datasetIntroText = "Third party or existing models will be used for this project."%}
-		<p>{{datasetIntroText}} {{modelCostText}}</p>
+		{% set modelsIntroText = "Third party or existing models will be used for this project."%}
+		<p>{{modelsIntroText}} {{modelCostText}}</p>
+
+		<p>The following third party or existing models will be used for this project:</p>
+			{% if modelsUsedListReply|length > 0 %}
+			<ul>
+			{% for itemUuid in modelsUsedListReply%}
+				{% set modelUsedTitlePath = [modelsUsedListPath, itemUuid, uuids.modelQUuid]|reply_path %}
+				{% set modelUsedTitleReply = replies[modelUsedTitlePath]|reply_str_value %}
+				{% if modelUsedTitleReply %}
+					<p><strong>Model used title - </strong>{{modelUsedTitleReply}}</p>
+				{% endif %}
+
+				{% set modelUsedDescriptionPath = [modelsUsedListPath, itemUuid, uuids.descriptionOfModelQUuid]|reply_path %}
+				{% set modelUsedDescriptionReply = replies[modelUsedDescriptionPath]|reply_str_value %}
+				<p><strong>Brief description</strong> {{modelUsedDescriptionReply}}</p>
+
+				{% set modelUsedAvailabilityPath = [modelsUsedListPath, itemUuid, uuids.whereIsThisModelAvailableQUuid]|reply_path %}
+				{% set modelUsedAvailabilityReply = replies[modelUsedAvailabilityPath]|reply_items %}
+				
+				<p><strong>Data are available from: </strong>
+				{% set modelUsedAvailabilityList = [] %}
+				{% for itemUuid in modelUsedAvailabilityReply %}
+					{%set modelUsedAvailabilityList = modelUsedAvailabilityList.append(km.entities.choices[itemUuid].label)%}
+				{% endfor %}
+
+				{% if modelUsedAvailabilityList| length > 0 %}
+					{{modelUsedAvailabilityList|join(", ")}}
+				{% else %}
+					<span style="color: red;">{{missingInformationText}}</span>
+				{% endif %}
+				</p>
+
+				{% set modelUsedConditionsPath = [modelsUsedListPath, itemUuid, uuids.whatAreTheConditionsOfUseForThisModelQUuid]|reply_path %}
+				{% set modelUsedConditionsReply = replies[modelUsedConditionsPath]|reply_str_value %}
+				{% if modelUsedConditionsReply %}
+					<p><strong>Conditions of use</strong> {{km.entities.answers[modelUsedConditionsReply].label}}
+				{% endif %}	
+
+				{% set modelUsedFormatPath = [modelsUsedListPath, itemUuid, uuids.doYouKnowInWhatFormatOrLanguageTheModelIsAvailableQUuid]|reply_path %}
+				{% set modelUsedFormatReply = replies[modelUsedFormatPath]|reply_str_value %}
+				{% if modelUsedFormatReply == uuids.iCanDirectlyUseItAUuid %}
+					{% set formatText = "We know the format of this data, it is suitable for our work and we can use it directly." %}
+				{% elif modelUsedFormatReply == uuids.iNeedToConvertItBeforeUsingAUuid %}
+					{% set formatText = "We know the format of this data, it is suitable for our work but we need to convert it to another format before using." %}	
+				{% endif %}
+				<p>{{formatText}}</p>
+
+				{# Dataset version text generation section #}
+				{% set modelUsedVersionPath = [modelsUsedListPath, itemUuid, uuids.isTheModelVersionedQUuid]|reply_path %}
+				{% set modelUsedVersionReply = replies[modelUsedVersionPath]|reply_str_value %}
+
+				{% set modelUsedVersionList = [] %}
+				{% if modelUsedVersionReply == uuids.no_11AUuid %}
+					{% set modelVersionFinalText = "This dataset is not versioned. " %}
+				{% elif modelUsedVersionReply == uuids.yes_11AUuid %}
+					{% set modelVersionText = "This dataset is versioned. " %}
+
+					{% set modelUsedVersionUsedPath = [modelUsedVersionPath, uuids.yes_11AUuid, uuids.whichVersionWillYouUse_2QUuid]|reply_path %}
+					{% set modelUsedVersionUsedReply = replies[modelUsedVersionUsedPath]|reply_str_value %}
+					{% set modelUsedVersionUsedText = "We are using the following version: " + modelUsedVersionUsedReply + ". " %}
+
+					{% set modelUsedVersionChangePath = [modelUsedVersionPath, uuids.yes_11AUuid, uuids.willYouChangeVersionIfItUpdates_2QUuid]|reply_path %}
+					{% set modelUsedVersionChangeReply = replies[modelUsedVersionChangePath]|reply_str_value %}
+					{% if modelUsedVersionChangeReply == uuids.willStayWithTheOldVersion_2AUuid %}
+						{% set modelUsedVersionOldPath = [modelUsedVersionChangePath, uuids.willStayWithTheOldVersion_2AUuid, uuids.howWillTheOldVersionBeAvailable_2QUuid]|reply_path %}
+						{% set modelUsedVersionOldReply = replies[modelUsedVersionOldPath]|reply_str_value %}
+						{% set modelUsedVersionChangeText = "We will not change version if the dataset updates, because " +  km.entities.answers[modelUsedVersionOldReply].label + ". " %}
+					{% else %}
+						{% set modelUsedVersionChangeText = "We will change version if the dataset updates. " +  km.entities.answers[modelUsedVersionOldReply].label + ". " %}
+					{% endif %}	
+					{% set modelVersionFinalText = modelVersionText + modelUsedVersionUsedText + modelUsedVersionChangeText %}
+
+				{% endif %}	
+				<p>{{modelVersionFinalText}}</p>
+			<hr/>	
+			{% endfor %}
+		{% endif %}
+		</ul>
 	{% endif %}	
 </div>
 
