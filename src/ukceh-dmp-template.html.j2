@@ -24,40 +24,95 @@
 		<dd>
 			This Data Management Plan (DMP) details the data management tasks and responsibilities in your science project.  
 			It is a live document to be updated with content as required and reviewed during the lifetime of the project.
+		</dd>
+	<dt>Copyright of DMP</dt> 
+		<dd>
+			UK Centre for Ecology & Hydrology (UKCEH)
+		</dd>	
+	<dt>Scope of DMP</dt> 
+		<dd>
+			<em>This document, together with other referenced documents, defines the responsibilities and procedures to be adopted
+				to ensure that environmental data and information produced as part of the project are reliable, fit for purpose and
+				consistent with document objectives and deliverables. It summarises the system of internal management that governs the 
+				decisions and instructions concerning project data management. This Data Management Plan covers staff responsibilities, 
+				data collection policies, resourcing of data management, data quality, IPR considerations, policies on access to data and
+				data dissemination during the project and arrangements for long-term management of data beyond the project.</em>
+		</dd>
+	<dt>Policies applicable to data and models in this research</dt> 
+		<dd>
+			<ul>
+				<li>Funder: <a href="https://nerc.ukri.org/research/sites/environmental-data-service-eds/policy/" target="_blank">NERC Data Policy</a>,</li> 
+				<li>UK Legislation: <a href="https://www.legislation.gov.uk/ukpga/2018/12/pdfs/ukpga_20180012_en.pdf" target="_blank">Data Protection Act 2018</a>,</li>
+				<li><a href="https://gdpr-info.eu/" target="_blank">General Data Protection Regulation (GDPR)</a></li>
+			</ul>
+		</dd>					
 </dl>
 
 {# ---- Timeline text ---- #}
-
 <h4 class="newpage">Timeline</h4>
 <dl>
 	<dt>First 3-6 months of grant</dt>
-	<dt>Annually</dt>	
+	<dd>Some text about 3-6 months of grant for UKCEH</dd>
+	<dt>Annually</dt>
+	<dd>Some text about annually for UKCEH</dd>	
 	<dt>6 - 9 months before grant end</dt>
+	<dd>Some text about 6-9 months of grant for UKCEH</dd>
 	<dt>End of grant</dt>
+	<dd>Some text about end of grant for UKCEH</dd>
 </dl>
 
 <h4 class="newpager"><span style="color: red;">Sections 1 - 4 to be completed within 3 months of project start date</span></h4>
 
 {# ---- Section ---- #}
-
 <div class="question">
 	<h3>1. Project Information</h3>
 	{% set acronymPath = [uuids.projectInformationCUuid, uuids.projectAcronymOrShortNameQUuid]|reply_path %}
 	{% set acronymReply = replies[acronymPath]|reply_str_value %}
 	{% set funderPath = [uuids.projectInformationCUuid, uuids.fundingQLUuid]|reply_path %}
 	{% set funderReply = replies[funderPath]|reply_items %}
+	
+	{# Abstract #}
+	{% set projectAbstractPath = [uuids.projectInformationCUuid, uuids.projectAbstractQUuid]|reply_path %}
+	{% set projectAbstractReply = replies[projectAbstractPath]|reply_str_value %}
+	{% set projectProposalPath = [uuids.projectInformationCUuid, uuids.linkToAProjectProposalOrAnotherDescriptionOfTheMethodsUsedInTheProjectQUuid]|reply_path %}
+	{% set projectProposalReply = replies[projectProposalPath]|reply_str_value %}
 
 	<dl>
-		<dt>Programme name</dt>	<dd>vvvv</dd>
-		<dt>Project Title</dt> <dd>{{projectName}}</dd>
-		<dt>Project Acronym</dt> <dd>{{acronymReply}}</dd>	
-		<dt>Copyright of DMP</dt> <dd>Natural Environment Research Council (NERC)</dd>	
-		<dt>Scope of DMP</dt> <dd><em>This document, together with other referenced documents, defines the responsibilities and procedures to be adopted
-				to ensure that environmental data and information produced as part of the project are reliable, fit for purpose and
-				consistent with document objectives and deliverables. It summarises the system of internal management that governs the 
-				decisions and instructions concerning project data management. This Data Management Plan covers staff responsibilities, 
-				data collection policies, resourcing of data management, data quality, IPR considerations, policies on access to data and
-				data dissemination during the project and arrangements for long-term management of data beyond the project.</em></dd>	
+		<dt>Programme name</dt>
+			<dd>
+				vvvv
+			</dd>
+		<dt>Project Title</dt>
+			<dd>
+				{{projectName}}
+			</dd>
+		<dt>Project Acronym</dt>
+			<dd>
+				{{acronymReply}}
+			</dd>	
+		<dt>Project Abstract</dt> 
+			<dd>
+				{{projectAbstractReply}}
+			</dd>
+		<dt>Proposal</dt>
+			<dd>
+				More information on the proposal can be found in {{projectProposalReply}}
+			</dd>
+
+	{% set projectStartDatePath = [uuids.projectInformationCUuid, uuids.dateTheProjectWillStartQUuid]|reply_path %}
+	{% set projectStartDateReply = replies[projectStartDatePath]|reply_str_value %}
+	{% set projectEndDatePath = [uuids.projectInformationCUuid, uuids.dateTheProjectWillEndQUuid]|reply_path %}
+	{% set projectEndDateReply = replies[projectEndDatePath]|reply_str_value %}
+
+		<dt>Project Start</dt>
+			<dd>
+				{{projectStartDateReply}}
+			</dd>
+		<dt>Project End</dt>
+			<dd>
+				{{projectEndDateReply}}
+			</dd>
+
 		<dt>Funders</dt>
 		<dd>
 			{% if funderReply|length > 0 %}
@@ -83,15 +138,6 @@
 					{% endfor %}
 				</ul>
 			{% endif %}
-		</dd>
-
-	<dt>Policies applicable to data and models in this research</dt> 
-		<dd>
-			<ul>
-				<li>Funder: <a href="https://nerc.ukri.org/research/sites/environmental-data-service-eds/policy/" target="_blank">NERC Data Policy</a>,</li> 
-				<li>UK Legislation: <a href="https://www.legislation.gov.uk/ukpga/2018/12/pdfs/ukpga_20180012_en.pdf" target="_blank">Data Protection Act 2018</a>,</li>
-				<li><a href="https://gdpr-info.eu/" target="_blank">General Data Protection Regulation (GDPR)</a></li>
-			</ul>
 		</dd>
 
 	{# Contributors #}
@@ -318,16 +364,11 @@
 {# ---- Section ---- #}
 
 <div class="question">
-	<h3>3. Project Data Management Approach</h3>
+	<h3>3. Creating and collecting data</h3>
 
 	<h4>3.1 Data Generation Activities</h4>
 
-		{% set projectAbstractPath = [uuids.projectInformationCUuid, uuids.projectAbstractQUuid]|reply_path %}
-		{% set projectAbstractReply = replies[projectAbstractPath]|reply_str_value %}
-		{% set projectProposalPath = [uuids.projectInformationCUuid, uuids.linkToAProjectProposalOrAnotherDescriptionOfTheMethodsUsedInTheProjectQUuid]|reply_path %}
-		{% set projectProposalReply = replies[projectProposalPath]|reply_str_value %}
 
-		{{projectAbstractReply}} More information on the proposal can be found in {{projectProposalReply}}.
 
 		{# If statement to determine whether project is data or non-data #}
 		{% set createOrCollectEnvironmentalDataPath = [uuids.creatingAndCollectingDataCUuid, uuids.willYourProjectCollectOrCreateResearchDataOrDataRelatedToolsQUuid]|reply_path %}
