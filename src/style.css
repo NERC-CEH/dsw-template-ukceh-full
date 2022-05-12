@@ -99,7 +99,7 @@ header .imgl {
 header .imgr {
   display: block;
   margin-left: auto;
-  margin-right: 0;
+  margin-right: auto;
   width: auto;
   height: 60px;
 }
