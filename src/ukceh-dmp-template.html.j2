@@ -678,8 +678,6 @@
 				{% endfor %}
 			{% endif %}
 
-
-
 			{# Data volume #}
 			{% set dataVolumePath = [createOrCollectEnvironmentalDataPath, uuids.yes_14AUuid, uuids.whatVolumeOfDataYouWillBeWorkingWithQUuid]|reply_path %}
 			{% set dataVolumeReply = replies[dataVolumePath]|reply_str_value %}
@@ -740,10 +738,10 @@
 			{% set personalDataLegalBasePath = [uuids.creatingAndCollectingDataCUuid, uuids.whatLegalBaseQUuid]|reply_path %}
 			{% set personalDataLegalBaseReply = replies[personalDataLegalBasePath]|reply_str_value %}	
 
-			{# Projects that won't create or collect any data (no-data) #}
-			{% elif createOrCollectEnvironmentalDataReply == uuids.no_14AUuid %}
-				<p>Project is no-data and will therefore not create or collect any environmental research data.</p>
-			{% endif %}
+		{# Projects that won't create or collect any data (no-data) #}
+		{% elif createOrCollectEnvironmentalDataReply == uuids.no_14AUuid %}
+			<p>Project is no-data and will therefore not create or collect any environmental research data.</p>
+		{% endif %}
 
 		<h3>4. Processing and analysing data</h3>
 			{# Data storage systems and conventions #}
