@@ -409,8 +409,6 @@
 	{# Models section #}
 	{% set modelsUsedPath = [uuids.reUsingDataCUuid, uuids.willTheProjectUseAnyPreExistingOrThirdPartyModelsQUuid]|reply_path %}
 	{% set modelsUsedReply = replies[modelsUsedPath]|reply_str_value %}
-	{% set modelsLicensingCostPath = [modelsUsedPath, uuids.yes_10AUuid, uuids.areYouAwareOfAnyCostOrLicensingImplicationsForTheExistingModelsYouPlanToUseQUuid]|reply_path %}
-	{% set modelsLicensingCostReply = replies [modelsLicensingCostPath] |reply_str_value %}
 	{% set modelsUsedListPath = [modelsUsedPath, uuids.yes_10AUuid, uuids.whatExistingModelsWillYouUseQLUuid]|reply_path %}
 	{% set modelsUsedListReply = replies[modelsUsedListPath]|reply_items %}
 
@@ -418,6 +416,8 @@
 		{% set modelsIntroText = "No third party or existing models will used for this project."%}
 		<p>{{datasetIntroText}}</p>
 	{% elif modelsUsedReply == uuids.yes_10AUuid %}
+		{% set modelsLicensingCostPath = [modelsUsedPath, uuids.yes_10AUuid, uuids.areYouAwareOfAnyCostOrLicensingImplicationsForTheExistingModelsYouPlanToUseQUuid]|reply_path %}
+		{% set modelsLicensingCostReply = replies [modelsLicensingCostPath] |reply_str_value %}	
 		{% if modelsLicensingCostReply == uuids.no_3_2AUuid %}
 			{% set modelCostText = "We have not planned or budgeted for any costs of models that are brought into the project, such as the purchasing of a license or storing large volumes of data." %}
 		{% elif modelsLicensingCostReply == uuids.yes_3_2AUuid %}
@@ -499,10 +499,43 @@
 
 				{% endif %}	
 				<p>{{modelVersionFinalText}}</p>
+
+				{# Do you expect to make changes? #}
+				{% set modelUsedChangesPath = [modelsUsedListPath, itemUuid, uuids.doYouExpectToMakeChangesToTheSuppliedModelQUuid]|reply_path %}
+				{% set modelUsedChangesReply = replies[modelUsedChangesPath]|reply_str_value %}
+
+				{% if modelUsedChangesReply == uuids.no_12AUuid %}
+					{% set modelChangesText = "We do not expect to make changes to the model." %}
+					<p>{{modelChangesText}}</p>
+				{% elif modelUsedChangesReply == uuids.yes_12AUuid %}
+					{% set modelUsedShareChangesPath = [modelUsedChangesPath, uuids.yes_12AUuid, uuids.willYouBeMakingYourRevisedModelAvailableToOthersQUuid]|reply_path %}	
+					{% set modelUsedShareChangesReply = replies[modelUsedShareChangesPath]|reply_str_value %}
+
+					{% if modelUsedShareChangesReply == uuids.no_13AUuid %}
+						{% set modelChangesText = "We expect to make changes to the model, but we will not make these available to others." %}
+					{% elif modelUsedShareChangesReply == uuids.yes_13AUuid %}	
+						{% set modelChangesText = "We expect to make changes to the model and we will make these available to others." %}
+					{% endif %}	
+					<p>{{modelChangesText}}</p>
+				{% endif %}	
+
+				{# How will you make sure the model will be available to others? #}
+				{% set modelUsedAvailabilityPath = [modelsUsedListPath, itemUuid, uuids.howWillYouMakeSureTheSameModelWillBeAvailableForOthersToReproduceYourResultsQUuid]|reply_path %}
+				{% set modelUsedAvailabilityReply = replies[modelUsedAvailabilityPath]|reply_str_value %}
+
+				{% if modelUsedAvailabilityReply == uuids.theProviderKeepsOldVersionsAround_2AUuid %}
+					{% set modelUsedAvailabilityText = "This version of the model will be available from the provider, allowing others to reproduce our results." %}
+				{% elif modelUsedAvailabilityReply == uuids.iWillKeepACopyAndMakeItAvailableWithMyResults_2AUuid %}
+					{% set modelUsedAvailabilityText = "We will make a copy of this version of the model to make it available along with our results, allowing others to reproduce our results." %}
+				{% elif modelUsedAvailabilityReply == uuids.itWillBeAvailableBothFromTheProviderAndTogetherWithMyData_2AUuid %}
+					{% set modelUsedAvailabilityText = "This version of the model will be available from the provider and we will make a copy of this version to make it available along with our results, allowing others to reproduce our results." %}
+				{% endif %}
+				<p>{{modelUsedAvailabilityText}}</p>
+
 			<hr/>	
 			{% endfor %}
+			</ul>
 		{% endif %}
-		</ul>
 	{% endif %}	
 </div>
 
