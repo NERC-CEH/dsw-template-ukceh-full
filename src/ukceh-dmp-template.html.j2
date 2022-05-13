@@ -268,17 +268,9 @@
 				{% set datasetUsedDescriptionReply = replies[datasetUsedDescriptionPath]|reply_str_value %}
 				<p><strong>Brief description</strong> {{datasetUsedDescriptionReply}}</p>
 
-				{% set datasetUsedIPRPath = [datasetUsedListPath, itemUuid, uuids.whichOrganisationSHoldTheIntellectualPropertyRightsIprToThisDataset_1QUuid]|reply_path %}	
-				{% set datasetUsedFormatReply = replies[datasetUsedIPRPath]|reply_str_value %}
-				<p><strong>Data owner/IPR</strong> {{datasetUsedFormatReply}}</p>
-
-				{% set datasetUsedApproximateSizePath = [datasetUsedListPath, itemUuid, uuids.whatIsTheApproximateSizeOfTheDataset_1QUuid]|reply_path %}
-				{% set datasetUsedApproximateSizeReply = replies[datasetUsedApproximateSizePath]|reply_str_value %}
-				{% if datasetUsedApproximateSizeReply %}
-					<p><strong>Size/Quantity</strong> {{km.entities.answers[datasetUsedApproximateSizeReply].label}}</p>
-				{% else %}
-					<p><strong>Size/Quantity</strong> <span style="color: red;">{{missingInformationText}}</span></p>
-				{% endif %}	
+				{% set datasetUsedDOIPath = [datasetUsedListPath, itemUuid, uuids.datasetIdentifierQUuid]|reply_path %}
+				{% set datasetUsedDOIReply = replies[datasetUsedDOIPath]|reply_str_value %}
+				<p><strong>DOI</strong> {{datasetUsedDOIReply}}</p>				
 
 				{% set datasetUsedAvailabilityPath = [datasetUsedListPath, itemUuid, uuids.whereAreTheDataAvailableQUuid]|reply_path %}
 				{% set datasetUsedAvailabilityReply = replies[datasetUsedAvailabilityPath]|reply_items %}
@@ -308,6 +300,10 @@
 				{% else %}
 					<p><strong>Conditions of use:</strong> {{missingInformationText}}
 				{% endif %}	
+
+				{% set datasetUsedIPRPath = [datasetUsedListPath, itemUuid, uuids.whichOrganisationSHoldTheIntellectualPropertyRightsIprToThisDataset_1QUuid]|reply_path %}	
+				{% set datasetUsedIPRReply = replies[datasetUsedIPRPath]|reply_str_value %}
+				<p><strong>Data owner/IPR</strong> {{datasetUsedIPRReply}}</p>
 
 				{% set datasetUsedFormatPath = [datasetUsedListPath, itemUuid, uuids.doYouKnowInWhatFormatTheDataAreAvailableQUuid]|reply_path %}
 				{% set datasetUsedFormatReply = replies[datasetUsedFormatPath]|reply_str_value %}
@@ -353,10 +349,59 @@
 				{% else %}
 					<p><strong>Availability of data version</strong> {{missingInformationText}}</p>
 				{% endif %}	
+
+				{% set datasetUsedApproximateSizePath = [datasetUsedListPath, itemUuid, uuids.whatIsTheApproximateSizeOfTheDataset_1QUuid]|reply_path %}
+				{% set datasetUsedApproximateSizeReply = replies[datasetUsedApproximateSizePath]|reply_str_value %}
+				{% if datasetUsedApproximateSizeReply %}
+					<p><strong>Size/Quantity</strong> {{km.entities.answers[datasetUsedApproximateSizeReply].label}}</p>
+				{% else %}
+					<p><strong>Size/Quantity</strong> <span style="color: red;">{{missingInformationText}}</span></p>
+				{% endif %}	
 			<hr/>	
 			{% endfor %}
+			</ul>
 		{% endif %}
-		</ul>
+		
+		{# Harmonisation question #}
+		{% set datasetHarmonisationPath = [datasetUsedPath, uuids.yes_3AUuid, uuids.doYouNeedToHarmoniseDifferentSourcesOfExistingDataQUuid]|reply_path %}
+		{% set datasetHarmonisationReply = replies[datasetHarmonisationPath]|reply_str_value %}
+		{% if datasetHarmonisationReply == uuids.no_5AUuid %}
+			{% set harmonisationText = "We do not need to harmonise different sources of existing data." %}
+			<p>{{harmonisationText}}</p>
+		{% elif datasetHarmonisationReply == uuids.yes_5AUuid %}
+			{% set datasetShareHarmonisationPath = [datasetHarmonisationPath, uuids.yes_5AUuid, uuids.willYouBeMakingYourHarmonisationResultsAvailableToOthersQUuid]|reply_path %}	
+			{% set datasetShareHarmonisationReply = replies[datasetShareHarmonisationPath]|reply_str_value %}
+			{% if datasetShareHarmonisationReply == uuids.no_6AUuid %}
+				{% set harmonisationText = "We need to harmonise different sources of existing data, but we will not make these results available."  %}
+			{% elif datasetShareHarmonisationReply == uuids.yes_6AUuid%}
+				{% set harmonisationText = "We need to harmonise different sources of existing data, and we will make these results available"  %}
+			{% endif %}	
+			<p>{{harmonisationText}}</p>	
+		{% endif %}
+
+		{# Computer readable question #}
+		{% set datasetComputerReadablePath = [datasetUsedPath, uuids.yes_3AUuid, uuids.willYouBeUsingDataThatNeedsToBeReMadeComputerReadableFirstQUuid]|reply_path %}
+		{% set datasetComputerReadableReply = replies[datasetComputerReadablePath]|reply_str_value %}
+
+		{% if datasetComputerReadableReply == uuids.no_7AUuid %}
+			{% set computerReadableText = "We will not be using data that needs to be (re-)made computer readable first." %}
+		<p>{{computerReadableText}}</p>
+		{% elif datasetComputerReadableReply == uuids.yes_7AUuid %}	
+			{% set datasetShareComputerReadablePath = [datasetComputerReadablePath, uuids.yes_7AUuid, uuids.willYouBeMakingTheDataAvailableInComputerReadableFormToOthersQUuid]|reply_path %}
+			{% set datasetShareComputerReadableReply = replies[datasetShareComputerReadablePath]|reply_str_value %}
+			{% if datasetShareComputerReadableReply == uuids.no_8AUuid %}
+				{% set computerReadableText = "We will be using data that needs to be (re-)made computer readable first, but we will not make it available to others." %}
+			{% elif datasetShareComputerReadableReply == uuids.yes_8AUuid %}	
+				{% set datasetPermissionComputerReadablePath = [datasetShareComputerReadablePath, uuids.yes_8AUuid, uuids.doYouHaveTheLicencePermissionToDoThisQUuid]|reply_path %}
+				{% set datasetPermissionComputerReadableReply = replies[datasetPermissionComputerReadablePath]|reply_str_value %}
+				{% if datasetPermissionComputerReadableReply == uuids.no_9AUuid %}
+					{% set computerReadableText = "We will be using data that needs to be (re-)made computer readable first, we will make it available to others, but we do not have the licensing permission to do this." %}
+				{% elif datasetPermissionComputerReadableReply == uuids.yes_9AUuid %}	
+					{% set computerReadableText = "We will be using data that needs to be (re-)made computer readable first, we will make it available to others and we have the licensing permission to do this." %}
+				{% endif %}
+			{% endif %}	
+		<p>{{computerReadableText}}</p>	
+		{% endif %}
 	{% endif %}
 </div>	
 
