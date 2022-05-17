@@ -97,7 +97,11 @@
 			</dd>
 		<dt>Proposal</dt>
 			<dd>
-				More information on the proposal can be found <a href = {{projectProposalReply}}>here</a>.
+				{% if projectProposalReply %}
+					More information on the proposal can be found <a href = {{projectProposalReply}}>here</a>.
+				{% else %}	
+					<span style="color: red;">{{missingInformationText}}</span></li>
+				{% endif%}
 			</dd>
 
 	{% set projectStartDatePath = [uuids.projectInformationCUuid, uuids.dateTheProjectWillStartQUuid]|reply_path %}
@@ -236,7 +240,21 @@
 			
 		{% endfor %}
 		</ul>
+	{% endif %}
+
+	{# Expertise #}
+
+	{% set expertisePath = [uuids.projectInformationCUuid, uuids.willYouRequireSpecialistExpertiseInAdditionToWhatIsUsuallyAvailableQUuid]|reply_path %}
+	{% set expertise = replies[expertisePath]|reply_str_value %}
+	
+	{% if expertise == uuids.noWeHaveAllTheExpertiseWeNeedAUuid %}
+		<p>We have all the expertise we need and do not require any additional specialist expertise.</p>
+	{% elif expertise == uuids.yesWeWillBeTrainingExistingStaffStudentsAUuid %}
+		<p>We will be training existing staff/students to gain the expertise we require.</p>
+	{% elif expertise == uuids.yesWeWillBeRecruitingNewPeopleWithAdditionalExpertiseAUuid %}
+		<p>We will be recruiting new people with additional expertise to get the specialist skills we need.</p>
 	{% endif %}	
+
 	</dl>
 </div>
 
@@ -263,17 +281,35 @@
 			{% for itemUuid in datasetUsedListReply%}
 				{% set datasetUsedTitlePath = [datasetUsedListPath, itemUuid, uuids.datasetOrDatabaseQUuid]|reply_path %}
 				{% set datasetUsedTitleReply = replies[datasetUsedTitlePath] %}
+				<p><strong>Dataset/Database used title:</strong>
 				{% if datasetUsedTitleReply %}
-					<p><strong>Dataset/Database used title - </strong>{{datasetUsedTitleReply.value.value.value}}</p>
+					{{datasetUsedTitleReply.value.value.value}}
+				{% else %}
+					<span style="color: red;">{{missingInformationText}}</span>
 				{% endif %}
+				</p>
 
 				{% set datasetUsedDescriptionPath = [datasetUsedListPath, itemUuid, uuids.descriptionOfDataQUuid]|reply_path %}
 				{% set datasetUsedDescriptionReply = replies[datasetUsedDescriptionPath]|reply_str_value %}
-				<p><strong>Brief description</strong> {{datasetUsedDescriptionReply}}</p>
+
+				<p><strong>Brief description:</strong>
+				{% if datasetUsedDescriptionReply %}
+					{{datasetUsedDescriptionReply}}
+				{% else %}
+					<span style="color: red;">{{missingInformationText}}</span>
+				{% endif %}
+				</p>
 
 				{% set datasetUsedDOIPath = [datasetUsedListPath, itemUuid, uuids.datasetIdentifierQUuid]|reply_path %}
 				{% set datasetUsedDOIReply = replies[datasetUsedDOIPath]|reply_str_value %}
-				<p><strong>DOI</strong> {{datasetUsedDOIReply}}</p>				
+
+				<p><strong>DOI:</strong>
+				{% if datasetUsedDOIReply %}
+					{{datasetUsedDOIReply}}
+				{% else %}
+					<span style="color: red;">{{missingInformationText}}</span>
+				{% endif %}
+				</p>
 
 				{% set datasetUsedAvailabilityPath = [datasetUsedListPath, itemUuid, uuids.whereAreTheDataAvailableQUuid]|reply_path %}
 				{% set datasetUsedAvailabilityReply = replies[datasetUsedAvailabilityPath]|reply_items %}
@@ -306,7 +342,14 @@
 
 				{% set datasetUsedIPRPath = [datasetUsedListPath, itemUuid, uuids.whichOrganisationSHoldTheIntellectualPropertyRightsIprToThisDataset_1QUuid]|reply_path %}	
 				{% set datasetUsedIPRReply = replies[datasetUsedIPRPath]|reply_str_value %}
-				<p><strong>Data owner/IPR</strong> {{datasetUsedIPRReply}}</p>
+
+				<p><strong>Data owner/IPR:</strong>
+				{% if datasetUsedIPRReply%}
+					{{datasetUsedIPRReply}}
+				{% else %}	
+					<span style="color: red;">{{missingInformationText}}</span>
+				{% endif %}
+				</p>
 
 				{% set datasetUsedFormatPath = [datasetUsedListPath, itemUuid, uuids.doYouKnowInWhatFormatTheDataAreAvailableQUuid]|reply_path %}
 				{% set datasetUsedFormatReply = replies[datasetUsedFormatPath]|reply_str_value %}
@@ -748,6 +791,12 @@
 		{% endif %}
 
 		<h3>4. Processing and analysing data</h3>
+		{% set processOrAnalyseDataPath = [uuids.processingAndAnalysingDataCUuid, uuids.willYourProjectProcessOrAnalyseResearchDataQUuid]|reply_path %}
+		{% set processOrAnalyseDataReply = replies[processOrAnalyseDataPath]|reply_str_value %}
+
+		{% if processOrAnalyseDataReply == uuids.no_5_2AUuid %}
+		<p>This project is not processing or analysing data.
+		{% elif processOrAnalyseDataReply == uuids.yes_5_2AUuid %}
 			{# Data storage systems and conventions #}
 			{% set dataStorageSystemsAndNamingConventionsPath = [uuids.processingAndAnalysingDataCUuid, uuids.dataStorageSystemsAndFileNamingConventionsQUuid]|reply_path %}
 			
@@ -771,7 +820,6 @@
 				{% if standardNamingProcedureReply == uuids.yes_49AUuid %}
 					{% set fileNamingProcedurePath = [standardNamingProcedurePath, uuids.yes_49AUuid, uuids.describeYourFileNamingProcedureQUuid]|reply_path %}
 					{% set fileNamingProcedureReply = replies[fileNamingProcedurePath]|reply_str_value %}
-
 					<p>This project will use a file and folders system to store data and will follow a standard naming procedure: {{fileNamingProcedureReply}}<p/>
 				{% endif %}
 			{% endif %}
@@ -779,12 +827,9 @@
 			{# Relational databases #}
 			{% if handlingChangesInDataReply %}
 				{% set handlingChangesInData = km.entities.answers[handlingChangesInDataReply].label %}
-			{% else %}
-				{% set handlingChangesInData = 'We have not decided how to handle changes in the data.' %}
+				<p>We will use a relational database system to store project data. {{handlingChangesInData}}</p>
 			{% endif %} 
 
-			<p>We will use a relational database system to store project data. {{handlingChangesInData}}</p>
-			
 			{# Other storage systems #}
 			{% set storageSystem = '' %}
 
@@ -914,216 +959,203 @@
 				{% endif %}
 
 
-			{# Managing access to workspace #} 
-			{% set manageWorkspaceAccessPath = [sharedWorkingSpaceForDataPath, uuids.yes_52AUuid, uuids.howWillYouManageAccessToTheWorkSpaceQUuid]|reply_path %}
-			{% set manageWorkspaceAccessReply = replies[manageWorkspaceAccessPath]|reply_str_value %}
+				{# Managing access to workspace #} 
+				{% set manageWorkspaceAccessPath = [sharedWorkingSpaceForDataPath, uuids.yes_52AUuid, uuids.howWillYouManageAccessToTheWorkSpaceQUuid]|reply_path %}
+				{% set manageWorkspaceAccessReply = replies[manageWorkspaceAccessPath]|reply_str_value %}
 
-			{% set accessControlPath = [manageWorkspaceAccessPath, uuids.exploreHintsAndTipsForBestPracticeAUuid, uuids.howWillAccessControlBeArrangedQUuid]|reply_path %}
-			{% set accessControlReply = replies[accessControlPath]|reply_str_value %}
-			{% set dataCopiedByRemoteUsersPath = [manageWorkspaceAccessPath, uuids.exploreHintsAndTipsForBestPracticeAUuid, uuids.willDataBeCopiedInAndOutOfTheWorkspaceStorageByRemoteUsersQUuid]|reply_path %}
-			{% set dataCopiedByRemoreUsersReply = replies[dataCopiedByRemoteUsersPath]|reply_str_value %}
+				{% set accessControlPath = [manageWorkspaceAccessPath, uuids.exploreHintsAndTipsForBestPracticeAUuid, uuids.howWillAccessControlBeArrangedQUuid]|reply_path %}
+				{% set accessControlReply = replies[accessControlPath]|reply_str_value %}
+				{% set dataCopiedByRemoteUsersPath = [manageWorkspaceAccessPath, uuids.exploreHintsAndTipsForBestPracticeAUuid, uuids.willDataBeCopiedInAndOutOfTheWorkspaceStorageByRemoteUsersQUuid]|reply_path %}
+				{% set dataCopiedByRemoreUsersReply = replies[dataCopiedByRemoteUsersPath]|reply_str_value %}
 
-			{% if accessControlReply == uuids.noSpecialProvisionsAreNeededAUuid %}
-				{% set accessControl = 'No special access provisions will be required for the project workspace' %}
-			{% elif accessControlReply == uuids.projectManagementWillNeedToBeAbleToGivePeopleAccessAUuid %}
-				{% set workspaceAccessControlPath = [accessControlPath, uuids.projectManagementWillNeedToBeAbleToGivePeopleAccessAUuid, uuids.howWillAccessToTheWorkspaceBeControlledQUuid]|reply_path %}
-				{% set workspaceAccessControlReply = replies[workspaceAccessControlPath]|reply_str_value %}
+				{% if accessControlReply == uuids.noSpecialProvisionsAreNeededAUuid %}
+					{% set accessControl = 'No special access provisions will be required for the project workspace' %}
+				{% elif accessControlReply == uuids.projectManagementWillNeedToBeAbleToGivePeopleAccessAUuid %}
+					{% set workspaceAccessControlPath = [accessControlPath, uuids.projectManagementWillNeedToBeAbleToGivePeopleAccessAUuid, uuids.howWillAccessToTheWorkspaceBeControlledQUuid]|reply_path %}
+					{% set workspaceAccessControlReply = replies[workspaceAccessControlPath]|reply_str_value %}
 
-				{% if workspaceAccessControlReply == uuids.onlyProjectMembersHaveReadWriteAccessToTheDataAUuid %}
-					{% set workspaceAccessControl = 'Read/write access to the project workspace will be restricted to project members only.' %}
-				{% elif workspaceAccessControlReply == uuids.anyoneInUkcehHasReadAccessToTheDataAllProjectMembersHaveReadWriteAccessAUuid %}
-					{% set workspaceAccessControl = 'Read/write access to the project workspace will be restricted to project members, but anyone at UKCEH will have read access.' %}
-				{% elif workspaceAccessControlReply == uuids.onlyProjectMembersWillHaveReadAccessOnlySelectedProjectMembersWillBeAbleToWriteDataAUuid %}
-					{% set workspaceAccessControl = 'Read access to the project workspace will be restricted to project members only, and only select project members will have write access.' %}
-				{% elif workspaceAccessControlReply == uuids.anyoneInUkcehCanReadDataOnlyProjectMembersCanRequestWriteAccessAUuid %}
-					{% set workspaceAccessControl = 'Anyone at UKCEH will have read access to the project workspace and project members will be able to request write access.' %}
+					{% if workspaceAccessControlReply == uuids.onlyProjectMembersHaveReadWriteAccessToTheDataAUuid %}
+						{% set workspaceAccessControl = 'Read/write access to the project workspace will be restricted to project members only.' %}
+					{% elif workspaceAccessControlReply == uuids.anyoneInUkcehHasReadAccessToTheDataAllProjectMembersHaveReadWriteAccessAUuid %}
+						{% set workspaceAccessControl = 'Read/write access to the project workspace will be restricted to project members, but anyone at UKCEH will have read access.' %}
+					{% elif workspaceAccessControlReply == uuids.onlyProjectMembersWillHaveReadAccessOnlySelectedProjectMembersWillBeAbleToWriteDataAUuid %}
+						{% set workspaceAccessControl = 'Read access to the project workspace will be restricted to project members only, and only select project members will have write access.' %}
+					{% elif workspaceAccessControlReply == uuids.anyoneInUkcehCanReadDataOnlyProjectMembersCanRequestWriteAccessAUuid %}
+						{% set workspaceAccessControl = 'Anyone at UKCEH will have read access to the project workspace and project members will be able to request write access.' %}
+					{% endif %}
+
+					{% set accessControl = 'Access to the workspace will need to be granted by a member of the project management team.' %}
+				{% elif accessControlReply == uuids.theWorkSpaceShouldBeConnectedToASingleSignOnSystemAUuid %}
+					{% set accessControl = 'The project workspace will be connected to a single sign-on system to control who has access to it.' %}
 				{% endif %}
 
-				{% set accessControl = 'Access to the workspace will need to be granted by a member of the project management team.' %}
-			{% elif accessControlReply == uuids.theWorkSpaceShouldBeConnectedToASingleSignOnSystemAUuid %}
-				{% set accessControl = 'The project workspace will be connected to a single sign-on system to control who has access to it.' %}
+				{% if dataCopiedByRemoteUsersReply == uuids.noThisShouldNotBeAllowedAUuid %}
+					{% set dataCopiedByRemoteUsers = 'Users accessing the workspace remotely will not be allowed to copy data in and out of it.' %}
+				{% elif dataCopiedByRemoreUsersReply == uuids.noAllDataProcessingWillBeDoneInTheSameEnvironmentVirtualResearchEnvironment_2AUuid %}
+					{% set dataCopiedByRemoteUsers = 'Users accessing the workspace remotely will not be allowed to copy data in and out of it - all data processing will be done in the same virtual environment.' %}
+				{% elif dataCopiedByRemoreUsersReply == uuids.yesOccasionallyAUuid %}
+					{% set dataCopiedByRemoteUsers = 'Users accessing the workspace remotely will occassionally be allowed to copy data in and out of it.' %}
+				{% elif dataCopiedByRemoreUsersReply == uuids.yesForActualComputationsRequiringHighPerformance_2AUuid %}
+					{% set dataCopiedByRemoteUsers = 'Users accessing the workspace remotely will be allowed to copy data in and out for computations requiring high performance.' %}
+				{% endif %}
+
+				{{workspaceAccessControl}} {{accessControl}} {{dataCopiedByRemoteUsers}}
+
+					
+			{% elif sharedWorkingSpaceForDataReply == uuids.no_55AUuid %}
+				{% set dataStoredByMembersPath = [sharedWorkingSpaceForDataPath, uuids.no_55AUuid, uuids.areDataThatProjectMembersStoreThemselvesAdequatelyBackedUpAndTraceableQUuid]|reply_path %}
+				{% set dataStoredByMembersReply = replies[dataStoredByMembersPath]|reply_str_value %}
+
+				{% if dataStoredByMembersReply == uuids.yesProtectedAgainstBothEquipmentFailureAndHumanErrorAUuid %}
+					<p>We will not be using a shared workspace for this project but have made sure that the data stored by project members is adequately backed up and traceable.</p>
+				{% elif dataStoredByMembersReply == uuids.no_56AUuid %} 
+					<p>We will not be using a shared workspace for this project and haven't implemented measures to make sure that data stored by project members is protected against equipment failure and human error.</p>
+				{% endif %}
+
 			{% endif %}
 
-			{% if dataCopiedByRemoteUsersReply == uuids.noThisShouldNotBeAllowedAUuid %}
-				{% set dataCopiedByRemoteUsers = 'Users accessing the workspace remotely will not be allowed to copy data in and out of it.' %}
-			{% elif dataCopiedByRemoreUsersReply == uuids.noAllDataProcessingWillBeDoneInTheSameEnvironmentVirtualResearchEnvironment_2AUuid %}
-				{% set dataCopiedByRemoteUsers = 'Users accessing the workspace remotely will not be allowed to copy data in and out of it - all data processing will be done in the same virtual environment.' %}
-			{% elif dataCopiedByRemoreUsersReply == uuids.yesOccasionallyAUuid %}
-				{% set dataCopiedByRemoteUsers = 'Users accessing the workspace remotely will occassionally be allowed to copy data in and out of it.' %}
-			{% elif dataCopiedByRemoreUsersReply == uuids.yesForActualComputationsRequiringHighPerformance_2AUuid %}
-				{% set dataCopiedByRemoteUsers = 'Users accessing the workspace remotely will be allowed to copy data in and out for computations requiring high performance.' %}
-			{% endif %}
+			{# Transformation/analysis/modelling tools #}
+			{% set transformationAnalysisModellingToolPath = [uuids.processingAndAnalysingDataCUuid, uuids.willYouBeUsingATransformationAnalysisModellingToolSuchAsRPythonOrFmeToProcessAndAnalyseModelYourDataQUuid]|reply_path %}
+			{% set transformationAnalysisModellingToolReply = replies[transformationAnalysisModellingToolPath]|reply_str_value %}
 
-			{{workspaceAccessControl}} {{accessControl}} {{dataCopiedByRemoteUsers}}
+			{% if transformationAnalysisModellingToolReply == uuids.noIPreferToUseASpreadsheetOrOtherPointAndClickToolAUuid %}
+				<p>We will use spreadsheets or other point-and-click tools to process and analyse/model our data.</p>
+			{% elif transformationAnalysisModellingToolReply == uuids.yesExploreFurtherAUuid %}
+				{# Tools #}
+				{% set toolsPath = [transformationAnalysisModellingToolPath, uuids.yesExploreFurtherAUuid, uuids.whatToolSWillYouBeUsingQUuid]|reply_path %}
+				{% set toolsReply = replies[toolsPath]|reply_items %}
 
+				{% if toolsReply %}
+					<p>We will use the following transformation/analysis/modelling tool(s) to process and analyse/model our data:</p>
+					{% for itemUuid in toolsReply %}
+							<li>{{ km.entities.choices[itemUuid].label }}</li>
+					{% endfor %}	
+				{% else %}
+					<p>We will use transformation/analysis/modelling tool(s) but havent decided which yet</p>
+				{% endif %}
+
+				{# Experience with software #}
+				{% set experienceWithSoftwarePath = [transformationAnalysisModellingToolPath, uuids.yesExploreFurtherAUuid, uuids.whatIsYourExperienceWithThisSoftwareQUuid]|reply_path %}
+				{% set experienceWithSoftwareReply = replies[experienceWithSoftwarePath]|reply_str_value %}
+
+				{% if experienceWithSoftwareReply == uuids.weHaveAllTheExpertiseRequiredToUseTheSoftwareAUuid %}
+					{% set experienceWithSoftware = 'We have all the expertise required to use the software.' %}
+				{% elif experienceWithSoftwareReply == uuids.weDontHaveAllTheSpecialistExpertiseRequiredButHaveAvailableHelpAndTrainingOpportunitiesResourcesAUuid %}
+					{% set experienceWithSoftware = 'We dont currently have all the expertise required to use the software but have available help and training opportunities resources.' %}
+				{% elif experienceWithSoftwareReply == uuids.weWillNeedExternalAdditionalExpertiseOrTrainingAUuid %}
+					{% set experienceWithSoftware = 'We will need external additional expertise or training to use the software.' %}
+				{% endif %}
 				
-		{% elif sharedWorkingSpaceForDataReply == uuids.no_55AUuid %}
-			{% set dataStoredByMembersPath = [sharedWorkingSpaceForDataPath, uuids.no_55AUuid, uuids.areDataThatProjectMembersStoreThemselvesAdequatelyBackedUpAndTraceableQUuid]|reply_path %}
-			{% set dataStoredByMembersReply = replies[dataStoredByMembersPath]|reply_str_value %}
+				{{experienceWithSoftware}}
 
-			{% if dataStoredByMembersReply == uuids.yesProtectedAgainstBothEquipmentFailureAndHumanErrorAUuid %}
-				<p>We will not be using a shared workspace for this project but have made sure that the data stored by project members is adequately backed up and traceable.</p>
-			{% elif dataStoredByMembersReply == uuids.no_56AUuid %} 
-				<p>We will not be using a shared workspace for this project and haven't implemented measures to make sure that data stored by project members is protected against equipment failure and human error.</p>
-			{% endif %}
+				{# High performance computing #}
+				{% set highPerformanceComputingPath = [transformationAnalysisModellingToolPath, uuids.yesExploreFurtherAUuid, uuids.doYouRequireHighPerformanceComputingParallelProcessingToExecuteYourScriptsWorkflowsModelsQUuid]|reply_path %}
+				{% set computingEnvironmentPath = [highPerformanceComputingPath, uuids.yesExploreFurther_2AUuid, uuids.whichHighPerformanceComputingEnvironmentSAreYouPlanningToUseQUuid]|reply_path %}
+				{% set computingEnvironmentReply = replies[computingEnvironmentPath]|reply_str_value %}
 
-		{% endif %}
+				<p>We will use {{computingEnvironmentReply}} to execute scripts/workflows/models that require high performance computing.</p>
 
-		{# Transformation/analysis/modelling tools #}
-		{% set transformationAnalysisModellingToolPath = [uuids.processingAndAnalysingDataCUuid, uuids.willYouBeUsingATransformationAnalysisModellingToolSuchAsRPythonOrFmeToProcessAndAnalyseModelYourDataQUuid]|reply_path %}
-		{% set transformationAnalysisModellingToolReply = replies[transformationAnalysisModellingToolPath]|reply_str_value %}
+				{# Version control #}
+				{% set versionControlSystemPath = [transformationAnalysisModellingToolPath, uuids.yesExploreFurtherAUuid, uuids.willYouUseAVersionControlSystemSuchAsGitGitHubForAnyToolsModelsCodeDevelopedByTheProjectQUuid]|reply_path %}
+				{% set versionControlSystemReply = replies[versionControlSystemPath]|reply_str_value %}
 
-		{% if transformationAnalysisModellingToolReply == uuids.noIPreferToUseASpreadsheetOrOtherPointAndClickToolAUuid %}
-			<p>We will use spreadsheets or other point-and-click tools to process and analyse/model our data.</p>
-		{% elif transformationAnalysisModellingToolReply == uuids.yesExploreFurtherAUuid %}
-			{# Tools #}
-			{% set toolsPath = [transformationAnalysisModellingToolPath, uuids.yesExploreFurtherAUuid, uuids.whatToolSWillYouBeUsingQUuid]|reply_path %}
-			{% set toolsReply = replies[toolsPath]|reply_items %}
-
-			{% if toolsReply %}
-				<p>We will use the following transformation/analysis/modelling tool(s) to process and analyse/model our data:</p>
-  				{% for itemUuid in toolsReply %}
-    					<li>{{ km.entities.choices[itemUuid].label }}</li>
-  				{% endfor %}	
-			{% else %}
-				<p>We will use transformation/analysis/modelling tool(s) but havent decided which yet</p>
-			{% endif %}
-
-			{# Experience with software #}
-			{% set experienceWithSoftwarePath = [transformationAnalysisModellingToolPath, uuids.yesExploreFurtherAUuid, uuids.whatIsYourExperienceWithThisSoftwareQUuid]|reply_path %}
-			{% set experienceWithSoftwareReply = replies[experienceWithSoftwarePath]|reply_str_value %}
-
-			{% if experienceWithSoftwareReply == uuids.weHaveAllTheExpertiseRequiredToUseTheSoftwareAUuid %}
-				{% set experienceWithSoftware = 'We have all the expertise required to use the software.' %}
-			{% elif experienceWithSoftwareReply == uuids.weDontHaveAllTheSpecialistExpertiseRequiredButHaveAvailableHelpAndTrainingOpportunitiesResourcesAUuid %}
-				{% set experienceWithSoftware = 'We dont currently have all the expertise required to use the software but have available help and training opportunities resources.' %}
-			{% elif experienceWithSoftwareReply == uuids.weWillNeedExternalAdditionalExpertiseOrTrainingAUuid %}
-				{% set experienceWithSoftware = 'We will need external additional expertise or training to use the software.' %}
-			{% endif %}
-			
-			{{experienceWithSoftware}}
-
-			{# High performance computing #}
-			{% set highPerformanceComputingPath = [transformationAnalysisModellingToolPath, uuids.yesExploreFurtherAUuid, uuids.doYouRequireHighPerformanceComputingParallelProcessingToExecuteYourScriptsWorkflowsModelsQUuid]|reply_path %}
-			{% set computingEnvironmentPath = [highPerformanceComputingPath, uuids.yesExploreFurther_2AUuid, uuids.whichHighPerformanceComputingEnvironmentSAreYouPlanningToUseQUuid]|reply_path %}
-			{% set computingEnvironmentReply = replies[computingEnvironmentPath]|reply_str_value %}
-
-			<p>We will use {{computingEnvironmentReply}} to execute scripts/workflows/models that require high performance computing.</p>
-
-			{# Version control #}
-			{% set versionControlSystemPath = [transformationAnalysisModellingToolPath, uuids.yesExploreFurtherAUuid, uuids.willYouUseAVersionControlSystemSuchAsGitGitHubForAnyToolsModelsCodeDevelopedByTheProjectQUuid]|reply_path %}
-			{% set versionControlSystemReply = replies[versionControlSystemPath]|reply_str_value %}
-
-			{% if versionControlSystemReply == uuids.no_66AUuid %}
-				{% set versionControlSystem = 'We wont use a version control system to keep track of changes in any tools/models/code developed by the project.' %}
-			{% elif versionControlSystemReply == uuids.yesGitHubAUuid %}
-				{% set versionControlSystem = 'We will use GitHub as a version control system to keep track of changes in any tools/models/code.' %}
-			{% elif versionControlSystemReply == uuids.yesOtherAUuid %}
-				{% if versionControlOtherReply %}
-					{% set versionControlOtherPath = [versionControlSystemPath, uuids.pleaseStateVersionControlSystemUsedQUuid]|reply_path %}
-					{% set versionControlOtherReply = replies[versionControlOtherPath]|reply_str_value %}
-					{% set versionControlSystem = 'We will use {{versionControlOtherReply}} as a version control system to keep track of changes in any tools/models/code.' %}
+				{% if versionControlSystemReply == uuids.no_66AUuid %}
+					{% set versionControlSystem = 'We wont use a version control system to keep track of changes in any tools/models/code developed by the project.' %}
+				{% elif versionControlSystemReply == uuids.yesGitHubAUuid %}
+					{% set versionControlSystem = 'We will use GitHub as a version control system to keep track of changes in any tools/models/code.' %}
+				{% elif versionControlSystemReply == uuids.yesOtherAUuid %}
+					{% if versionControlOtherReply %}
+						{% set versionControlOtherPath = [versionControlSystemPath, uuids.pleaseStateVersionControlSystemUsedQUuid]|reply_path %}
+						{% set versionControlOtherReply = replies[versionControlOtherPath]|reply_str_value %}
+						{% set versionControlSystem = 'We will use {{versionControlOtherReply}} as a version control system to keep track of changes in any tools/models/code.' %}
+					{% endif %}
 				{% endif %}
-			{% endif %}
-			{{versionControlSystem}}
+				{{versionControlSystem}}
 
-		{% endif %}
-
-		{# Risk of information loss etc. #}
-		{% set riskOfInfoLossPath = [uuids.processingAndAnalysingDataCUuid, uuids.isTheRiskOfInformationLossLeaksAndVandalismAcceptablyLowQUuid]|reply_path %}
-
-		{% set genericAndSpecificRisksPath = [riskOfInfoLossPath, uuids.exploreHintsAndTipsForGoodPractice_5AUuid, uuids.areAllProjectMembersAwareOfTheRisksGenericAndSpecificToTheProjectQUuid]|reply_path %}
-		{% set genericAndSpecificRisksReply = replies[genericAndSpecificRisksPath]|reply_str_value %}
-
-		{% if genericAndSpecificRisksReply == uuids.yes_77AUuid %}
-			{% set genericAndSpecificRisks = 'All project members are aware of the risks related to information loss and vandalism, and we have ensured they know about the protocols in place to minimise and migitate these risks.' %}
-		{% elif genericAndSpecificRisksReply == uuids.no_80AUuid %}
-			{% set genericAndSpecificRisks = 'Not all project members are aware of the risks related to information loss and vandalism. This is an inherent risk to the project and we must work to ensure everyone knows about the protocols to minimise and mitigate these risks.' %}
-		{% endif %}
-
-		{{genericAndSpecificRisks}}
-
-
-		{% set dataStoredExternallyPath = [riskOfInfoLossPath, uuids.exploreHintsAndTipsForGoodPractice_5AUuid, uuids.doProjectMembersStoreDataOrSoftwareOnComputersInTheLabFieldOrExternalHardDrivesConnectedToThoseComputersQUuid]|reply_path %}
-		{% set dataStoredExternallyReply = replies[dataStoredExternallyPath]|reply_str_value %}
-
-		{% if dataStoredExternallyReply == uuids.yes_72AUuid %}
-			{% set dataStoredExternally = 'Project members will store data or software externally (e.g. computers in the lab/field, external hard drives), which means we will need to make sure data is adequately backed-up and who has access to facilities were data are stored.' %}
-		{% endif %}
-
-		{{dataStoredExternally}}
-
-		{% set carryDataWithThemPath = [riskOfInfoLossPath, uuids.exploreHintsAndTipsForGoodPractice_5AUuid, uuids.doProjectMembersCarryDataWithThemQUuid]|reply_path %}
-		{% set carryDataWithThemReply = replies[carryDataWithThemPath]|reply_str_value %}
-
-		{% if carryDataWithThemReply == uuids.yes_73AUuid %}
-			{% set passwordProtectedDevicesPath = [carryDataWithThemPath, uuids.yes_73AUuid, uuids.areAccountsOnLaptopsDevicesPasswordProtectedQUuid]|reply_path %}
-			{% set passwordProtectedDevicesReply = replies[passwordProtectedDevicesPath]|reply_str_value %}
-
-			{% if passwordProtectedDevicesReply == uuids.yes_75AUuid %}
-				{% set passwordProtectedDevices = 'In order to safeguard any data stored on these devices we will make sure accounts are password protected.' %}
-			{% elif passwordProtectedDevicesReply == uuids.no_77AUuid %}
-				{% set passwordProtectedDevices = 'The risk of losing data stored on these devices will not be adequately mitigated as our accounts wont be password protected.' %}
 			{% endif %}
 
-			{% set carryDataWithThem = 'Project members will carry data with them on some form of external media (e.g. USB, laptop). ' %}
-		{% endif %}
+			{# Risk of information loss etc. #}
+			{% set riskOfInfoLossPath = [uuids.processingAndAnalysingDataCUuid, uuids.isTheRiskOfInformationLossLeaksAndVandalismAcceptablyLowQUuid]|reply_path %}
 
-		{{carryDataWithThem}}{{passwordProtectedDevices}}
+			{% set genericAndSpecificRisksPath = [riskOfInfoLossPath, uuids.exploreHintsAndTipsForGoodPractice_5AUuid, uuids.areAllProjectMembersAwareOfTheRisksGenericAndSpecificToTheProjectQUuid]|reply_path %}
+			{% set genericAndSpecificRisksReply = replies[genericAndSpecificRisksPath]|reply_str_value %}
+
+			{% if genericAndSpecificRisksReply == uuids.yes_77AUuid %}
+				{% set genericAndSpecificRisks = 'All project members are aware of the risks related to information loss and vandalism, and we have ensured they know about the protocols in place to minimise and migitate these risks.' %}
+			{% elif genericAndSpecificRisksReply == uuids.no_80AUuid %}
+				{% set genericAndSpecificRisks = 'Not all project members are aware of the risks related to information loss and vandalism. This is an inherent risk to the project and we must work to ensure everyone knows about the protocols to minimise and mitigate these risks.' %}
+			{% endif %}
+
+			{{genericAndSpecificRisks}}
 
 
-		{# Personal data protection #}
-		{% set personalDataProtectionPath = [riskOfInfoLossPath, uuids.exploreHintsAndTipsForGoodPractice_5AUuid, uuids.arePersonalDataSufficientlyProtectedQUuid]|reply_path %}
-		{% set personalDataProtectionReply = replies[personalDataProtectionPath]|reply_str_value %}
+			{% set dataStoredExternallyPath = [riskOfInfoLossPath, uuids.exploreHintsAndTipsForGoodPractice_5AUuid, uuids.doProjectMembersStoreDataOrSoftwareOnComputersInTheLabFieldOrExternalHardDrivesConnectedToThoseComputersQUuid]|reply_path %}
+			{% set dataStoredExternallyReply = replies[dataStoredExternallyPath]|reply_str_value %}
 
-		{% if personalDataProtectionReply == uuids.weAreNotUsingAnyPersonalInformationAUuid %}
-			{% set personalDataProtection = 'We will not be using any personal data information.' %}
-		{% elif personalDataProtectionReply == uuids.yesAllPersonalInformationWillBeProcessedInPseudonymisedFormOnlyAUuid %}
-			{% set pseudonymisationPath = [personalDataProtectionPath, uuids.yesAllPersonalInformationWillBeProcessedInPseudonymisedFormOnlyAUuid, uuids.howIsPseudonymisationHandledQUuid]|reply_path %}
-			{% set pseudonymisationReply = replies[pseudonymisationPath]|reply_str_value %}
+			{% if dataStoredExternallyReply == uuids.yes_72AUuid %}
+				{% set dataStoredExternally = 'Project members will store data or software externally (e.g. computers in the lab/field, external hard drives), which means we will need to make sure data is adequately backed-up and who has access to facilities were data are stored.' %}
+			{% endif %}
 
-			{% if pseudonymisationReply %}
-				{% set personalDataProtection = 'All personal information used by this project will be processed in pseudonymised form only, and psuedonymisation ' %}
+			{{dataStoredExternally}}
 
-				{% if pseudonymisationReply == uuids.wePseudonymiseInsideTheProjectOnlyLimitedPeopleCanAccessTheKeysAUuid %}
-					{% set pseudonymisation = 'will only be done inside the project, with only a limited number of people having access to security keys.' %}
-					{{personalDataProtection}}{{pseudonymisation}}
-				{% elif pseudonymisationReply == uuids.pseudonymisationIsHandledByAnIndependentPartyInOrderToAllowDataCouplingAUuid %}
-					{% set pseudonymisation = 'will be handled by an independent party in order to allow data coupling.' %}
-					{{personalDataProtection}}{{pseudonymisation}}
-				{% elif pseudonymisationReply == uuids.weHaveAnotherWayOfPseudonymisationAUuid %}
-					{% set pseudonymisation = 'will be done by ' %}
+			{% set carryDataWithThemPath = [riskOfInfoLossPath, uuids.exploreHintsAndTipsForGoodPractice_5AUuid, uuids.doProjectMembersCarryDataWithThemQUuid]|reply_path %}
+			{% set carryDataWithThemReply = replies[carryDataWithThemPath]|reply_str_value %}
 
-					{% set pseudonymisationOtherPath = [pseudonymisationPath, uuids.weHaveAnotherWayOfPseudonymisationAUuid, uuids.whatWayAreYouPseudonymisingDataQUuid]|reply_path %}
-					{% set pseudonymisationOtherReply = replies[pseudonymisationOtherPath]|reply_str_value %}
+			{% if carryDataWithThemReply == uuids.yes_73AUuid %}
+				{% set passwordProtectedDevicesPath = [carryDataWithThemPath, uuids.yes_73AUuid, uuids.areAccountsOnLaptopsDevicesPasswordProtectedQUuid]|reply_path %}
+				{% set passwordProtectedDevicesReply = replies[passwordProtectedDevicesPath]|reply_str_value %}
 
-					{{personalDataProtection}} {{pseudonymisation}} {{pseudonymisationOtherReply}}
+				{% if passwordProtectedDevicesReply == uuids.yes_75AUuid %}
+					{% set passwordProtectedDevices = 'In order to safeguard any data stored on these devices we will make sure accounts are password protected.' %}
+				{% elif passwordProtectedDevicesReply == uuids.no_77AUuid %}
+					{% set passwordProtectedDevices = 'The risk of losing data stored on these devices will not be adequately mitigated as our accounts wont be password protected.' %}
 				{% endif %}
-			{% else %}
-				{% set personalDataProtection = 'All personal information used by this project will be processed in pseudonymised form only. We have not yet decided how this process will work.' %}
+
+				{% set carryDataWithThem = 'Project members will carry data with them on some form of external media (e.g. USB, laptop). ' %}
+			{% endif %}
+
+			{{carryDataWithThem}}{{passwordProtectedDevices}}
+
+
+			{# Personal data protection #}
+			{% set personalDataProtectionPath = [riskOfInfoLossPath, uuids.exploreHintsAndTipsForGoodPractice_5AUuid, uuids.arePersonalDataSufficientlyProtectedQUuid]|reply_path %}
+			{% set personalDataProtectionReply = replies[personalDataProtectionPath]|reply_str_value %}
+
+			{% if personalDataProtectionReply == uuids.weAreNotUsingAnyPersonalInformationAUuid %}
+				{% set personalDataProtection = 'We will not be using any personal data information.' %}
+			{% elif personalDataProtectionReply == uuids.yesAllPersonalInformationWillBeProcessedInPseudonymisedFormOnlyAUuid %}
+				{% set pseudonymisationPath = [personalDataProtectionPath, uuids.yesAllPersonalInformationWillBeProcessedInPseudonymisedFormOnlyAUuid, uuids.howIsPseudonymisationHandledQUuid]|reply_path %}
+				{% set pseudonymisationReply = replies[pseudonymisationPath]|reply_str_value %}
+
+				{% if pseudonymisationReply %}
+					{% set personalDataProtection = 'All personal information used by this project will be processed in pseudonymised form only, and psuedonymisation ' %}
+
+					{% if pseudonymisationReply == uuids.wePseudonymiseInsideTheProjectOnlyLimitedPeopleCanAccessTheKeysAUuid %}
+						{% set pseudonymisation = 'will only be done inside the project, with only a limited number of people having access to security keys.' %}
+						{{personalDataProtection}}{{pseudonymisation}}
+					{% elif pseudonymisationReply == uuids.pseudonymisationIsHandledByAnIndependentPartyInOrderToAllowDataCouplingAUuid %}
+						{% set pseudonymisation = 'will be handled by an independent party in order to allow data coupling.' %}
+						{{personalDataProtection}}{{pseudonymisation}}
+					{% elif pseudonymisationReply == uuids.weHaveAnotherWayOfPseudonymisationAUuid %}
+						{% set pseudonymisation = 'will be done by ' %}
+
+						{% set pseudonymisationOtherPath = [pseudonymisationPath, uuids.weHaveAnotherWayOfPseudonymisationAUuid, uuids.whatWayAreYouPseudonymisingDataQUuid]|reply_path %}
+						{% set pseudonymisationOtherReply = replies[pseudonymisationOtherPath]|reply_str_value %}
+
+						{{personalDataProtection}} {{pseudonymisation}} {{pseudonymisationOtherReply}}
+					{% endif %}
+				{% else %}
+					{% set personalDataProtection = 'All personal information used by this project will be processed in pseudonymised form only. We have not yet decided how this process will work.' %}
+					{{personalDataProtection}}
+				{% endif %}
+			{% elif personalDataProtectionReply == uuids.yesAllDataWillBeCollectedAnonymouslyAUuid %}
+				{% set personalDataProtection = 'All personal data will be collected anonymously.' %}
+				{{personalDataProtection}}
+			{% elif personalDataProtectionReply == uuids.yesAllDataWillBeAnonymisedAsEarlyAsPossibleAUuid %}
+				{% set personalDataProtection = 'All personal information used in this project will be anonymised as early as possible.' %}
 				{{personalDataProtection}}
 			{% endif %}
-		{% elif personalDataProtectionReply == uuids.yesAllDataWillBeCollectedAnonymouslyAUuid %}
-			{% set personalDataProtection = 'All personal data will be collected anonymously.' %}
-			{{personalDataProtection}}
-		{% elif personalDataProtectionReply == uuids.yesAllDataWillBeAnonymisedAsEarlyAsPossibleAUuid %}
-			{% set personalDataProtection = 'All personal information used in this project will be anonymised as early as possible.' %}
-			{{personalDataProtection}}
 		{% endif %}
-		
-	{# Expertise #}
-
-	{% set expertisePath = [uuids.projectInformationCUuid, uuids.willYouRequireSpecialistExpertiseInAdditionToWhatIsUsuallyAvailableQUuid]|reply_path %}
-	{% set expertise = replies[expertisePath]|reply_str_value %}
-	
-	{% if expertise == uuids.noWeHaveAllTheExpertiseWeNeedAUuid %}
-		<p>We have all the expertise we need and do not require any additional specialist expertise.</p>
-	{% elif expertise == uuids.yesWeWillBeTrainingExistingStaffStudentsAUuid %}
-		<p>We will be training existing staff/students to gain the expertise we require.</p>
-	{% elif expertise == uuids.yesWeWillBeRecruitingNewPeopleWithAdditionalExpertiseAUuid %}
-		<p>We will be recruiting new people with additional expertise to get the specialist skills we need.</p>
-	{% endif %}
-
 </div>
 
 {# ---- Section ---- #}
