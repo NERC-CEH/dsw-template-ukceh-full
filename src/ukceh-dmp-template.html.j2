@@ -653,6 +653,153 @@
 						</ul>
 					{% endif %}	
 				{% endif %}
+				
+				{# Question on equipment used tbc #}
+
+				{# Section on transport of raw data and processing #}
+				{% set willYouNeedTransportPath = [observationalOrExperimentalPath, uuids.yes_15AUuid, uuids.willYouNeedToTransferTransportRawDataFromThePlaceItWasCollectedToWhereItWillBeProcessedQUuid]|reply_path %}
+				{% set willYouNeedTransportReply = replies[willYouNeedTransportPath]|reply_str_value %}
+
+				{% if willYouNeedTransportReply == uuids.noTransportIsNeededAnalysisIsDoneWhereItIsObtainedAUuid %}
+					<p>
+						We will not need to transport/transfer raw data from the place it was collected.
+						Analysis will be done where it is obtained.
+					</p>
+				{% elif willYouNeedTransportReply == uuids.yes_18AUuid%}
+					<p>
+						We will need to transport/transfer raw data from the place it was collected.
+						{% set howWillYouTransportPath = [willYouNeedTransportPath, uuids.yes_18AUuid, uuids.howWillTheRawDataBeTransportedQUuid]|reply_path %}
+						{% set howWillYouTransportReply = replies[howWillYouTransportPath]|reply_str_value %}
+
+						{% if howWillYouTransportReply == uuids.onPhysicalMediaAUuid %}
+							It will be transported on physical media.
+							{% set isSufficientStoragePath = [howWillYouTransportPath, uuids.onPhysicalMediaAUuid, uuids.isSufficientWritingAndReadingStorageCapacityAvailableForThePhysicalMediaQUuid]|reply_path %}
+							{% set isSufficientStorageReply = replies[isSufficientStoragePath]|reply_str_value %}
+
+							{% if isSufficientStorageReply == uuids.no_17AUuid %}
+								We have not checked if sufficient writing and reading storage capacity is available.
+							{% elif isSufficientStorageReply == uuids.yes_19AUuid %}
+								We have made sure sufficient writing and reading storage capacity is available to do so.	
+							{% endif %}
+						{% elif howWillYouTransportReply == uuids.viaAPublicNetworkAUuid %}	
+							It will be transferred via a public network.
+							{% set isSufficientNetworkCapacityPath = [howWillYouTransportPath, uuids.viaAPublicNetworkAUuid, uuids.isSufficientNetworkCapacityAvailableToTransferTheDataQUuid]|reply_path %}
+							{% set isSufficientNetworkCapacityReply = replies[isSufficientNetworkCapacityPath]|reply_str_value %}
+
+							{% if isSufficientNetworkCapacityReply == uuids.no_18AUuid %}
+								We have not checked if sufficient network capacity is available to transfer data.
+							{% elif isSufficientNetworkCapacityReply == uuids.yes_20AUuid %}
+								We have made sure sufficient network capacity is available to do so.	
+							{% endif %}
+
+						{% elif howWillYouTransportReply == uuids.viaAPrivateConnectionAUuid %}
+							It will be transferred via a private connection.
+						{% endif %}
+
+						{# Integrity question#}
+						{% set dataIntegrityGuaranteedPath = [willYouNeedTransportPath, uuids.yes_18AUuid, uuids.isDataIntegrityGuaranteedDuringThisStageQUuid]|reply_path %}
+						{% set dataIntegrityGuaranteedReply = replies[dataIntegrityGuaranteedPath]|reply_str_value %}
+						
+						{% if dataIntegrityGuaranteedReply == uuids.no_19AUuid %}
+							We have no means of identifying whether the raw data has been transferred error free, been tampered with and/or lost, and therefore cannot guarantee data integrity.
+						{% elif dataIntegrityGuaranteedReply == uuids.yes_21AUuid %}
+							To guarantee data integrity, we have means of identifying whether the raw data has been transferred error free, been tampered with and/or lost.
+						{% endif %}
+
+						{# Security question #}
+						{% set dataSecurityPath = [willYouNeedTransportPath, uuids.yes_18AUuid, uuids.haveYouConsideredAnySecurityIssuesAtThisStageQUuid]|reply_path %}
+						{% set dataSecurityReply = replies[dataSecurityPath]|reply_str_value %}
+						
+						{% if dataSecurityReply == uuids.no_20AUuid %}
+							We have not considered security, and therefore cannot guarantee data will be protected from theft, leaks or irretrievable data loss.
+						{% elif dataSecurityReply == uuids.yesWeHaveConsideredAndWontNeedAnySpecificPlansAUuid %}
+							We have considered security and we will not need any specific plans.
+						{% elif dataSecurityReply == uuids.yesWeHaveConsideredThisAndHaveAPlanInPlaceAUuid %}	
+							We have considered security and we have a plan in place.
+						{% endif %}						
+					</p>
+				{% endif%}
+
+				{# Quality control section #}
+				{% set qualityControlPath = [observationalOrExperimentalPath, uuids.yes_15AUuid, uuids.willYouBeUsingQualityControlProcessesQUuid]|reply_path %}
+				{% set qualityControlReply = replies[qualityControlPath]|reply_str_value %}
+
+				{% if qualityControlReply == uuids.no_21AUuid %}
+				<p>
+					We will not be using a quality control process.
+				</p>	
+				{% elif qualityControlReply == uuids.yes_22AUuid %}
+				<p>
+					We will be using a quality control process:
+					<ul>
+						{% set calibratingMeasurementsPath = [qualityControlPath, uuids.yes_22AUuid, uuids.areYouCalibratingMeasurementsQUuid]|reply_path %}
+						{% set calibratingMeasurementsReply = replies[calibratingMeasurementsPath]|reply_str_value %}
+
+						{% if calibratingMeasurementsReply == uuids.no_22AUuid %}
+							<li>Not calibrating measurements</li>
+						{% elif calibratingMeasurementsReply == uuids.yes_23AUuid %}
+							<li>Calibrating measurements</li>
+						{% endif %}
+
+						{% set repeatSamplesMeasurementsPath = [qualityControlPath, uuids.yes_22AUuid, uuids.areYouRunningRepeatSamplesOrAreYouRepeatingMeasurementsQUuid]|reply_path %}
+						{% set repeatSamplesMeasurementsReply = replies[repeatSamplesMeasurementsPath]|reply_str_value %}
+						
+						{% if repeatSamplesMeasurementsReply == uuids.no_23AUuid %}
+							<li>Not running repeat samples or repeating measurements</li>
+						{% elif repeatSamplesMeasurementsReply == uuids.yes_24AUuid %}
+							<li>Running repeat samples or repeating measurements</li>
+						{% endif %}
+
+						{% set standardDataCaptureMeasurementsPath = [qualityControlPath, uuids.yes_22AUuid, uuids.areYouFollowingStandardOrDescribedDataCaptureMethodsCommonlyUsedInYourFieldQUuid]|reply_path %}
+						{% set standardDataCaptureMeasurementsReply = replies[standardDataCaptureMeasurementsPath]|reply_str_value %}
+						
+						{% if standardDataCaptureMeasurementsReply == uuids.no_24AUuid %}
+							<li>Not using standard or described data capture methods commonly used in our field</li>
+						{% elif standardDataCaptureMeasurementsReply == uuids.yes_25AUuid %}
+							<li>Using standard or described data capture methods commonly used in our field</li>
+						{% endif %}
+
+						{% set validatingMeasurementsPath = [qualityControlPath, uuids.yes_22AUuid, uuids.willDataBePeerReviewedDuringOrUponCollectionQUuid]|reply_path %}
+						{% set validatingMeasurementsReply = replies[validatingMeasurementsPath]|reply_str_value %}
+						
+						{% if validatingMeasurementsReply == uuids.no_26AUuid %}
+							<li>No process to validate or check during or upon collection before further analysis</li>
+						{% elif validatingMeasurementsReply == uuids.yes_27AUuid %}
+							<li>Processes to validate or check during or upon collection before further analysis</li>
+						{% endif %}
+
+						{% set automatedDataEntryMeasurementsPath = [qualityControlPath, uuids.yes_22AUuid, uuids.areYouDoingDataEntryValidationQUuid]|reply_path %}
+						{% set automatedDataEntryMeasurementsReply = replies[automatedDataEntryMeasurementsPath]|reply_str_value %}
+						
+						{% if automatedDataEntryMeasurementsReply == uuids.no_25AUuid %}
+							<li>No process to automatically test data for correctness when recording/entering into a database</li>
+						{% elif automatedDataEntryMeasurementsReply == uuids.yes_26AUuid %}
+							<li>Processes to automatically test data for correctness when recording/entering into a database</li>
+						{% endif %}
+
+						{% set controlledVocabulariesMeasurementsPath = [qualityControlPath, uuids.yes_22AUuid, uuids.areYouUsingControlledVocabulariesQUuid]|reply_path %}
+						{% set controlledVocabulariesMeasurementsReply = replies[controlledVocabulariesMeasurementsPath]|reply_str_value %}
+						
+						{% if controlledVocabulariesMeasurementsReply == uuids.no_27AUuid %}
+							<li>Not using controlled vocabularies</li>
+						{% elif controlledVocabulariesMeasurementsReply == uuids.yes_28AUuid %}
+							<li>Using controlled vocabularies</li>
+						{% endif %}
+
+						{% set anyOtherMeasurementsPath = [qualityControlPath, uuids.yes_22AUuid, uuids.areYouUsingAnyOtherQualityProcessesQUuid]|reply_path %}
+						{% set anyOtherMeasurementsReply = replies[anyOtherMeasurementsPath]|reply_str_value %}
+						
+						{% if anyOtherMeasurementsReply == uuids.yes_29AUuid %}
+							{% set whatOtherMeasurementsPath = [anyOtherMeasurementsPath, uuids.yes_29AUuid, uuids.whatOtherQualityProcessesDoYouUseQUuid]|reply_path %}
+							{% set whatOtherMeasurementsReply = replies[whatOtherMeasurementsPath]|reply_str_value %}
+							<li>{{whatOtherMeasurementsReply}}</li>
+						{% endif %}	
+
+					</ul>
+				</p>
+				{% endif %}
+
+
 			</p>		
 			{% endif %}
 
