@@ -596,21 +596,42 @@
 		{% set createOrCollectEnvironmentalDataReply = replies[createOrCollectEnvironmentalDataPath]|reply_str_value %}
 
 		{% if createOrCollectEnvironmentalDataReply == uuids.yes_14AUuid %}
+		<p>This project will create or collect environmental research data.</p>
 
 			{% set observationalOrExperimentalPath = [createOrCollectEnvironmentalDataPath, uuids.yes_14AUuid, uuids.willYouBeAcquiringObservationalOrExperimentalDataQUuid]|reply_path %}
 			{% set observationalOrExperimentalReply = replies[observationalOrExperimentalPath]|reply_str_value %}
 
 			{% if observationalOrExperimentalReply == uuids.yes_15AUuid %}
+			<p> We will acquire observational or experimental data in this project. 
+
+				{% set surveyDesignPath =  [observationalOrExperimentalPath, uuids.yes_15AUuid, uuids.willYouBeImplementingAPreDeterminedOrStandardSurveyExperimentalDesignQUuid]|reply_path %}
+				{% set surveyDesignReply = replies[surveyDesignPath]|reply_str_value %}
+
+				{% if surveyDesignReply == uuids.noWeWillUseADesignCreatedSpecificallyForThisProjectAUuid %}
+					We will not implement a pre-determined survey/experimental design.
+					We will use a design created specifically for this project.
+				{% elif surveyDesignReply == uuids.yes_16AUuid %}
+					{% set widelyUsedDesignPath = [surveyDesignPath, uuids.yes_16AUuid, uuids.isThisDesignWidelyUsedInYourFieldOfResearchQUuid]|reply_path %}
+					{% set widelyUsedDesignReply = replies[widelyUsedDesignPath]|reply_str_value %}
+					{% if widelyUsedDesignReply == uuids.yesItIsAStandardDesignAUuid %}
+						We will implement a pre-determined survey/experimental design.
+						This design is standard in our field of research.
+					{% elif widelyUsedDesignReply == uuids.thisIsARelativelyNewButReliableDesignAUuid %}
+						We will implement a pre-determined survey/experimental design.
+						This design is new to our field of research, but it is reliable.
+					{% endif %}
+				{% endif %}
+
 				{% set whoWillDoMeasurementsPath = [observationalOrExperimentalPath, uuids.yes_15AUuid, uuids.whoWillDoTheMeasurementsQUuid]|reply_path %}
 				{% set whoWillDoMeasurementsReply = replies[whoWillDoMeasurementsPath]|reply_items %}
 
 					{% if whoWillDoMeasurementsReply %}
-						<p>We will acquire observational or experimental data, and it will be collected by:</p>
+						<p>Observational or experimental data will be collected by:</p>
 						{% for itemUuid in whoWillDoMeasurementsReply %}
 							<li>{{ km.entities.choices[itemUuid].label }}</li>
 						{% endfor %}
 					{% else %}
-						<p>We will acquire observational or experimental data. We haven't decided who will do the measurements.</p>
+						<p>We haven't decided who will do the measurements.</p>
 					{% endif %}
 
 					{# Code not working to do customised statement #}
@@ -621,6 +642,7 @@
 					{% elif whoWillDoMeasurementsReply == uuids.externalPartyAUuid %}
 						{% set whoWillDoMeasurements = 'We will acquire observational or exprimental data, and external party will do the measurements.' %}
 					{% endif %}
+			</p>		
 			{% endif %}
 
 			{# Other means such as modelling #}
@@ -795,7 +817,7 @@
 		{% set processOrAnalyseDataReply = replies[processOrAnalyseDataPath]|reply_str_value %}
 
 		{% if processOrAnalyseDataReply == uuids.no_5_2AUuid %}
-		<p>This project is not processing or analysing data.
+		<p>This project is not processing or analysing data.</p>
 		{% elif processOrAnalyseDataReply == uuids.yes_5_2AUuid %}
 			{# Data storage systems and conventions #}
 			{% set dataStorageSystemsAndNamingConventionsPath = [uuids.processingAndAnalysingDataCUuid, uuids.dataStorageSystemsAndFileNamingConventionsQUuid]|reply_path %}
