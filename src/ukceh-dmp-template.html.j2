@@ -625,23 +625,34 @@
 				{% set whoWillDoMeasurementsPath = [observationalOrExperimentalPath, uuids.yes_15AUuid, uuids.whoWillDoTheMeasurementsQUuid]|reply_path %}
 				{% set whoWillDoMeasurementsReply = replies[whoWillDoMeasurementsPath]|reply_items %}
 
-					{% if whoWillDoMeasurementsReply %}
-						<p>Observational or experimental data will be collected by:</p>
-						{% for itemUuid in whoWillDoMeasurementsReply %}
-							<li>{{ km.entities.choices[itemUuid].label }}</li>
-						{% endfor %}
-					{% else %}
-						<p>We haven't decided who will do the measurements.</p>
-					{% endif %}
+				{% if whoWillDoMeasurementsReply %}
+					<p>Observational or experimental data will be collected by:</p>
+					{% for itemUuid in whoWillDoMeasurementsReply %}
+						<li>{{ km.entities.choices[itemUuid].label }}</li>
+					{% endfor %}
+				{% else %}
+					<p>We haven't decided who will do the measurements.</p>
+				{% endif %}
 
-					{# Code not working to do customised statement #}
-					{% if whoWillDoMeasurementsReply == uuids.staffInTheProjectWithOurOwnEquipmentIfRequiredAUuid %}
-						{% set whoWillDoMeasurements = 'We will acquire observational or experimental data using our own equipment.' %}
-					{% elif whoWillDoMeasurementsReply == uuids.expertsInTheProjectAtASpecialisedInfrastructureAUuid %}
-						{% set whoWillDoMeasurements = 'We will acquire observational or experimental data, and experts in the project will do the measurements at a specialised infrastructure.' %}					
-					{% elif whoWillDoMeasurementsReply == uuids.externalPartyAUuid %}
-						{% set whoWillDoMeasurements = 'We will acquire observational or exprimental data, and external party will do the measurements.' %}
-					{% endif %}
+				{% set usingInstrumentsPath = [observationalOrExperimentalPath, uuids.yes_15AUuid, uuids.willYouBeUsingInstrumentsToCollectDataQUuid]|reply_path %}
+				{% set usingInstrumentsReply = replies[usingInstrumentsPath]|reply_str_value %}
+
+				{% if usingInstrumentsReply == uuids.no_16AUuid %}
+					<p>We will not be using using any instruments or facilities to collect data.
+				{% elif usingInstrumentsReply == uuids.yes_17AUuid %}
+					{% set whatInstrumentListPath = [usingInstrumentsPath, uuids.yes_17AUuid, uuids.whatInstrumentsOrFacilitiesWillBeUsedToCollectDataQLUuid]|reply_path %}
+					{% set whatInstrumentListReply = replies[whatInstrumentListPath]|reply_items %}
+					<p> We will be using the following instruments or facilities:
+					{% if whatInstrumentListReply|length > 0 %}
+						<ul>
+						{% for itemUuid in whatInstrumentListReply %}
+							{% set whatInstrumentPath = [whatInstrumentListPath, itemUuid, uuids.instrumentFacilityNameQUuid]|reply_path %}
+							{% set whatInstrumentReply = replies[whatInstrumentPath]|reply_str_value %}
+							<li> {{whatInstrumentReply}}</li>
+						{% endfor %}
+						</ul>
+					{% endif %}	
+				{% endif %}
 			</p>		
 			{% endif %}
 
