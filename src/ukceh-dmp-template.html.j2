@@ -4,7 +4,7 @@
 {% set projectName = replies[projectNamePath]|reply_str_value %}
 {% set projectNumberPath = [uuids.projectInformationCUuid, uuids.projectNumberQUuid]|reply_path %}
 {% set projectNumber = replies[projectNumberPath]|reply_str_value %}
-<h4>UKCEH Programme - UK-SCAPE</h4> 
+<h4>UKCEH Project</h4> 
 <dl>
 	<dt>Project name</dt> <dd>{{projectName}}</dd>	
 	<dt>Grant reference</dt> <dd>{{projectNumber}}</dd>
@@ -41,7 +41,7 @@
 	<dt>Policies applicable to data and models in this research</dt> 
 		<dd>
 			<ul>
-				<li>UK Legislation: <a href="https://www.legislation.gov.uk/ukpga/2018/12/pdfs/ukpga_20180012_en.pdf" target="_blank">Data Protection Act 2018</a>,</li>
+				<li><a href="https://www.legislation.gov.uk/ukpga/2018/12/pdfs/ukpga_20180012_en.pdf" target="_blank">Data Protection Act 2018</a>,</li>
 				<li><a href="https://gdpr-info.eu/" target="_blank">General Data Protection Regulation (GDPR)</a></li>
 			</ul>
 		</dd>					
@@ -51,20 +51,26 @@
 <h4 class="newpage">Timeline</h4>
 <dl>
 	<dt>First 3-6 months of grant</dt>
-	<dd>Some text about 3-6 months of grant for UKCEH</dd>
+		<dd>
+			Some text about 3-6 months of grant for UKCEH
+		</dd>
 	<dt>Annually</dt>
-	<dd>Some text about annually for UKCEH</dd>	
+		<dd>
+			Some text about annually for UKCEH
+		</dd>	
 	<dt>6 - 9 months before grant end</dt>
-	<dd>Some text about 6-9 months of grant for UKCEH</dd>
+		<dd>
+			Some text about 6-9 months of grant for UKCEH
+		</dd>
 	<dt>End of grant</dt>
-	<dd>Some text about end of grant for UKCEH</dd>
+		<dd>
+			Some text about end of grant for UKCEH
+		</dd>
 </dl>
-
-<h4 class="newpager"><span style="color: red;">Sections 1 - 4 to be completed within 3 months of project start date</span></h4>
 
 {# ---- Section ---- #}
 <div class="question">
-	<h3>1. Project Information</h3>
+	<h3 class = "newpager">1. Project Information</h3>
 	{% set acronymPath = [uuids.projectInformationCUuid, uuids.projectAcronymOrShortNameQUuid]|reply_path %}
 	{% set acronymReply = replies[acronymPath]|reply_str_value %}
 	{% set funderPath = [uuids.projectInformationCUuid, uuids.fundingQLUuid]|reply_path %}
@@ -77,10 +83,6 @@
 	{% set projectProposalReply = replies[projectProposalPath]|reply_str_value %}
 
 	<dl>
-		<dt>Programme name</dt>
-			<dd>
-				vvvv
-			</dd>
 		<dt>Project Title</dt>
 			<dd>
 				{{projectName}}
@@ -95,7 +97,7 @@
 			</dd>
 		<dt>Proposal</dt>
 			<dd>
-				More information on the proposal can be found in {{projectProposalReply}}
+				More information on the proposal can be found <a href = {{projectProposalReply}}>here</a>.
 			</dd>
 
 	{% set projectStartDatePath = [uuids.projectInformationCUuid, uuids.dateTheProjectWillStartQUuid]|reply_path %}
@@ -241,7 +243,8 @@
 {# ---- Section ---- #}
 
 <div class="question">
-	<h3>2. Re-using data </h3>	
+	<h3>2. Re-using data </h3>
+	<h4>2.1 Existing datasets used in this project</h4>	
 	{% set datasetUsedPath = [uuids.reUsingDataCUuid, uuids.willTheProjectUseAnyPreExistingOrThirdPartyDataQUuid]|reply_path %}
 	{% set datasetUsedReply = replies[datasetUsedPath]|reply_str_value %}
 	{% set datasetUsedListPath = [datasetUsedPath, uuids.yes_3AUuid, uuids.whatExistingDataResourcesWillYouUseQLUuid]|reply_path %}
@@ -298,7 +301,7 @@
 						<p style="text-indent: 40px"><strong>What conditions</strong> {{whatConditionsReply}}</p>
 					{% endif %}
 				{% else %}
-					<p><strong>Conditions of use:</strong> {{missingInformationText}}
+					<p><strong>Conditions of use:</strong> <span style="color: red;">{{missingInformationText}}</span>
 				{% endif %}	
 
 				{% set datasetUsedIPRPath = [datasetUsedListPath, itemUuid, uuids.whichOrganisationSHoldTheIntellectualPropertyRightsIprToThisDataset_1QUuid]|reply_path %}	
@@ -344,10 +347,10 @@
 
 				{% set datasetUsedMakeAvailablePath = [datasetUsedListPath, itemUuid, uuids.howWillYouMakeSureTheSameDataWillBeAvailableForOthersToReproduceYourResultsQUuid]|reply_path %}
 				{% set datasetUsedMakeAvailableReply = replies[datasetUsedMakeAvailablePath]|reply_str_value %}
-				{% if datasetUsedMakeAvailableReply%}
+				{% if datasetUsedMakeAvailableReply %}
 					<p><strong>Availability of data version</strong> {{km.entities.answers[datasetUsedMakeAvailableReply].label}}</p>
 				{% else %}
-					<p><strong>Availability of data version</strong> {{missingInformationText}}</p>
+					<p><strong>Availability of data version</strong> <span style="color: red;">{{missingInformationText}}</span></p>
 				{% endif %}	
 
 				{% set datasetUsedApproximateSizePath = [datasetUsedListPath, itemUuid, uuids.whatIsTheApproximateSizeOfTheDataset_1QUuid]|reply_path %}
@@ -406,6 +409,7 @@
 </div>	
 
 <div>
+	<h4>2.2 Existing models used in this project</h4>	
 	{# Models section #}
 	{% set modelsUsedPath = [uuids.reUsingDataCUuid, uuids.willTheProjectUseAnyPreExistingOrThirdPartyModelsQUuid]|reply_path %}
 	{% set modelsUsedReply = replies[modelsUsedPath]|reply_str_value %}
@@ -1387,11 +1391,11 @@
 		</ul>
 	{% endif %}	
 
-	<h4>4.3 Software packages this project plans to create</h4>
+	<h4>5.3 Software packages this project plans to create</h4>
 	{% set softwarePath = [uuids.preservingAndSharingDataCUuid, uuids.softwarePackagesQUuid]|reply_path %}
 	{% set softwareReply = replies[softwarePath]|reply_str_value%}
 	{% if softwareReply == uuids.iWillNotBeProducingAnySoftwarePackagesAsPartOfThisProjectAUuid %}
-		<p>NA</p>
+		<p>No software packages will be created by this project.</p>
 	{% elif softwareReply == uuids.specifyAListOfSoftwarePackagesYouWillBeProducingAUuid %}	
 		{% set softwareListPath = [softwarePath, uuids.specifyAListOfSoftwarePackagesYouWillBeProducingAUuid, uuids.softwarePackagesListQLUuid]|reply_path %}	
 		{% set softwareListReply = replies[softwareListPath]|reply_items %}
@@ -1508,11 +1512,11 @@
 	{% endif %}
 
 	{# Section 4.4 - Physical samples #}
-	<h4>4.4 Physical samples this project plans to create</h4>
+	<h4>5.4 Physical samples this project plans to collect</h4>
 	{% set samplesPath = [uuids.preservingAndSharingDataCUuid, uuids.physicalCollectionsAndSamplesQUuid]|reply_path %}
 	{% set samplesReply = replies[samplesPath]|reply_str_value%}
 	{% if samplesReply == uuids.iWillNotBeProducingAnyPhysicalCollectionsOrSamplesAsPartOfThisProjectAUuid %}
-		<p>NA</p>
+		<p>No physical samples are collected by this project.</p>
 	{% elif samplesReply == uuids.specifyAListOfPhysicalSamplesYouWillBeProducingAUuid %}	
 		{% set samplesListPath = [samplesPath, uuids.specifyAListOfPhysicalSamplesYouWillBeProducingAUuid, uuids.listOfPhysicalCollectionsQLUuid]|reply_path %}	
 		{% set samplesListReply = replies[samplesListPath]|reply_items %}
@@ -1598,10 +1602,10 @@
 
 {# Section #}
 <div class="question">
+{% if ctx.phaseUuid == "e6b3786d-9246-4179-b78e-d99c8ca9435c" %}
 	<h3>6. Project closure </h3>
-	
-
+{% endif %}	
 </div>
 
 
-{# <pre>{{ ctx|tojson(2) }}</pre> #}
+ {#<pre>{{ ctx|tojson(2) }}</pre>#}
