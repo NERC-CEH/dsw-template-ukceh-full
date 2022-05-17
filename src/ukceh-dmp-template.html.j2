@@ -794,11 +794,45 @@
 							{% set whatOtherMeasurementsReply = replies[whatOtherMeasurementsPath]|reply_str_value %}
 							<li>{{whatOtherMeasurementsReply}}</li>
 						{% endif %}	
-
 					</ul>
 				</p>
 				{% endif %}
 
+				{# Question on interest  #}
+				{% set interestInDataPath = [observationalOrExperimentalPath, uuids.yes_15AUuid, uuids.whoElseCouldBeInterestedInUsingTheseDataQUuid]|reply_path %}
+				{% set interestInDataReply = replies[interestInDataPath]|reply_str_value %}
+
+				<p>
+					{% if interestInDataReply == uuids.justUsAUuid %}
+						We are the only ones interested in this data, and therefore do not need a plan to publish our data.
+					{% elif interestInDataReply == uuids.otherResearchersWorkingInTheSameFieldOfResearchAUuid %}
+						Other researchers in our field could be interested in our data, and therefore we need a plan to publish our data.
+					{% elif interestInDataReply == uuids.aWideRangeOfResearchersAUuid %}
+						A wide range of researchers could be interested in our data, and therefore we need a plan to publish our data.
+					{% endif %}
+				</p>				
+
+				{# Question on formal ownership #}
+				{% set formalOwnershipDataPath = [observationalOrExperimentalPath, uuids.yes_15AUuid, uuids.hasFormalOwnershipOfTheDataBeenEstablishedQUuid]|reply_path %}
+				{% set formalOwnershipDataReply = replies[formalOwnershipDataPath]|reply_str_value %}
+
+				<p>
+					The Intellectual Property Rights (IPR), are held
+					{% if formalOwnershipDataReply == uuids.theProjectFunderHoldsTheIprAUuid %}
+						by the funder.
+					{% elif formalOwnershipDataReply == uuids.thePartyMeasuringTheDataOwnsItAUuid %}
+						by the organisation measuring the data.
+					{% elif formalOwnershipDataReply == uuids.theOrganisationOfThePrincipalInvestigatorHoldsTheIprAUuid %}
+						by the organisation of the Principal Investigator.
+					{% elif formalOwnershipDataReply == uuids.theProjectPartnersAcquireFullOwnershipAUuid %}
+						by the project partners.
+					{% elif formalOwnershipDataReply == uuids.weHaveMadeOtherArrangementsAUuid %}
+						through the following arrangments:
+						{% set whatOtherArrangementsDataPath = [formalOwnershipDataPath, uuids.weHaveMadeOtherArrangementsAUuid, uuids.whatOtherArrangementsQUuid]|reply_path %}
+						{% set whatOtherArrangementsDataReply = replies[whatOtherArrangementsDataPath]|reply_str_value %}
+						{{whatOtherArrangementsDataReply}}
+					{% endif %}
+				</p>				
 
 			</p>		
 			{% endif %}
