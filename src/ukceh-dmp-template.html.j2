@@ -852,6 +852,34 @@
 					{% endfor %}
 				{% endif %}
 
+				{# Will model output be made available to others #}
+				{% set availableToOthersModelPath = [otherMeansModellingPath, uuids.yes_30AUuid, uuids.willTheModelOutputBeMadeAvailableToOthersQUuid]|reply_path %}
+				{% set availableToOthersModelReply = replies[availableToOthersModelPath]|reply_str_value %}
+				
+				{% if availableToOthersModelReply == uuids.no_30AUuid %}
+					<p>
+						We will not make the model output available to others.
+						{% set whyNotAvailableToOthersModelPath = [availableToOthersModelPath, uuids.no_30AUuid, uuids.whyQUuid]|reply_path %}
+						{% set whyNotAvailableToOthersModelReply = replies[whyNotAvailableToOthersModelPath]|reply_str_value %}
+						{{ km.entities.answers[whyNotAvailableToOthersModelReply].label }}
+					</p>
+				{% elif availableToOthersModelReply == uuids.yes_31AUuid %}
+					<p>We will make the model output available to others.</p>
+				{% endif %}
+
+				{# Who else could be interested in using these data #}
+				{% set interestInModelOutputPath = [otherMeansModellingPath, uuids.yes_30AUuid, uuids.whoElseCouldBeInterestedInUsingTheseData_2QUuid]|reply_path %}
+				{% set interestInModelOutputReply = replies[interestInModelOutputPath]|reply_str_value %}
+
+				<p>
+					{% if interestInModelOutputReply == uuids.justUs_2AUuid %}
+						We are the only ones interested in this model output, and therefore do not need a plan to publish our data.
+					{% elif interestInModelOutputReply == uuids.otherResearchersWorkingInTheSameFieldOfResearch_2AUuid %}
+						Other researchers in our field could be interested in our model output, and therefore we need a plan to publish our data.
+					{% elif interestInModelOutputReply == uuids.aWideRangeOfResearchers_2AUuid %}
+						A wide range of researchers could be interested in our model output, and therefore we need a plan to publish our data.
+					{% endif %}
+				</p>	
 			{% endif %}
 
 			{# Software packages #}
