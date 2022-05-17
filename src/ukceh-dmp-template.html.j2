@@ -969,7 +969,7 @@
 					{% elif differentInterpretationReply == uuids.weAcceptTheRiskOfDifferentInterpretationsAUuid %}
 						We accept the risk of different interpretations.
 					{% elif differentInterpretationReply == uuids.weDoValidationAfterwardsAUuid %}
-						There is some risk of different interpretations, but we conduct a validation afterwards.
+						There is some risk of different interpretations, but we will conduct a validation afterwards.
 					{% elif differentInterpretationReply == uuids.weHaveMadeOtherArrangements_4AUuid %}
 						We have the following arrangements in place to mitigate the risk of different interpretations:
 						{% set whatOtherArrangementsCollectingDataPath = [differentInterpretationPath, uuids.weHaveMadeOtherArrangements_4AUuid, uuids.whatOtherArrangements_4QUuid]|reply_path %}
@@ -978,10 +978,66 @@
 					{% endif %}	
 				{% endif %}	
 				</p>
-
-
-
 			{% endif %}
+
+			{# Physical collections #}
+			{% set physicalSamplesPath = [createOrCollectEnvironmentalDataPath, uuids.yes_14AUuid, uuids.willYouBeStoringPhysicalSamplesQUuid]|reply_path %}
+			{% set physicalSamplesReply = replies[physicalSamplesPath]|reply_str_value %}
+
+			{% if physicalSamplesReply == uuids.yes_41AUuid %}
+				<p>
+					We will be storing physical samples.
+
+				{# How will physical samples be identified #}
+				{% set identificationPhysicalSamplesPath = [physicalSamplesPath, uuids.yes_41AUuid, uuids.howWillTheSamplesAndAnyRecordsDerivedFromThemBeIdentifiedQUuid]|reply_path %}
+				{% set identificationPhysicalSamplesReply = replies[identificationPhysicalSamplesPath]|reply_str_value %}
+				
+				{% if identificationPhysicalSamplesReply|length > 0 %}
+					{{km.entities.answers[identificationPhysicalSamplesReply].label}}
+
+					{% if identificationPhysicalSamplesReply == uuids.samplesWillGetAnInternalCodeAUuid %}
+						{% set fullyDocumentedPhysicalSamplesPath = [identificationPhysicalSamplesPath, uuids.samplesWillGetAnInternalCodeAUuid, uuids.isTheCodeFullyDocumentedQUuid]|reply_path %}
+						{% set fullyDocumentedPhysicalSamplesReply = replies[fullyDocumentedPhysicalSamplesPath]|reply_str_value %}
+
+						{% if fullyDocumentedPhysicalSamplesReply == uuids.no_4_2AUuid %}
+							which is not fully documented.
+						{% elif fullyDocumentedPhysicalSamplesReply == uuids.yes_4_2AUuid %}
+							which is fully documented.
+						{% endif %}
+					{% endif %}	
+				{% endif %}
+				</p>
+
+				{% set physicalSamplesWherePath = [physicalSamplesPath, uuids.yes_41AUuid, uuids.whereWillTheSamplesBeStoredQLUuid]|reply_path %}
+				{% set physicalSamplesWhereReply = replies[physicalSamplesWherePath]|reply_items %}
+				
+				
+				{% if physicalSamplesWhereReply|length > 0 %}
+					The place(s) of storage are:
+					<ul>
+					{% for itemUuid in physicalSamplesWhereReply %}
+						<li>
+							{% set storagePlacePath = [physicalSamplesWherePath, itemUuid, uuids.placeOfStorageQUuid]|reply_path %}
+							{% set storagePlaceReply = replies[storagePlacePath]|reply_str_value %}
+
+							{% if storagePlaceReply %}
+								{{storagePlaceReply}}.
+							{% endif %}
+
+							{% set storagePermissionsFundsPath = [physicalSamplesWherePath, itemUuid, uuids.doYouHaveTheRequiredPermissionsAndFundsToAccessThePlaceOfStorageQUuid]|reply_path %}
+							{% set storagePermissionsFundsReply = replies[storagePermissionsFundsPath]|reply_str_value %}
+
+							{% if storagePermissionsFundsReply == uuids.no_40AUuid %}
+								We don't currently have the permissions and funds to access the place of storage for the project samples.
+							{% elif storagePermissionsFundsReply == uuids.yes_42AUuid %}	
+								We have the permissions and funds to access the place of storage for the project samples.
+							{% endif %}
+						</li>
+					{% endfor %}
+					</ul>
+				{% endif %}
+			{% endif %}
+
 
 			{# Data formats #}
 			{% set dataFormatsPath = [createOrCollectEnvironmentalDataPath, uuids.yes_14AUuid, uuids.whatDataFormatsWillYouBeUsingQLUuid]|reply_path %}
@@ -1044,35 +1100,6 @@
 			{% elif dataVolumeReply == uuids.totalDataVolumeIsSmallEnoughThatItWontBeAProblemAUuid %}
 				<p>The total volume of data this project will collect is small enough (<1Tb) that it won't be a problem or pose storage constraints.</p> 
 			{% endif %}
-
-			{# Physical collections #}
-			{% set physicalSamplesPath = [uuids.creatingAndCollectingDataCUuid, uuids.yes_14AUuid, uuids.willYouBeStoringPhysicalSamplesQUuid]|reply_path %}
-			{% set physicalSamplesReply = replies[physicalSamplesPath]|reply_str_value %}
-
-			{% if physicalSamplesReply == uuids.yes_40AUuid %}
-				{% set physicalSamplesWherePath = [physicalSamplesPath, uuids.yes_40AUuid, uuids.whereWillTheSamplesBeStoredQLUuid]|reply_path %}
-				{% set physicalSamplesWhereReply = replies[physicalSamplesWherePath]|reply_items %}
-
-				{% if physicalSamplesWhereReply|length > 0 %}
-					{% for itemUuid in physicalSamplesWhereReply %}
-						{% set storagePlacePath = [physicalSamplesWherePath, itemUuid, uuids.placeOfStorageQUuid]|reply_path %}
-      						{% set storagePlaceReply = replies[storagePlacePath]|reply_str_value %}
-      						{% set storagePermissionsFundsPath = [physicalSamplesWherePath, itemUuid, uuids.doYouHaveTheRequiredPermissionsAndFundsToAccessThePlaceOfStorageQUuid]|reply_path %}
-      						{% set storagePermissionsFundsReply = replies[storagePermissionsFundsPath] %}
-
-						{% if storagePlaceReply %}
-        						{{km.entities.answers[storagePlaceReply].label}}
-      						{% endif %}
-
-      						{% if storagePermissionsFundsReply == uuids.no_40AUuid %}
-        						<p>We don't currently have the permissions and funds to access the place of storage for the project samples</p>
-						{% elif storagePermissionsFundsReply == uuids.yes_41Uuid %}	
-							<p>We have the permissions and funds to access the place of storage for the project samples.</p>
-			      			{% endif %}
-
-					{% endfor %}
-				{% endif %}
-			{% endif %} 
 		
 			{# Personal data #}
 			{% set consentForPersonalDataPath = [createOrCollectEnvironmentalDataPath, uuids.yes_14AUuid, uuids.willYouNeedConsentForAnyNewlyCollectedPersonalDataQUuid]|reply_path %}
