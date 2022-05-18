@@ -1040,6 +1040,27 @@
 					{% endfor %}
 					</ul>
 				{% endif %}
+
+				{# Question on health and safety measures #}
+				{% set healthAndSafetyPhysicalSamplesPath = [physicalSamplesPath, uuids.yes_41AUuid, uuids.doesTheStoragePreservationAndOrManagementOfTheSamplesRequireHealthAndSafetyMeasuresQUuid]|reply_path %}
+				{% set healthAndSafetyPhysicalSamplesReply = replies[healthAndSafetyPhysicalSamplesPath]|reply_str_value %}
+				
+				<p>
+					{% if healthAndSafetyPhysicalSamplesReply == uuids.no_41AUuid %}
+						The storage, preservation or management of the physical samples does not require health and safety measures.
+					{% elif healthAndSafetyPhysicalSamplesReply == uuids.yes_43AUuid %}
+						The storage, preservation or management of the physical samples requires health and safety measures,
+
+						{% set riskAssessmentPhysicalSamplesPath = [healthAndSafetyPhysicalSamplesPath, uuids.yes_43AUuid, uuids.willYouCompleteARiskAssessmentQUuid]|reply_path %}
+						{% set riskAssessmentPhysicalSamplesReply = replies[riskAssessmentPhysicalSamplesPath]|reply_str_value %}
+						
+						{% if riskAssessmentPhysicalSamplesReply == uuids.no_42AUuid %}
+							but we will not complete a risk assessment for this.
+						{% elif riskAssessmentPhysicalSamplesReply == uuids.yes_44AUuid %}
+							and we will complete a risk assessment for this.
+						{% endif %}
+					{% endif %}
+				</p>
 			{% endif %}
 
 			{# Data formats #}
@@ -1048,7 +1069,7 @@
 
 			{% if dataFormatsReply|length > 0 %}
 			<h4>Data formats and volume</h4>
-			<p>The data produced by this project will be in the following formats:</p>	
+			<p>The data produced by this project will be in the following format(s):</p>	
 				{% for itemUuid in dataFormatsReply %}
 					{% set dataFormatPath = [dataFormatsPath, itemUuid, uuids.dataFormatQUuid]|reply_path %}
 					{% set dataFormatReply = replies[dataFormatPath] %}
