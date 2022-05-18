@@ -602,6 +602,7 @@
 			{% set observationalOrExperimentalReply = replies[observationalOrExperimentalPath]|reply_str_value %}
 
 			{% if observationalOrExperimentalReply == uuids.yes_15AUuid %}
+			<h4>Observational or experimental data</h4>
 			<p> We will acquire observational or experimental data in this project. 
 
 				{% set surveyDesignPath =  [observationalOrExperimentalPath, uuids.yes_15AUuid, uuids.willYouBeImplementingAPreDeterminedOrStandardSurveyExperimentalDesignQUuid]|reply_path %}
@@ -887,6 +888,7 @@
 			{% set otherMeansSoftwareReply = replies[otherMeansSoftwarePath]|reply_str_value %}
 
 			{% if otherMeansSoftwareReply == uuids.yes_32AUuid %}
+				<h4>Software packages</h4>
 				<p>We will produce a software package as part of this project.</p>
 			{% endif %}
 
@@ -895,6 +897,7 @@
 			{% set otherMeansInformationProductReply = replies[otherMeansInformationProductPath]|reply_str_value %}
 
 			{% if otherMeansInformationProductReply == uuids.yes_33AUuid %}
+				<h4>Information products</h4>
 				<p>We will produce an information product as part of this project.</p>
 			{% endif %}
 
@@ -903,6 +906,7 @@
 			{% set dataByOtherMethodsReply = replies[dataByOtherMethodsPath]|reply_str_value %}
 
 			{% if dataByOtherMethodsReply == uuids.yes_34AUuid %}
+				<h4>Other data types</h4>
 				{% set typeOfDataCollectingPath = [dataByOtherMethodsPath, uuids.yes_34AUuid, uuids.whatTypeOfDataWillYouBeCollectingQUuid]|reply_path %}
 				{% set typeOfDataCollectingReply = replies[typeOfDataCollectingPath]|reply_items %}
 
@@ -985,6 +989,7 @@
 			{% set physicalSamplesReply = replies[physicalSamplesPath]|reply_str_value %}
 
 			{% if physicalSamplesReply == uuids.yes_41AUuid %}
+				<h4>Physical samples</h4>
 				<p>
 					We will be storing physical samples.
 
@@ -1010,7 +1015,6 @@
 
 				{% set physicalSamplesWherePath = [physicalSamplesPath, uuids.yes_41AUuid, uuids.whereWillTheSamplesBeStoredQLUuid]|reply_path %}
 				{% set physicalSamplesWhereReply = replies[physicalSamplesWherePath]|reply_items %}
-				
 				
 				{% if physicalSamplesWhereReply|length > 0 %}
 					The place(s) of storage are:
@@ -1038,12 +1042,12 @@
 				{% endif %}
 			{% endif %}
 
-
 			{# Data formats #}
 			{% set dataFormatsPath = [createOrCollectEnvironmentalDataPath, uuids.yes_14AUuid, uuids.whatDataFormatsWillYouBeUsingQLUuid]|reply_path %}
 			{% set dataFormatsReply = replies[dataFormatsPath]|reply_items %}
 
 			{% if dataFormatsReply|length > 0 %}
+			<h4>Data formats and volume</h4>
 			<p>The data produced by this project will be in the following formats:</p>	
 				{% for itemUuid in dataFormatsReply %}
 					{% set dataFormatPath = [dataFormatsPath, itemUuid, uuids.dataFormatQUuid]|reply_path %}
@@ -1074,7 +1078,6 @@
 							<li>{{ dataFormatReply.value.value.value }} ({{ dataFormatArchiving }})</li>
 						{% endif %}
 					{% endif %}
-
 				{% endfor %}
 			{% endif %}
 
