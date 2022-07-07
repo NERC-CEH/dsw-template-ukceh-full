@@ -1143,25 +1143,18 @@
 		{% set processOrAnalyseDataReply = replies[processOrAnalyseDataPath]|reply_str_value %}
 
 		{% if processOrAnalyseDataReply == uuids.no_5_2AUuid %}
-		<p>This project is not processing or analysing data.</p>
+			<p>This project is not processing or analysing data.</p>
 		{% elif processOrAnalyseDataReply == uuids.yes_5_2AUuid %}
-			{# Data storage systems and conventions #}
-			{% set dataStorageSystemsAndNamingConventionsPath = [uuids.processingAndAnalysingDataCUuid, uuids.dataStorageSystemsAndFileNamingConventionsQUuid]|reply_path %}
-			
-			{% set fileSystemToStoreDataPath = [dataStorageSystemsAndNamingConventionsPath, uuids.exploreHintsAndTipsForGoodPractice_2AUuid, uuids.areYouUsingAFileSystemWithFilesAndFoldersToStoreDataQUuid]|reply_path %}
+			<p>This project is processing or analysing data.</p>
+
+			{% set fileSystemToStoreDataPath = [processOrAnalyseDataPath, uuids.yes_5_2AUuid, uuids.areYouUsingAFileSystemWithFilesAndFoldersToStoreDataQUuid]|reply_path %}
 			{% set fileSystemToStoreDataReply = replies[fileSystemToStoreDataPath]|reply_str_value %} 
-
-			{% set relationalDatabaseToStoreDataPath = [dataStorageSystemsAndNamingConventionsPath, uuids.exploreHintsAndTipsForGoodPractice_2AUuid, uuids.willYouUseARelationalDatabaseSystemToStoreProjectDataQUuid]|reply_path %}
-			{% set handlingChangesInDataPath = [relationalDatabaseToStoreDataPath, uuids.yes_50AUuid, uuids.howWillYouHandleChangesInTheDataQUuid ]|reply_path %}
-			{% set handlingChangesInDataReply = replies[handlingChangesInDataPath]|reply_str_value %}
-
-			{% set anotherStorageSystemPath = [dataStorageSystemsAndNamingConventionsPath, uuids.exploreHintsAndTipsForGoodPractice_2AUuid, uuids.areYouUsingAnotherStorageSystemQUuid]|reply_path %}
-			{% set anotherStorageSystemReply = replies[anotherStorageSystemPath]|reply_str_value %}
-			{% set storageSystemPath = [anotherStorageSystemPath, uuids.yes_51AUuid, uuids.pleaseSpecifyWhichStorageSystemYouWillUseQUuid]|reply_path %}
-			{% set storageSystemReply = replies[storageSystemPath]|reply_str_value %}
-
-			{# File systems #}
-			{% if fileSystemToStoreDataReply == uuids.yes_48AUuid %}
+			
+			{% if fileSystemToStoreDataReply == uuids.no_47AUuid %}
+				<p>We are not using a file system with files and folders to store data.</p>
+			{% elif  fileSystemToStoreDataReply == uuids.yes_48AUuid %}
+				<p>We are using a file system with files and folders to store data.</p>
+				
 				{% set standardNamingProcedurePath = [fileSystemToStoreDataPath, uuids.yes_48AUuid, uuids.doYouHaveAStandardProcedureInPlaceForFolderAndFileNamingQUuid]|reply_path %}
 				{% set standardNamingProcedureReply = replies[standardNamingProcedurePath]|reply_str_value %} 
 
@@ -1170,15 +1163,42 @@
 					{% set fileNamingProcedureReply = replies[fileNamingProcedurePath]|reply_str_value %}
 					<p>This project will use a file and folders system to store data and will follow a standard naming procedure: {{fileNamingProcedureReply}}<p/>
 				{% endif %}
+
+				{% set metadataEmbeddedPath = [fileSystemToStoreDataPath, uuids.yes_48AUuid, uuids.willAllTheMetadataThatIsEmbeddedInTheFileNamesAlsoBeAvailableInSupportingDocumentsQUuid]|reply_path %}
+				{% set metadataEmbeddedReply = replies[metadataEmbeddedPath]|reply_str_value %}
+
+				{% if metadataEmbeddedReply == uuids.noFileNamesShouldBeConsideredAsStandAlonePartsOfTheMetadataAUuid %}
+					<p>Filenames will be considered as stand-alone parts of the metadata, and will not be explicitly available elsewhere.<p>
+				{% elif metadataEmbeddedReply == uuids.yesAllMetadataIsAlsoExplicitlyAvailableElsewhereAUuid %}
+					<p>Metadata embedded in file names will also be explicitly available elsewhere.</p>
+				{% endif %}
+
 			{% endif %}
 
-			{# Relational databases #}
-			{% if handlingChangesInDataReply %}
-				{% set handlingChangesInData = km.entities.answers[handlingChangesInDataReply].label %}
-				<p>We will use a relational database system to store project data. {{handlingChangesInData}}</p>
-			{% endif %} 
+			{# Relational database #}
+			{% set relationalDatabaseToStoreDataPath = [processOrAnalyseDataPath, uuids.yes_5_2AUuid, uuids.willYouUseARelationalDatabaseSystemToStoreProjectDataQUuid]|reply_path %}
+			{% set relationalDatabaseToStoreDataReply = replies[relationalDatabaseToStoreDataPath]|reply_str_value %}
+			
+			{% if relationalDatabaseToStoreDataReply == uuids.no_49AUuid %}
+				<p>We will not be using a relational database to store data.</p>
+			{% elif relationalDatabaseToStoreDataReply == uuids.yes_50AUuid %}
+				<p>We will be using a relational database to store data.
+				{% set handlingChangesInDataPath = [relationalDatabaseToStoreDataPath, uuids.yes_50AUuid, uuids.howWillYouHandleChangesInTheDataQUuid ]|reply_path %}
+				{% set handlingChangesInDataReply = replies[handlingChangesInDataPath]|reply_str_value %}
+
+				{# Relational databases #}
+				{% if handlingChangesInDataReply %}
+					{% set handlingChangesInData = km.entities.answers[handlingChangesInDataReply].label %}
+					{{handlingChangesInData}}.</p>
+				{% endif %} 
+			{% endif %}
 
 			{# Other storage systems #}
+			{% set anotherStorageSystemPath = [processOrAnalyseDataPath, uuids.yes_5_2AUuid, uuids.areYouUsingAnotherStorageSystemQUuid]|reply_path %}
+			{% set anotherStorageSystemReply = replies[anotherStorageSystemPath]|reply_str_value %}
+			{% set storageSystemPath = [anotherStorageSystemPath, uuids.yes_51AUuid, uuids.pleaseSpecifyWhichStorageSystemYouWillUseQUuid]|reply_path %}
+			{% set storageSystemReply = replies[storageSystemPath]|reply_str_value %}
+			
 			{% set storageSystem = '' %}
 
 			{% if storageSystemReply %}
@@ -1189,7 +1209,7 @@
 
 			{# Shared working space #}
 			
-			{% set sharedWorkingSpaceForDataPath = [uuids.processingAndAnalysingDataCUuid, uuids.willYouBeUsingASharedWorkingSpaceToWorkWithYourDataQUuid]|reply_path %}
+			{% set sharedWorkingSpaceForDataPath = [processOrAnalyseDataPath, uuids.yes_5_2AUuid, uuids.willYouBeUsingASharedWorkingSpaceToWorkWithYourDataQUuid]|reply_path %}
 			{% set sharedWorkingSpaceForDataReply = replies[sharedWorkingSpaceForDataPath]|reply_str_value %}
 
 			{% if sharedWorkingSpaceForDataReply == uuids.yes_52AUuid %}
@@ -1363,7 +1383,7 @@
 			{% endif %}
 
 			{# Transformation/analysis/modelling tools #}
-			{% set transformationAnalysisModellingToolPath = [uuids.processingAndAnalysingDataCUuid, uuids.willYouBeUsingATransformationAnalysisModellingToolSuchAsRPythonOrFmeToProcessAndAnalyseModelYourDataQUuid]|reply_path %}
+			{% set transformationAnalysisModellingToolPath = [processOrAnalyseDataPath, uuids.yes_5_2AUuid, uuids.willYouBeUsingATransformationAnalysisModellingToolSuchAsRPythonOrFmeToProcessAndAnalyseModelYourDataQUuid]|reply_path %}
 			{% set transformationAnalysisModellingToolReply = replies[transformationAnalysisModellingToolPath]|reply_str_value %}
 
 			{% if transformationAnalysisModellingToolReply == uuids.noIPreferToUseASpreadsheetOrOtherPointAndClickToolAUuid %}
@@ -1396,12 +1416,249 @@
 				
 				{{experienceWithSoftware}}
 
+				{# Do you need to develop your own script #}
+				{% set developOwnWorkflowsPath = [transformationAnalysisModellingToolPath, uuids.yesExploreFurtherAUuid, uuids.doYouNeedToDevelopYourOwnScriptsWorkflowsModelsForThisProjectQUuid]|reply_path %}
+				{% set developOwnWorkflowsReply = replies[developOwnWorkflowsPath]|reply_str_value %}
+
+				{% if developOwnWorkflowsReply == uuids.noWeWillBeUsingExistingScriptsWorkflowsAUuid %}
+					<p>We will not need to develop our own scripts/workflows/models for this project - we will use existing scripts/workflows.</p>
+				{% elif developOwnWorkflowsReply == uuids.yesNewScriptsWorkflowsModelsWillBeDevelopedAUuid %}
+					<p>We will need to develop our own scripts/workflows/models for this project.</p>
+					{% set listScriptsWorkflowsModelsPath = [developOwnWorkflowsPath, uuids.yesNewScriptsWorkflowsModelsWillBeDevelopedAUuid, uuids.listScriptsWorkflowsModelsThatWillBeDevelopedQLUuid]|reply_path %}
+					{% set listScriptsWorkflowsModelsReply = replies[listScriptsWorkflowsModelsPath]|reply_items %}
+
+					{% if listScriptsWorkflowsModelsReply|length > 0 %}
+						<ul>
+						{% for itemUuid in listScriptsWorkflowsModelsReply %}
+							{% set scriptOrWorkflowPath = [listScriptsWorkflowsModelsPath, itemUuid, uuids.scriptOrWorkflowToBeDevelopedQUuid]|reply_path %}
+							{% set scriptOrWorkflowReply = replies[scriptOrWorkflowPath]|reply_str_value %}
+								<p><strong>Script or workflow to be developed - </strong>{{scriptOrWorkflowReply}}</p>
+
+							{% set softwareRepositoryForDevelopmentPath = [listScriptsWorkflowsModelsPath, itemUuid, uuids.pleaseSpecifyTheSoftwareRepositoryYouUseForDevelopmentQUuid]|reply_path %}
+							{% set softwareRepositoryForDevelopmentReply = replies[softwareRepositoryForDevelopmentPath]|reply_str_value %}
+								<p><strong>Software repository used for development - </strong>{{softwareRepositoryForDevelopmentReply}}</p>
+
+							{% set didYouConsiderExistingOptionsPath = [listScriptsWorkflowsModelsPath, itemUuid, uuids.didYouConsiderExistingOptionsQUuid]|reply_path %}
+							{% set didYouConsiderExistingOptionsReply = replies[didYouConsiderExistingOptionsPath]|reply_str_value %}
+
+							{% if didYouConsiderExistingOptionsReply == uuids.alternativesExistButWePreferToDevelopOurOwnAUuid %}
+								<p>Alternative scripts/workflows/models exist, but we prefer to develop our own.</p>
+							{% elif didYouConsiderExistingOptionsReply == uuids.thisWillBeOneOfTheMainOutcomesOfOurProjectAUuid %}
+								<p>We considered existing options, but this script/workflow/model will be one of the main outcomes of the project.</p>
+							{% elif didYouConsiderExistingOptionsReply == uuids.noSuitableAlternativesExistAUuid %}
+								<p>We considered exsiting options, but no suitable alternatives exist.</p>
+							{% endif %}
+
+							{% set whatLicenceWillYouUsePath = [listScriptsWorkflowsModelsPath, itemUuid, uuids.whatLicenceWillYouUseForYourToolQUuid]|reply_path %}
+							{% set whatLicenceWillYouUseReply = replies[whatLicenceWillYouUsePath]|reply_str_value %}
+
+							{% if whatLicenceWillYouUseReply == uuids.openGovernmentLicenceOglAUuid %}
+								<p>We will be using an Open Government Licence (OGL)</p>
+							{% elif whatLicenceWillYouUseReply == uuids.weAreUsingADifferentBeSpokeLicenceAUuid %}
+								{% set whatIsTheLicencePath = [whatLicenceWillYouUsePath, uuids.weAreUsingADifferentBeSpokeLicenceAUuid, uuids.whatIsTheLicenceQUuid]|reply_path %}
+								{% set whatIsTheLicenceReply = replies[whatIsTheLicencePath]|reply_str_value %}
+								<p>We are using the following be-spoke licence: {{whatIsTheLicenceReply}}.</p>
+								
+								{% set contactedUkcehLicensingTeamPath = [whatLicenceWillYouUsePath, uuids.weAreUsingADifferentBeSpokeLicenceAUuid, uuids.haveYouContactedTheUkcehLicensingTeamQUuid]|reply_path %}
+								{% set contactedUkcehLicensingTeamReply = replies[contactedUkcehLicensingTeamPath]|reply_str_value %}
+
+								{% if contactedUkcehLicensingTeamReply == uuids.no_57AUuid %}
+									<p> We have not contacted the UKCEH licensing team to confirm this is an appropriate licence.</p>
+								{% elif contactedUkcehLicensingTeamReply == uuids.yes_58AUuid %}
+									<p> We have contacted the UKCEH licensing team to confirm this is an appropriate licence.</p>
+								{% endif %}	
+							{% endif %}
+						{% endfor %}
+						</ul>
+					{% endif %}	
+				{% endif %}
+
+				{# Does your tool provide provenance information when script is run? #}
+				{% set doesToolProvideProvenancePath = [transformationAnalysisModellingToolPath, uuids.yesExploreFurtherAUuid, uuids.doesYourToolProvideProvenanceInformationEGAutomaticLoggingWhenTheScriptWorkflowModelIsRunQUuid]|reply_path %}
+				{% set doesToolProvideProvenanceReply = replies[doesToolProvideProvenancePath]|reply_str_value %}
+				
+				{% if doesToolProvideProvenanceReply == uuids.noWeWillNotStoreProvenanceInformationWhenRunningTheWorkflowAUuid %}
+					<p> No provenance information will be stored when running the workflow.</p>
+				{% elif doesToolProvideProvenanceReply == uuids.yesThisIsGeneratedAutomaticallyByTheToolAUuid %}
+					<p>Provenance information will be stored when running the workflow, and this is automatically generated by the tool.</p>
+					{% set provenanceConvertedPath = [doesToolProvideProvenancePath, uuids.yesThisIsGeneratedAutomaticallyByTheToolAUuid, uuids.doesTheProvenanceNeedToBeStoredOrConvertedToSomeStandardFormatQUuid]|reply_path %}
+					{% set provenanceConvertedReply = replies[provenanceConvertedPath]|reply_str_value %}
+
+					{% if provenanceConvertedReply == uuids.no_58AUuid %}
+						<p>The provenance does not need to be stored or converted to a standard format.</p>
+					{% elif provenanceConvertedReply == uuids.yes_59AUuid %}
+						<p>The provenance needs to be stored or converted to a standard format.</p>
+					{% endif %}
+
+				{% elif doesToolProvideProvenanceReply == uuids.yesWeWillBuildThisIntoOurScriptsWorkflowsAUuid %}
+					<p>Provenance information will be stored when running the workflow, and we will build this into our workflow.</p>
+				{% endif %}
+
+				{# Annotate or comment #}
+				{% set willYouAnnotatePath = [transformationAnalysisModellingToolPath, uuids.yesExploreFurtherAUuid, uuids.willYouAnnotateOrCommentYourScriptWorkflowModelToMakeItUnderstandableQUuid]|reply_path %}
+				{% set willYouAnnotateReply = replies[willYouAnnotatePath]|reply_str_value %}
+
+				{% if willYouAnnotateReply == uuids.no_59AUuid %}
+					<p>The script/workflow/model will not be annotated or commented to be made understandable.</p>
+				{% elif willYouAnnotateReply == uuids.yes_60AUuid %}
+					<p>The script/workflow/model will be annotated or commented to be made understandable.</p>
+				{% endif %}
+
+				{# Multiple people developing #}
+				{% set willMultiplePeopleDevelopPath = [transformationAnalysisModellingToolPath, uuids.yesExploreFurtherAUuid, uuids.willMultiplePeopleBeDevelopingTheScriptsWorkflowsModelsQUuid]|reply_path %}
+				{% set willMultiplePeopleDevelopReply = replies[willMultiplePeopleDevelopPath]|reply_str_value %}
+				
+				{% if willMultiplePeopleDevelopReply == uuids.noOnlyOnePersonWillDevelopTheScriptsWorkflowsAUuid %}
+					<p>Only one person will be develop the scripts/workflows.</p>
+				{% elif willMultiplePeopleDevelopReply == uuids.yesWeWillUseASharedDriveAUuid %}
+					<p>Multiple people will be developing the scripts/workflows, and a shared drive will be used to collaborate.</p>
+				{% elif willMultiplePeopleDevelopReply == uuids.yesWeWillDevelopLocallyUsingAVersionControlSystemAndSharedRepositoryAUuid %}
+					<p>Multiple people will be developing the scripts/workflows, and a version control system and shared repository will be used to collaborate.</p>
+				{% elif willMultiplePeopleDevelopReply == uuids.yesWeWillUseACollaborativeDevelopmentEnvironmentSuchAsDataLabsAUuid %}
+					<p>Multiple people will be developing the scripts/workflows, and a collaborate development environment, such as DataLabs, will be used to collaborate.</p>
+				{% endif %}
+
+				{# Need a GUI? #}
+				{% set graphicalUserInterfacePath = [transformationAnalysisModellingToolPath, uuids.yesExploreFurtherAUuid, uuids.doesTheRunningOfScriptsWorkflowsModelsNeedToBeControlledUsingAGraphicalUserInterfaceGuiQUuid]|reply_path %}
+				{% set graphicalUserInterfaceReply = replies[graphicalUserInterfacePath]|reply_str_value %}
+				
+				{% if graphicalUserInterfaceReply == uuids.no_60AUuid %}
+					<p>The running of scripts/workflows/models does not need to be controlled using a Graphical User Interface (GUI)</p>
+				{% elif graphicalUserInterfaceReply == uuids.yesWeWillUseAToolEGShinyToRunWorkflowsAndAnalyseResultsAUuid %}
+					<p>We will use a tool (e.g. Shiny) to run workflows and analyse results.</p>
+				{% endif %}
+
+				{# Remote computers #}
+				{% set remoteComputerPath = [transformationAnalysisModellingToolPath, uuids.yesExploreFurtherAUuid, uuids.doTheScriptsWorkflowsModelsNeedToBeRunOnRemoteComputersQUuid]|reply_path %}
+				{% set remoteComputerReply = replies[remoteComputerPath]|reply_str_value %}
+
+				{% if remoteComputerReply == uuids.no_61AUuid %}
+					<p>The running of scripts/workflows/models does not require remote computers to be run.</p>
+				{% elif remoteComputerReply == uuids.yes_61AUuid %}
+					<p>The running of scripts/workflows/models requires remote computers to be run.</p>
+				{% endif %}
+
 				{# High performance computing #}
 				{% set highPerformanceComputingPath = [transformationAnalysisModellingToolPath, uuids.yesExploreFurtherAUuid, uuids.doYouRequireHighPerformanceComputingParallelProcessingToExecuteYourScriptsWorkflowsModelsQUuid]|reply_path %}
-				{% set computingEnvironmentPath = [highPerformanceComputingPath, uuids.yesExploreFurther_2AUuid, uuids.whichHighPerformanceComputingEnvironmentSAreYouPlanningToUseQUuid]|reply_path %}
-				{% set computingEnvironmentReply = replies[computingEnvironmentPath]|reply_str_value %}
+				{% set highPerformanceComputingReply = replies[highPerformanceComputingPath]|reply_str_value %}
 
-				<p>We will use {{computingEnvironmentReply}} to execute scripts/workflows/models that require high performance computing.</p>
+				{% if highPerformanceComputingReply == uuids.noAStandardLaptopOrDesktopPcWillBeSufficientAUuid %}
+				<p>No high performance computing is required for processing, as a standard laptop or desktop PC will be sufficient.</p>
+				{% elif highPerformanceComputingReply == uuids.yesExploreFurther_2AUuid %}
+					<p>
+					High performace computing is required for processing.
+
+					{# CPU #}
+					{% set howMuchCPUPath = [highPerformanceComputingPath, uuids.yesExploreFurther_2AUuid, uuids.doYouKnowHowMuchCpuPowerMemoryAndIOBandwidthATypicalAnalysisModelRunWillTakeQUuid]|reply_path %}
+					{% set howMuchCPUReply = replies[howMuchCPUPath]|reply_str_value %}
+
+					{% if howMuchCPUReply == uuids.no_62AUuid %}
+						We do not know how much CPU power, memory and I/O bandwidth a typical analysis/model run will take.
+					{% elif howMuchCPUReply == uuids.yes_62AUuid %}	
+						We are aware how much CPU power, memory and I/O bandwidth a typical analysis/model run will take.
+					{% endif %}
+
+					{# Is there sufficient experience #}
+					{% set isThereSufficientExperiencePath = [highPerformanceComputingPath, uuids.yesExploreFurther_2AUuid, uuids.isThereSufficientExperienceWithTheChosenComputingEnvironmentInTheProjectQUuid]|reply_path %}
+					{% set isThereSufficientExperienceReply = replies[isThereSufficientExperiencePath]|reply_str_value %}
+
+					{% if isThereSufficientExperienceReply == uuids.weWillRecruitAUuid %}
+						We currently do not have sufficient experience with the chosen computing environment, but we will recruit.					
+					{% elif isThereSufficientExperienceReply == uuids.trainingHasBeenArrangedAUuid %}	
+						We currently do not have sufficient experience with the chosen computing environment, but we have arranged training.
+					{% elif isThereSufficientExperienceReply == uuids.weWillUseTheHelpdeskAUuid %}	
+						We currently do not have sufficient experience with the chosen computing environment, but we will use the helpdesk.
+					{% elif isThereSufficientExperienceReply == uuids.weHaveSufficientKnowledgeInTheProjectAUuid %}	
+						We have sufficient experience with the chosen computing environment.
+					{% endif %}
+
+					{# Have you confirmed the environment is available. #}
+					{% set confirmedComputingEnvironmentAvailablePath = [highPerformanceComputingPath, uuids.yesExploreFurther_2AUuid, uuids.haveYouConfirmedThatTheHighPerformanceComputingEnvironmentWillBeAvailableWhenRequiredQUuid]|reply_path %}
+					{% set confirmedComputingEnvironmentAvailableReply = replies[confirmedComputingEnvironmentAvailablePath]|reply_str_value %}
+
+					{% if confirmedComputingEnvironmentAvailableReply == uuids.no_63AUuid %}
+						We have not confirmed the computing environment is availabe when required.
+					{% elif confirmedComputingEnvironmentAvailableReply == uuids.yes_63AUuid %}	
+						We have confirmed the computing environment is availabe when required.
+					{% endif %}
+
+					{# is the hpc environment available clsoe to project working storage area #}
+					{% set isComputingEnvironmentCloseToStoragePath = [highPerformanceComputingPath, uuids.yesExploreFurther_2AUuid, uuids.isTheHighPerformanceComputingEnvironmentAvailableCloseToTheProjectWorkingStorageAreaQUuid]|reply_path %}
+					{% set isComputingEnvironmentCloseToStorageReply = replies[isComputingEnvironmentCloseToStoragePath]|reply_str_value %}
+
+					{% if isComputingEnvironmentCloseToStorageReply == uuids.noWeWillCopyTheDataAsRequiredAUuid %}
+						The high performance computing environment cannot access data in the project storage area directly, and therefore we will need to copy the data as required.
+					{% elif isComputingEnvironmentCloseToStorageReply == uuids.yesWeCanUseTheDataDirectlyInTheProjectStorageAreaAUuid %}	
+						The high performance computing environment can access data in the project storage area directly.
+					{% endif %}
+
+					{# Which environment #}
+					{% set computingEnvironmentPath = [highPerformanceComputingPath, uuids.yesExploreFurther_2AUuid, uuids.whichHighPerformanceComputingEnvironmentSAreYouPlanningToUseQUuid]|reply_path %}
+					{% set computingEnvironmentReply = replies[computingEnvironmentPath]|reply_str_value %}
+
+					We will use {{computingEnvironmentReply}} to execute scripts/workflows/models that require high performance computing.
+
+					{# Contingency plan #}
+					{% set contingencyPlanPath = [highPerformanceComputingPath, uuids.yesExploreFurther_2AUuid, uuids.doYouHaveAContingencyPlanIfYourChosenComputingEnvironmentIsUnavailableQUuid]|reply_path %}
+					{% set contingencyPlanReply = replies[contingencyPlanPath]|reply_str_value %}
+
+					{% if contingencyPlanReply == uuids.weWillWaitUntilTheProblemIsFixedAUuid %}
+						We do not have a contingency plan if our computing environment is unavailable, and will have to wait until the problem is fixed.
+					{% elif contingencyPlanReply == uuids.weHaveAnAlternativeAUuid %}	
+						{% set contingencyPlanDetailsPath = [contingencyPlanPath, uuids.weHaveAnAlternativeAUuid, uuids.giveDetailsOfAlternativeQUuid]|reply_path %}
+						{% set contingencyPlanDetailsReply = replies[contingencyPlanDetailsPath]|reply_str_value %}
+							We have the following contingency plan if our computing environment is unavailable: {{contingencyPlanDetailsReply}}.
+					{% endif %}					
+					</p>
+				{% endif %}
+
+				{# Checked by a second person #}
+				{% set checkedBySecondPersonPath = [transformationAnalysisModellingToolPath, uuids.yesExploreFurtherAUuid, uuids.willAllCodeAndCodeChangesBeCheckedByASecondPersonBeforeTheyAreDeployedQUuid]|reply_path %}
+				{% set checkedBySecondPersonReply = replies[checkedBySecondPersonPath]|reply_str_value %}
+
+				{% if checkedBySecondPersonReply == uuids.no_64AUuid %}
+					<p> We have not arranged for all code and code changes to be checked by a second person before they are deployed.</p>
+				{% elif checkedBySecondPersonReply == uuids.yes_64AUuid %}
+					<p> We have arranged for all code and code changes to be checked by a second person before they are deployed.</p>
+				{% endif %}
+
+				{# How will updates to tools be handled #}
+				{% set howWillUpdatesBeHandledPath = [transformationAnalysisModellingToolPath, uuids.yesExploreFurtherAUuid, uuids.howWillYouHandleUpdatesToToolsPackagesEGNewROrPackageVersionsQUuid]|reply_path %}
+				{% set howWillUpdatesBeHandledReply = replies[howWillUpdatesBeHandledPath]|reply_str_value %}
+
+				{% if howWillUpdatesBeHandledReply == uuids.weWillTrustNewReleasesAndImplementAUuid %}
+					<p>If tools/packages are updated we will trust the new releases and implement without checks.</p>
+				{% elif howWillUpdatesBeHandledReply == uuids.weWillOnlyDeploySelectedStableUpdatesToToolsPackagesAUuid %}
+					<p>If tools/packages are updated we will only deploy selected stable updates.</p>
+				{% elif howWillUpdatesBeHandledReply == uuids.weWillTestAllToolPackageChangesOnASubsetOfOurOwnDataBeforeImplementationAUuid %}
+					<p>If tools/packages are updated we will test changes on a subset of our own data before deployment.</p>
+				{% elif howWillUpdatesBeHandledReply == uuids.weWillNotChangeToolPackageVersionsAfterTheInitialSelectionAUuid %}
+					<p>If tools/packages are updated we will not change our version after initial selection.</p>
+				{% endif %}	
+
+				{# Test correct results #}			
+				{% set testCorrectResultPath = [transformationAnalysisModellingToolPath, uuids.yesExploreFurtherAUuid, uuids.willYouTestWhetherKnownCorrectResultsAreObtainedOverTimeQUuid]|reply_path %}
+				{% set testCorrectResultReply = replies[testCorrectResultPath]|reply_str_value %}
+
+				{% if testCorrectResultReply == uuids.no_65AUuid %}
+					<p>We will not test whether known correct results are obtained over time.</p>
+				{% elif testCorrectResultReply == uuids.yesWeWillRegularlyMakeTestRunsOnTheSameDataAUuid %}
+					<p>We will test whether known correct results are obtained over time, by regularly testing runs on the same data.</p>
+				{% elif testCorrectResultReply == uuids.yesWeWillAutomaticallyMakeTestRunsOnTheSameDataAUuid %}
+					<p>We will test whether known correct results are obtained over time, by automatically testing runs on the same data.</p>
+				{% endif %}	
+
+				{# What if a package is dropped #}
+				{% set packageSupportDroppedPath = [transformationAnalysisModellingToolPath, uuids.yesExploreFurtherAUuid, uuids.howWillYouDealWithTheSituationWhereSupportForAToolOrPackageIsDroppedQUuid]|reply_path %}
+				{% set packageSupportDroppedReply = replies[packageSupportDroppedPath]|reply_str_value %}
+
+				{% if packageSupportDroppedReply == uuids.weWillKeepRunningItUnchangedAUuid %}
+					<p>If support for a tool or package is dropped, we will keep running it unchanged.</p>
+				{% elif packageSupportDroppedReply == uuids.weWillStartToDoNecessaryMaintenanceOurselvesAUuid %}
+					<p>If support for a tool or package is dropped, we will start to do necessary maintenance ourselves.</p>
+				{% elif packageSupportDroppedReply == uuids.weWillLookForAlternativesAUuid %}
+					<p>If support for a tool or package is dropped, we will look for alternatives.</p>
+				{% endif %}	
 
 				{# Version control #}
 				{% set versionControlSystemPath = [transformationAnalysisModellingToolPath, uuids.yesExploreFurtherAUuid, uuids.willYouUseAVersionControlSystemSuchAsGitGitHubForAnyToolsModelsCodeDevelopedByTheProjectQUuid]|reply_path %}
@@ -1422,10 +1679,118 @@
 
 			{% endif %}
 
-			{# Risk of information loss etc. #}
-			{% set riskOfInfoLossPath = [uuids.processingAndAnalysingDataCUuid, uuids.isTheRiskOfInformationLossLeaksAndVandalismAcceptablyLowQUuid]|reply_path %}
+			{# Will you keep results together #}
+			{% set willYouKeepResultsTogetherPath = [processOrAnalyseDataPath, uuids.yes_5_2AUuid, uuids.willYouKeepResultsTogetherWithAllProcessingScriptsWorkflowsSpreadsheetsIncludingDocumentationOfTheVersionsOfTheToolsThatHaveBeenRunQUuid]|reply_path %}
+			{% set willYouKeepResultsTogetherReply = replies[willYouKeepResultsTogetherPath]|reply_str_value %}
 
-			{% set genericAndSpecificRisksPath = [riskOfInfoLossPath, uuids.exploreHintsAndTipsForGoodPractice_5AUuid, uuids.areAllProjectMembersAwareOfTheRisksGenericAndSpecificToTheProjectQUuid]|reply_path %}
+			{% if willYouKeepResultsTogetherReply == uuids.no_67AUuid %}
+				<p>We will not keep results together with all processing scripts/workflows/spreadsheets including documentation of the versions of the tools that have been used.</p>
+			{% elif willYouKeepResultsTogetherReply == uuids.yes_65AUuid %}
+				<p>We will keep results together with all processing scripts/workflows/spreadsheets including documentation of the versions of the tools that have been used.</p>
+			{% endif %}
+
+			{# Will you make use of metadata fields #}
+			{% set willYouMakeUseOfMetadataFieldsPath = [processOrAnalyseDataPath, uuids.yes_5_2AUuid, uuids.willYouMakeUseOfMetadataFieldsInYourOutputDataFilesToDescribeWhatTheDataAreAndHowTheyWereObtainedQUuid]|reply_path %}
+			{% set willYouMakeUseOfMetadataFieldsReply = replies[willYouMakeUseOfMetadataFieldsPath]|reply_str_value %}
+
+			{% if willYouMakeUseOfMetadataFieldsReply == uuids.no_68AUuid %}
+				<p>We will not make use of metadata fields in our output data files to describe what the data are and how they were obtained.</p>
+			{% elif willYouMakeUseOfMetadataFieldsReply == uuids.yes_66AUuid %}
+				<p>We will make use of metadata fields in our output data files to describe what the data are and how they were obtained.</p>
+			{% elif willYouMakeUseOfMetadataFieldsReply == uuids.yesWeWillBeCreatingSeparateDocumentationAUuid %}
+				<p>We will provide metadata through separate documentation.</p>
+			{% elif willYouMakeUseOfMetadataFieldsReply == uuids.yesWeWillAddMetadataToTheDataFilesAndProvideAdditionalInformationInDocumentationAUuid %}
+				<p>We will make use of metadata fields in our output data files to describe what the data are and how they were obtained, and we will also provide additional information in documentation.</p>
+			{% endif %}
+
+			{# Validate integrity #}
+			{% set willYouValidateIntegrityOfResultsPath = [processOrAnalyseDataPath, uuids.yes_5_2AUuid, uuids.willYouValidateTheIntegrityOfYourResultsBeforePublishingTheDataOrArticlesReportsBasedOnTheDataQUuid]|reply_path %}
+			{% set willYouValidateIntegrityOfResultsReply = replies[willYouValidateIntegrityOfResultsPath]|reply_str_value %}
+
+			{% if willYouValidateIntegrityOfResultsReply == uuids.no_73AUuid %}
+				<p>We will not validate the integrity of our results before publishing the data or articles/reports based on the data.</p>
+			{% elif willYouValidateIntegrityOfResultsReply == uuids.yes_67AUuid %}
+				<p>We will validate the integrity of our results before publishing the data or articles/reports based on the data.</p>
+
+				{# Defined checklist #}
+				{% set haveYouDefinedChecklistPath = [willYouValidateIntegrityOfResultsPath, uuids.yes_67AUuid, uuids.willYouRunASubsetOfYourJobsSeveralTimesAcrossTheDifferentComputeInfrastructuresYouAreUsingQUuid]|reply_path %}
+				{% set haveYouDefinedChecklistReply = replies[haveYouDefinedChecklistPath]|reply_str_value %}
+
+				{% if haveYouDefinedChecklistReply == uuids.no_69AUuid %}
+					<p> We have not defined a checklist to ensure the data are correct at all stages through the processing and analysis.</p>
+				{% elif haveYouDefinedChecklistReply == uuids.yes_68AUuid %}
+					<p> We have defined a checklist to ensure the data are correct at all stages through the processing and analysis.</p>
+				{% endif %}
+
+				{# Checked by another person #}
+				{% set willEachDatasetBeCheckedByAnotherPersonPath = [willYouValidateIntegrityOfResultsPath, uuids.yes_67AUuid, uuids.willYouBeInstrumentingTheToolsIntoPipelinesAndWorkflowsUsingAutomatedToolsQUuid]|reply_path %}
+				{% set willEachDatasetBeCheckedByAnotherPersonReply = replies[willEachDatasetBeCheckedByAnotherPersonPath]|reply_str_value %}
+
+				{% if willEachDatasetBeCheckedByAnotherPersonReply == uuids.no_70AUuid %}
+					<p>We have not arranged for each dataset to be checked by another person before sharing.</p>
+				{% elif willEachDatasetBeCheckedByAnotherPersonReply == uuids.yes_69AUuid %}
+					<p>We have arranged for each dataset to be checked by another person before sharing.</p>
+				{% endif %}
+
+				{# Will processing be repeated #}
+				{% set willProcessingAndAnalysisBeRepeatedPath = [willYouValidateIntegrityOfResultsPath, uuids.yes_67AUuid, uuids.willYouUseIndependentlyDevelopedDuplicateToolsOrWorkflowsForCriticalStepsToReduceOrEliminateHumanErrorsQUuid]|reply_path %}
+				{% set willProcessingAndAnalysisBeRepeatedReply = replies[willProcessingAndAnalysisBeRepeatedPath]|reply_str_value %}
+
+				{% if willProcessingAndAnalysisBeRepeatedReply == uuids.no_71AUuid %}
+					<p>Processing and analysis will not be repeated with validation checks at each stage.</p>
+				{% elif willProcessingAndAnalysisBeRepeatedReply == uuids.yes_70AUuid %}
+					<p>Processing and analysis will be repeated with validation checks at each stage.</p>
+				{% endif %}				
+			{% endif %}
+
+			{# Is the risk of information loss acceptably low #}
+			{% set riskOfInformationLossPath = [processOrAnalyseDataPath, uuids.yes_5_2AUuid, uuids.isTheRiskOfInformationLossLeaksAndVandalismAcceptablyLowQUuid]|reply_path %}
+			{% set riskOfInformationLossReply = replies[riskOfInformationLossPath]|reply_str_value %}
+
+			{% if riskOfInformationLossReply == uuids.exploreHintsAndTipsForGoodPractice_5AUuid %}
+				{% set dataStoredExternallyPath = [riskOfInformationLossPath, uuids.exploreHintsAndTipsForGoodPractice_5AUuid, uuids.doProjectMembersStoreDataOrSoftwareOnComputersInTheLabFieldOrExternalHardDrivesConnectedToThoseComputersQUuid]|reply_path %}
+				{% set dataStoredExternallyReply = replies[dataStoredExternallyPath]|reply_str_value %}
+
+				{% if dataStoredExternallyReply == uuids.no_74AUuid %}
+					<p>Project members will not store data or software externally (e.g. computers in the lab/field, external hard drives), which means we will need to make sure data is adequately backed-up and who has access to facilities where data are stored.</p>
+				{% elif dataStoredExternallyReply == uuids.yes_72AUuid %}
+					<p>Project members will store data or software externally (e.g. computers in the lab/field, external hard drives), which means we will need to make sure data is adequately backed-up and who has access to facilities where data are stored.</p>
+				{% endif %}
+
+				{# Do project members carry data with them #}
+				{% set carryDataWithThemPath = [riskOfInformationLossPath, uuids.exploreHintsAndTipsForGoodPractice_5AUuid, uuids.doProjectMembersCarryDataWithThemQUuid]|reply_path %}
+				{% set carryDataWithThemReply = replies[carryDataWithThemPath]|reply_str_value %}
+
+				{% if carryDataWithThemReply == uuids.no_75AUuid %}
+					<p>Project members will not carry data with them.</p>
+				{% elif carryDataWithThemReply == uuids.yes_73AUuid %}
+					<p>
+						Project members will carry data with them on some form of external media (e.g. USB, laptop). 
+						{# Are data encrypted #}
+						{% set areDataEncryptedPath = [carryDataWithThemPath, uuids.yes_73AUuid, uuids.areTheDataEncryptedQUuid]|reply_path %}
+						{% set areDataEncryptedReply = replies[areDataEncryptedPath]|reply_str_value %}
+
+						{% if areDataEncryptedReply == uuids.no_76AUuid %}
+							Data will not be encryped.
+						{% elif areDataEncryptedReply == uuids.yes_74AUuid %}
+							Data will be encryped.
+						{% endif %}
+
+						{# Password protection#}
+						{% set passwordProtectedDevicesPath = [carryDataWithThemPath, uuids.yes_73AUuid, uuids.areAccountsOnLaptopsDevicesPasswordProtectedQUuid]|reply_path %}
+						{% set passwordProtectedDevicesReply = replies[passwordProtectedDevicesPath]|reply_str_value %}
+
+						{% if passwordProtectedDevicesReply == uuids.yes_75AUuid %}
+							In order to safeguard any data stored on these devices we will make sure accounts are password protected.
+						{% elif passwordProtectedDevicesReply == uuids.no_77AUuid %}
+							The risk of losing data stored on these devices will not be adequately mitigated as our accounts wont be password protected.
+						{% endif %}
+					</p>
+				{% endif %}
+			{% endif %}			
+
+			{# Risk of information loss etc. #}
+			{% set genericAndSpecificRisksPath = [transformationAnalysisModellingToolPath, uuids.exploreHintsAndTipsForGoodPractice_5AUuid, uuids.areAllProjectMembersAwareOfTheRisksGenericAndSpecificToTheProjectQUuid]|reply_path %}
 			{% set genericAndSpecificRisksReply = replies[genericAndSpecificRisksPath]|reply_str_value %}
 
 			{% if genericAndSpecificRisksReply == uuids.yes_77AUuid %}
@@ -1435,34 +1800,6 @@
 			{% endif %}
 
 			{{genericAndSpecificRisks}}
-
-
-			{% set dataStoredExternallyPath = [riskOfInfoLossPath, uuids.exploreHintsAndTipsForGoodPractice_5AUuid, uuids.doProjectMembersStoreDataOrSoftwareOnComputersInTheLabFieldOrExternalHardDrivesConnectedToThoseComputersQUuid]|reply_path %}
-			{% set dataStoredExternallyReply = replies[dataStoredExternallyPath]|reply_str_value %}
-
-			{% if dataStoredExternallyReply == uuids.yes_72AUuid %}
-				{% set dataStoredExternally = 'Project members will store data or software externally (e.g. computers in the lab/field, external hard drives), which means we will need to make sure data is adequately backed-up and who has access to facilities were data are stored.' %}
-			{% endif %}
-
-			{{dataStoredExternally}}
-
-			{% set carryDataWithThemPath = [riskOfInfoLossPath, uuids.exploreHintsAndTipsForGoodPractice_5AUuid, uuids.doProjectMembersCarryDataWithThemQUuid]|reply_path %}
-			{% set carryDataWithThemReply = replies[carryDataWithThemPath]|reply_str_value %}
-
-			{% if carryDataWithThemReply == uuids.yes_73AUuid %}
-				{% set passwordProtectedDevicesPath = [carryDataWithThemPath, uuids.yes_73AUuid, uuids.areAccountsOnLaptopsDevicesPasswordProtectedQUuid]|reply_path %}
-				{% set passwordProtectedDevicesReply = replies[passwordProtectedDevicesPath]|reply_str_value %}
-
-				{% if passwordProtectedDevicesReply == uuids.yes_75AUuid %}
-					{% set passwordProtectedDevices = 'In order to safeguard any data stored on these devices we will make sure accounts are password protected.' %}
-				{% elif passwordProtectedDevicesReply == uuids.no_77AUuid %}
-					{% set passwordProtectedDevices = 'The risk of losing data stored on these devices will not be adequately mitigated as our accounts wont be password protected.' %}
-				{% endif %}
-
-				{% set carryDataWithThem = 'Project members will carry data with them on some form of external media (e.g. USB, laptop). ' %}
-			{% endif %}
-
-			{{carryDataWithThem}}{{passwordProtectedDevices}}
 
 
 			{# Personal data protection #}
