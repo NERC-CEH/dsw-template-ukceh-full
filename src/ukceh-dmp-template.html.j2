@@ -2321,6 +2321,16 @@
 <div class="question">
 {% if ctx.phaseUuid == "e6b3786d-9246-4179-b78e-d99c8ca9435c" %}
 	<h3>6. Project closure </h3>
+
+	{% set projectClosurePath = [uuids.projectClosureCUuid, uuids.canYouConfirmThisProjectHasFinishedQUuid]|reply_path %}
+	{% set projectClosureReply = replies[projectClosurePath]|reply_str_value %}
+
+	{% if projectClosureReply == uuids.no_143AUuid %}
+		<p>Project not yet closed</p>
+	{% elif projectClosureReply == uuids.yes_133AUuid %}
+		<p>Project is closed</p>
+	{% endif %}	
+
 {% endif %}	
 </div>
 
