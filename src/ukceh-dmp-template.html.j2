@@ -2326,13 +2326,58 @@
 	{% set projectClosureReply = replies[projectClosurePath]|reply_str_value %}
 
 	{% if projectClosureReply == uuids.no_143AUuid %}
-		<p>Project not yet closed</p>
+		{% set dateExpectProjectToBeCompletedPath = [projectClosurePath, uuids.no_143AUuid, uuids.enterTheDateYouExpectTheProjectToBeCompletedQUuid]|reply_path %}
+		{% set dateExpectProjectToBeCompletedReply = replies[dateExpectProjectToBeCompletedPath]|reply_str_value %}
+		<p>Project not yet closed.</p>
+		Project expected to be completed by {{dateExpectProjectToBeCompletedReply}}
+
 	{% elif projectClosureReply == uuids.yes_133AUuid %}
 		<p>Project is closed</p>
+
+		{% set havePreExistingDataOrModelsBeenDeletedOrMovedToArchivePath = [uuids.projectClosureCUuid, uuids.ifYourProjectUsedPreExistingDataOrModelsHaveTheseBeenDeletedOrMovedToAnArchiveSpaceQUuid]|reply_path %}
+		{% set havePreExistingDataOrModelsBeenDeletedOrMovedToArchiveReply = replies[havePreExistingDataOrModelsBeenDeletedOrMovedToArchivePath]|reply_str_value %}
+
+		{% if havePreExistingDataOrModelsBeenDeletedOrMovedToArchiveReply == uuids.no_2_2AUuid %}
+			<p>Pre-existing data or models have not yet been deleted or moved to an archive.</p>
+		{% elif havePreExistingDataOrModelsBeenDeletedOrMovedToArchiveReply == uuids.yes_2_2AUuid %}
+			<p>Pre-existing data or models have been deleted or moved to an archive.</p>
+		{% elif havePreExistingDataOrModelsBeenDeletedOrMovedToArchiveReply == uuids.notApplicableWeDidntUseAnyPreExistingDataOrModelsAUuid %}
+			<p>We didn't use any pre-existing data or models.</p> {# could just print nothing here?#}
+		{% endif %}
+
+
+		{% set hasProjectcollectedResearchDataOrToolsPath = [uuids.projectClosureCUuid, uuids.hasYourProjectCollectedOrCreatedAnyResearchDataOrDataRelatedToolsQUuid]|reply_path %}
+		{% set hasProjectcollectedResearchDataOrToolsReply = replies[hasProjectcollectedResearchDataOrToolsPath]|reply_str_value %}
+
+		{% if hasProjectcollectedResearchDataOrToolsReply == uuids.no_3_1AUuid %}
+			<p>This project has not collected or created any research data or data-related tools.</p>
+		{% elif hasProjectcollectedResearchDataOrToolsReply == uuids.yes_3_1AUuid %}
+			<p>This project has collected or created research data or data-related tools.</p>
+
+			{% set doesTheListOfDatasetsCoverAllDataGeneratedAndForEachDatasetStateTheOutcomeOfTheLongTermPlanPath = [hasProjectcollectedResearchDataOrToolsPath, uuids.yes_3_1AUuid, uuids.doesTheListOfDatasetsCoverAllDataGeneratedAndForEachDatasetStateTheOutcomeOfTheLongTermPlanQUuid]|reply_path %}
+			{% set doesTheListOfDatasetsCoverAllDataGeneratedAndForEachDatasetStateTheOutcomeOfTheLongTermPlanReply = replies[doesTheListOfDatasetsCoverAllDataGeneratedAndForEachDatasetStateTheOutcomeOfTheLongTermPlanPath]|reply_str_value %}
+
+			{% if doesTheListOfDatasetsCoverAllDataGeneratedAndForEachDatasetStateTheOutcomeOfTheLongTermPlanReply == uuids.no_4_1AUuid %}
+			<p><b>The project cannot be considered complete as the list of datasets is not complete and up to date</b></p>
+			{% elif doesTheListOfDatasetsCoverAllDataGeneratedAndForEachDatasetStateTheOutcomeOfTheLongTermPlanReply == uuids.yes_4_1AUuid %}
+			<p>The list of datasets (in Chapter 'Preserving and sharing data') covers all the data generated and, for each dataset, states the outcome of the long-term plan.</p>
+			{% endif %}
+
+
+			
+
+
+
+
+		{% endif %}
+
+
+
+
+
 	{% endif %}	
 
 {% endif %}	
 </div>
-
 
  {#<pre>{{ ctx|tojson(2) }}</pre>#}
