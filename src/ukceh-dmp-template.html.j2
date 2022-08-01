@@ -2358,20 +2358,52 @@
 			{% set doesTheListOfDatasetsCoverAllDataGeneratedAndForEachDatasetStateTheOutcomeOfTheLongTermPlanReply = replies[doesTheListOfDatasetsCoverAllDataGeneratedAndForEachDatasetStateTheOutcomeOfTheLongTermPlanPath]|reply_str_value %}
 
 			{% if doesTheListOfDatasetsCoverAllDataGeneratedAndForEachDatasetStateTheOutcomeOfTheLongTermPlanReply == uuids.no_4_1AUuid %}
-			<p><b>The project cannot be considered complete as the list of datasets is not complete and up to date</b></p>
+				<p><b>The project cannot be considered complete as the list of datasets is not complete and up to date</b></p>
 			{% elif doesTheListOfDatasetsCoverAllDataGeneratedAndForEachDatasetStateTheOutcomeOfTheLongTermPlanReply == uuids.yes_4_1AUuid %}
-			<p>The list of datasets (in Chapter 'Preserving and sharing data') covers all the data generated and, for each dataset, states the outcome of the long-term plan.</p>
+				<p>The list of datasets (in Chapter 'Preserving and sharing data') covers all the data generated and, for each dataset, states the outcome of the long-term plan.</p>
 			{% endif %}
 
 
-			
+			{% set areThereConfidentialDataThatRequireOngoingManagementPath = [hasProjectcollectedResearchDataOrToolsPath, uuids.yes_3_1AUuid, uuids.areThereAnyConfidentialSensitiveDataThatCannotBeMadeAccessibleButNeedToBeRetainedAndThereforeRequireOngoingManagementToProtectQUuid]|reply_path %}
+			{% set areThereConfidentialDataThatRequireOngoingManagementReply = replies[areThereConfidentialDataThatRequireOngoingManagementPath]|reply_str_value %}
 
-
-
+			{% if areThereConfidentialDataThatRequireOngoingManagementReply == uuids.no_5_1AUuid %}
+				{# don't need to print anything?#}
+			{% elif areThereConfidentialDataThatRequireOngoingManagementReply == uuids.yes_5_1AUuid %}
+				<p>There are confidential/sensitive data that cannot be made accessible but need to be retained and therefore require ongoing management to protect.</p>
+			{% endif %}
 
 		{% endif %}
 
+		{% set hasYourProjectCreatedAnyModelsPath = [uuids.projectClosureCUuid, uuids.hasYourProjectCreatedAnyModelsOfLongTermValueQUuid]|reply_path %}
+		{% set hasYourProjectCreatedAnyModelsReply = replies[hasYourProjectCreatedAnyModelsPath]|reply_str_value %}
 
+		{% if hasYourProjectCreatedAnyModelsReply == uuids.no_6_1AUuid %}
+			{# don't need to print anything?#}
+		{% elif hasYourProjectCreatedAnyModelsReply == uuids.yes_6_1AUuid %}
+			<p>This project has created model(s) of long-term value.</p>
+
+			{% set hasTheListOfModelsBeenUpdatedToStateTheOutcomeOfTheLongTermPlanForEachModelPath = [hasYourProjectCreatedAnyModelsPath, uuids.yes_6_1AUuid, uuids.hasTheListOfModelsBeenUpdatedToStateTheOutcomeOfTheLongTermPlanForEachModelQUuid]|reply_path %}
+			{% set hasTheListOfModelsBeenUpdatedToStateTheOutcomeOfTheLongTermPlanForEachModelReply = replies[hasTheListOfModelsBeenUpdatedToStateTheOutcomeOfTheLongTermPlanForEachModelPath]|reply_str_value %}
+
+			{% if hasTheListOfModelsBeenUpdatedToStateTheOutcomeOfTheLongTermPlanForEachModelReply == uuids.no_7_1AUuid %}
+				<p>The list of models has <b>not</b> been updated to state the long term plan for each model. <b>The project cannot be considered complete</b>.</p>
+			{% elif hasTheListOfModelsBeenUpdatedToStateTheOutcomeOfTheLongTermPlanForEachModelReply == uuids.yes_7_1AUuid %}
+				<p>The list of models has been updated to state the long term plan for each model</p>
+			{% endif %}
+		{% endif %}
+
+
+		{% set hasAllTheDocumentationRelatingToTheDataAndModelsBeenUpdatedAndArchivedToBeRetainedAsAnAuditTrailPath = [uuids.projectClosureCUuid, uuids.hasAllTheDocumentationRelatingToTheDataAndModelsBeenUpdatedAndArchivedToBeRetainedAsAnAuditTrailQUuid]|reply_path %}
+		{% set hasAllTheDocumentationRelatingToTheDataAndModelsBeenUpdatedAndArchivedToBeRetainedAsAnAuditTrailReply  = replies[hasAllTheDocumentationRelatingToTheDataAndModelsBeenUpdatedAndArchivedToBeRetainedAsAnAuditTrailPath]|reply_str_value %}
+
+		{% if hasAllTheDocumentationRelatingToTheDataAndModelsBeenUpdatedAndArchivedToBeRetainedAsAnAuditTrailReply == uuids.no_8_1AUuid %}
+			<p>The documentation relating to the data and models has <b>not</b> been updated and archived to be retained as an audit trail</p>
+		{% elif hasAllTheDocumentationRelatingToTheDataAndModelsBeenUpdatedAndArchivedToBeRetainedAsAnAuditTrailReply == uuids.yes_8_1AUuid %}
+			<p>The documentation relating to the data and models has been updated and archived to be retained as an audit trail</p>
+		{% elif hasAllTheDocumentationRelatingToTheDataAndModelsBeenUpdatedAndArchivedToBeRetainedAsAnAuditTrailReply == uuids.notApplicableWeDidNotUseAnyDataOrModelsAUuid %}
+			{# don't need to print anything?#}
+		{% endif %}
 
 
 
