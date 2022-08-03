@@ -379,7 +379,7 @@
 					{% if datasetUsedVersionChangeReply == uuids.willStayWithTheOldVersionAUuid %}
 						{% set datasetUsedVersionOldPath = [datasetUsedVersionChangePath, uuids.willStayWithTheOldVersionAUuid, uuids.howWillTheOldVersionBeAvailableQUuid]|reply_path %}
 						{% set datasetUsedVersionOldReply = replies[datasetUsedVersionOldPath]|reply_str_value %}
-						{% set datasetUsedVersionChangeText = "We will not change version if the dataset updates, because " +  km.entities.answers[datasetUsedVersionOldReply].label + ". " %}
+						{% set datasetUsedVersionChangeText = "We will not change version if the dataset updates. " %} {# , because " +  km.entities.answers[datasetUsedVersionOldReply].label + ". " %} #}
 					{% else %}
 						{% set datasetUsedVersionChangeText = "We will change version if the dataset updates. " +  km.entities.answers[datasetUsedVersionChangeReply].label + ". " %}
 					{% endif %}	
@@ -390,6 +390,7 @@
 
 				{% set datasetUsedMakeAvailablePath = [datasetUsedListPath, itemUuid, uuids.howWillYouMakeSureTheSameDataWillBeAvailableForOthersToReproduceYourResultsQUuid]|reply_path %}
 				{% set datasetUsedMakeAvailableReply = replies[datasetUsedMakeAvailablePath]|reply_str_value %}
+				
 				{% if datasetUsedMakeAvailableReply %}
 					<p><strong>Availability of data version</strong> {{km.entities.answers[datasetUsedMakeAvailableReply].label}}</p>
 				{% else %}
@@ -417,8 +418,12 @@
 		{% elif datasetHarmonisationReply == uuids.yes_5AUuid %}
 			{% set datasetShareHarmonisationPath = [datasetHarmonisationPath, uuids.yes_5AUuid, uuids.willYouBeMakingYourHarmonisationResultsAvailableToOthersQUuid]|reply_path %}	
 			{% set datasetShareHarmonisationReply = replies[datasetShareHarmonisationPath]|reply_str_value %}
-			{% if datasetShareHarmonisationReply == uuids.no_6AUuid %}
-				{% set harmonisationText = "We need to harmonise different sources of existing data, but we will not make these results available."  %}
+			{% if datasetShareHarmonisationReply == uuids.no_6AUuid %} {# this is now - "No, the terms and conditions of the original data prevent us from doing so" #}
+				{% set harmonisationText = "We need to harmonise different sources of existing data, but we will not make these results available because we have not considered doing this." %}
+			{% elif datasetShareHarmonisationReply == uuids.noWeWontBeAbleToMakeTheseResultsAvailableAUuid %}
+				{% set harmonisationText = "We will not make these results available because the terms and conditions of the original data prevent us from doing so" %}
+
+
 			{% elif datasetShareHarmonisationReply == uuids.yes_6AUuid%}
 				{% set harmonisationText = "We need to harmonise different sources of existing data, and we will make these results available"  %}
 			{% endif %}	
@@ -1865,6 +1870,8 @@
 			{% set datasetDescriptionReply = replies[datasetDescriptionPath]|reply_str_value %}
 			<p><strong>Brief description, including format </strong>{{datasetDescriptionReply}}</p>
 
+			{# This is where questions dataset identifier (when known) and what license(s) will the data be shared under (c8febdf1-085d-431f-8150-3bd62de3678d) #}
+
 			{% set datasetExistingDataPath = [datasetListPath, itemUuid, uuids.areDataDerivedFromExistingDataQUuid]|reply_path %}
 			{% set datasetExistingDataReply = replies[datasetExistingDataPath]|reply_str_value %}
 			{% if datasetExistingDataReply %}
@@ -2332,8 +2339,7 @@
 		Project expected to be completed by {{dateExpectProjectToBeCompletedReply}}
 
 	{% elif projectClosureReply == uuids.yes_133AUuid %}
-		<p>Project is closed</p>
-
+		
 		{% set havePreExistingDataOrModelsBeenDeletedOrMovedToArchivePath = [uuids.projectClosureCUuid, uuids.ifYourProjectUsedPreExistingDataOrModelsHaveTheseBeenDeletedOrMovedToAnArchiveSpaceQUuid]|reply_path %}
 		{% set havePreExistingDataOrModelsBeenDeletedOrMovedToArchiveReply = replies[havePreExistingDataOrModelsBeenDeletedOrMovedToArchivePath]|reply_str_value %}
 
@@ -2342,7 +2348,7 @@
 		{% elif havePreExistingDataOrModelsBeenDeletedOrMovedToArchiveReply == uuids.yes_2_2AUuid %}
 			<p>Pre-existing data or models have been deleted or moved to an archive.</p>
 		{% elif havePreExistingDataOrModelsBeenDeletedOrMovedToArchiveReply == uuids.notApplicableWeDidntUseAnyPreExistingDataOrModelsAUuid %}
-			<p>We didn't use any pre-existing data or models.</p> {# could just print nothing here?#}
+			{# <p>We didn't use any pre-existing data or models.</p> #} {# could just print nothing here?#}
 		{% endif %}
 
 
@@ -2381,15 +2387,15 @@
 		{% if hasYourProjectCreatedAnyModelsReply == uuids.no_6_1AUuid %}
 			{# don't need to print anything?#}
 		{% elif hasYourProjectCreatedAnyModelsReply == uuids.yes_6_1AUuid %}
-			<p>This project has created model(s) of long-term value.</p>
+			This project has created model(s) of long-term value.
 
 			{% set hasTheListOfModelsBeenUpdatedToStateTheOutcomeOfTheLongTermPlanForEachModelPath = [hasYourProjectCreatedAnyModelsPath, uuids.yes_6_1AUuid, uuids.hasTheListOfModelsBeenUpdatedToStateTheOutcomeOfTheLongTermPlanForEachModelQUuid]|reply_path %}
 			{% set hasTheListOfModelsBeenUpdatedToStateTheOutcomeOfTheLongTermPlanForEachModelReply = replies[hasTheListOfModelsBeenUpdatedToStateTheOutcomeOfTheLongTermPlanForEachModelPath]|reply_str_value %}
 
 			{% if hasTheListOfModelsBeenUpdatedToStateTheOutcomeOfTheLongTermPlanForEachModelReply == uuids.no_7_1AUuid %}
-				<p>The list of models has <b>not</b> been updated to state the long term plan for each model. <b>The project cannot be considered complete</b>.</p>
+				The list of models has <b>not</b> been updated to state the long term plan for each model. <b>The project cannot be considered complete.</b>.
 			{% elif hasTheListOfModelsBeenUpdatedToStateTheOutcomeOfTheLongTermPlanForEachModelReply == uuids.yes_7_1AUuid %}
-				<p>The list of models has been updated to state the long term plan for each model</p>
+				The list of models has been updated to state the long term plan for each model.
 			{% endif %}
 		{% endif %}
 
