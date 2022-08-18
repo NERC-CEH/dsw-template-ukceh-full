@@ -421,7 +421,9 @@
 			{% if datasetShareHarmonisationReply == uuids.no_6AUuid %} {# this is now - "No, the terms and conditions of the original data prevent us from doing so" #}
 				{% set harmonisationText = "We need to harmonise different sources of existing data, but we will not make these results available because we have not considered doing this." %}
 			{% elif datasetShareHarmonisationReply == uuids.noWeWontBeAbleToMakeTheseResultsAvailableAUuid %}
-				{% set harmonisationText = "We will not make these results available because the terms and conditions of the original data prevent us from doing so" %}
+				{% set harmonisationText = "We will not make these results available, the terms and conditions of the original data prevent us from doing so" %}
+			{% elif datasetShareHarmonisationReply == uuids.noTheDataContainSensitiveOrConfidentialInformationAUuid %}
+				{% set harmonisationText = "We will not make these results available, the data contain sensitive or confidential information  " %}
 
 
 			{% elif datasetShareHarmonisationReply == uuids.yes_6AUuid%}
@@ -1871,6 +1873,58 @@
 			<p><strong>Brief description, including format </strong>{{datasetDescriptionReply}}</p>
 
 			{# This is where questions dataset identifier (when known) and what license(s) will the data be shared under (c8febdf1-085d-431f-8150-3bd62de3678d) #}
+			{% set datasetLicencePath = [datasetListPath, itemUuid, uuids.whatLicenceSWillTheDatasetBeSharedUnderQLUuid]|reply_path %}
+			{% set datasetLicenceListReply = replies[datasetLicencePath]|reply_items %}
+
+			{% if datasetLicenceListReply|length > 0 %}
+				<ul>
+				{% for itemLicenceUuid in datasetLicenceListReply %}
+
+					{% set datasetLicenceTypePath = [datasetLicencePath, itemLicenceUuid, uuids.licence_1QUuid]|reply_path %}
+					{% set datasetLicenceTypeReply = replies[datasetLicenceTypePath]|reply_str_value %}
+
+					<p><strong>Licence: </strong>{{ km.entities.answers[datasetLicenceTypeReply].label }}</p>
+
+
+					{% if datasetLicenceTypeReply == uuids.theDatasetWillBeAvailableUnderSomeRestrictionsAUuid %}
+						{% set datasetLicenceSomeRestrictionsPath = [datasetLicenceTypePath, uuids.theDatasetWillBeAvailableUnderSomeRestrictionsAUuid]|reply_path %}
+
+						{% set whatLicenceConditionsPath = [datasetLicenceSomeRestrictionsPath, uuids.whatConditions_1QUuid]|reply_path %}
+						{% set whatLicenceConditionsReply = replies[whatLicenceConditionsPath]|reply_str_value %}
+						{{whatLicenceConditionsReply}}
+
+						{% set linkToTheLicenceTextPath = [datasetLicenceSomeRestrictionsPath, uuids.linkToTheLicenceText_1QUuid]|reply_path %}
+						{% set linkToTheLicenceTextReply = replies[linkToTheLicenceTextPath]|reply_str_value %}
+						{{linkToTheLicenceTextReply}}
+
+						{% set howWillReUsersBeAbleToGetAccessPath = [datasetLicenceSomeRestrictionsPath, uuids.howWillReUsersBeAbleToGetAccess_1QUuid]|reply_path %}
+						{% set howWillReUsersBeAbleToGetAccessReply = replies[howWillReUsersBeAbleToGetAccessPath]|reply_str_value %}
+						<p>Users will get access to the data: {{ km.entities.answers[howWillReUsersBeAbleToGetAccessReply].label }}</p>
+
+						{% if howWillReUsersBeAbleToGetAccessReply == uuids.throughAnotherProcess_1AUuid %}
+							{% set whatProcessPath = [howWillReUsersBeAbleToGetAccessPath, uuids.throughAnotherProcess_1AUuid, uuids.whatProcess_1QUuid]|reply_path %}
+							{% set whatProcessReply = replies[whatProcessPath]|reply_str_value %}
+							{{whatProcessReply}}
+
+						{% endif %}
+
+						{% set willTheConditionsBePublishedAsPartOfTheMetadataPath = [datasetLicenceSomeRestrictionsPath, uuids.willTheConditionsBePublishedAsPartOfTheMetadata_1QUuid]|reply_path %}
+						{% set datasetLicenceSomeRestrictionsReply = replies[willTheConditionsBePublishedAsPartOfTheMetadataPath]|reply_str_value %}
+						{% if datasetLicenceSomeRestrictionsReply == uuids.no_145AUuid %}
+							<p>The licence conditions will not be published as part of the metadata.</p>
+						{% elif datasetLicenceSomeRestrictionsReply == uuids.yes_135AUuid %}
+							<p>The licence conditions will be published as part of the metadata.</p>
+						{% endif %}
+					{% endif %}
+
+					{% set startingDatePath = [datasetLicencePath, itemLicenceUuid, uuids.startingDate_1QUuid]|reply_path %}
+					{% set startingDateReply = replies[startingDatePath]|reply_str_value %}
+					<p>Starting date: {{startingDateReply}}</p>
+
+				{% endfor %}
+				</ul>
+			{% endif %}
+			
 
 			{% set datasetExistingDataPath = [datasetListPath, itemUuid, uuids.areDataDerivedFromExistingDataQUuid]|reply_path %}
 			{% set datasetExistingDataReply = replies[datasetExistingDataPath]|reply_str_value %}
@@ -2010,6 +2064,10 @@
 				<p><strong>Brief description </strong>{{modelsDescriptionReply}}</p>
 
 				{# Model identifier DOI #}
+				{% set modelsIDPath = [modelsListPath, itemUuid, uuids.modelIdentifierIfAnyQLUuid]|reply_path %}
+				{% set modelsIDReply = replies[modelsIDPath]|reply_str_value %}
+				<p><strong>ID </strong>{{modelsIDReply}}</p>
+
 				{# Estimated date generated #}
 				{% set modelsDateGeneratedPath = [modelsListPath, itemUuid, uuids.whatIsTheEstimatedDateForWhenTheModelWillBeCreatedQUuid]|reply_path %}
 				{% set modelsDateGeneratedReply = replies[modelsDateGeneratedPath]|reply_str_value %}
@@ -2057,32 +2115,38 @@
 					{% set modelsRepositoryPath = [modelsLongTermPlanPath, uuids.yesItWillBeSentToARepository_2AUuid, uuids.whatRepositoryWillTheModelBeStoredInQUuid]|reply_path %}
 					{% set modelsRepositoryReply = replies[modelsRepositoryPath]|reply_str_value %}
 				
-				{% if modelsRepositoryReply %}
-					{# Long term plan + repository answer#}
-					{#A domain specific repository answer was replaced with "Another repository"#}
-					{% if modelsRepositoryReply == uuids.aDomainSpecificRepository_2AUuid %}
-						{% set modelsRepositorySearchPath = [modelsRepositoryPath, uuids.aDomainSpecificRepository_2AUuid, uuids.searchAndSelectARepository_2QUuid]|reply_path %}
-						{% set modelsRepositorySearchReply = replies[modelsRepositorySearchPath] %}
+					{% if modelsRepositoryReply %}
+						{# Long term plan + repository answer#}
+						{#A domain specific repository answer was replaced with "Another repository"#}
+						{% if modelsRepositoryReply == uuids.aDomainSpecificRepository_2AUuid %}
+							{% set modelsRepositorySearchPath = [modelsRepositoryPath, uuids.aDomainSpecificRepository_2AUuid, uuids.searchAndSelectARepository_2QUuid]|reply_path %}
+							{% set modelsRepositorySearchReply = replies[modelsRepositorySearchPath] %}
 
-						{% set modelsLongTermPlan = 'Will be archived with ' %}
-							<strong>{{modelsLongTermText}}</strong> {{modelsLongTermPlan}} {{modelsRepositorySearchReply.value.value.value}}
+							{% set modelsLongTermPlan = 'Will be archived with ' %}
+								<strong>{{modelsLongTermText}}</strong> {{modelsLongTermPlan}} {{modelsRepositorySearchReply.value.value.value}}
 
-					{# Special purpose repository #}	
-					{% elif modelsRepositoryReply == uuids.aSpecialPurposeRepositoryCreatedForTheProject_2AUuid %}
-						{% set modelsLongTermPlan = 'Will be archived in a special purpose repository created for the project' %}
-						{% set modelsSpecialRepositoryNamePath = [modelsRepositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProject_2AUuid, uuids.giveTheNameOfTheRepositoryWhenItIsKnown_2QUuid]|reply_path %}
-						{% set modelsSpecialRepositoryNameReply = replies[modelsSpecialRepositoryNamePath]|reply_str_value%}
-						{% set modelsSpecialRepositoryUrlPath = [modelsRepositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProject_2AUuid, uuids.giveTheUrlToTheRepositoryWhenItIsKnown_2QUuid]|reply_path %}
-						{% set modelsSpecialRepositoryUrlReply = replies[modelsSpecialRepositoryUrlPath]|reply_str_value%}
+						{# Special purpose repository #}	
+						{% elif modelsRepositoryReply == uuids.aSpecialPurposeRepositoryCreatedForTheProject_2AUuid %}
+							{% set modelsLongTermPlan = 'Will be archived in a special purpose repository created for the project' %}
+							{% set modelsSpecialRepositoryNamePath = [modelsRepositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProject_2AUuid, uuids.giveTheNameOfTheRepositoryWhenItIsKnown_2QUuid]|reply_path %}
+							{% set modelsSpecialRepositoryNameReply = replies[modelsSpecialRepositoryNamePath]|reply_str_value%}
+							{% set modelsSpecialRepositoryUrlPath = [modelsRepositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProject_2AUuid, uuids.giveTheUrlToTheRepositoryWhenItIsKnown_2QUuid]|reply_path %}
+							{% set modelsSpecialRepositoryUrlReply = replies[modelsSpecialRepositoryUrlPath]|reply_str_value%}
 
-						<strong>{{modelsLongTermText}}</strong> {{modelsLongTermPlan}}. The repository is {{modelsSpecialRepositoryNameReply}} and can be found at {{modelsSpecialRepositoryUrlReply}}.
-					
-					{# One of the NERC data centre options #}	
-					{% else %}
-						{% set modelsLongTermPlan = 'Will be archived with the ' %}
-							<strong>{{modelsLongTermText}}</strong> {{modelsLongTermPlan}} {{km.entities.answers[modelsRepositoryReply].label}}
-					{% endif %} 
-				{% endif %}
+							<strong>{{modelsLongTermText}}</strong> {{modelsLongTermPlan}}. The repository is {{modelsSpecialRepositoryNameReply}} and can be found at {{modelsSpecialRepositoryUrlReply}}.
+						
+						{# One of the NERC data centre options #}	
+						{% else %}
+							{% set modelsLongTermPlan = 'Will be archived with the ' %}
+								<strong>{{modelsLongTermText}}</strong> {{modelsLongTermPlan}} {{km.entities.answers[modelsRepositoryReply].label}}
+						{% endif %} 
+					{% endif %}
+
+					{# License THIS NEEDS TO BE MOVED? 
+					{% set whatLicenceSWillTheModelBeAvailableUnderPath = [modelsLongTermPlanPath, uuids.yesItWillBeSentToARepository_2AUuid, uuids.whatLicenceSWillTheModelBeAvailableUnderQLUuid]|reply_path %}
+					{% set whatLicenceSWillTheModelBeAvailableUnderReply = replies[whatLicenceSWillTheModelBeAvailableUnderPath]|reply_str_value %}
+					<p><strong>License </strong>{{ km.entities.answers[whatLicenceSWillTheModelBeAvailableUnderReply].label }}</p>
+#}
 
 				{% elif modelsLongTermPlanReply == uuids.yesItWillBeKeptLocally_2AUuid %}
 					{% set modelsLongTermPlan = 'Will be kept locally' %}
