@@ -2041,6 +2041,7 @@
 	{% endif %}
 
 	<h4>5.2 Models this project plans to create</h4>
+
 	{% set modelsPath = [uuids.preservingAndSharingDataCUuid, uuids.modelsQUuid]|reply_path %}
 	{% set modelsReply = replies[modelsPath]|reply_str_value%}
 	{% if modelsReply == uuids.iWillNotBeProducingModelsAsPartOfThisProjectAUuid %}
@@ -2052,34 +2053,79 @@
 		
 		{% if modelsListReply|length > 0 %}
 			<ul>
-			{% for itemUuid in modelsListReply %}
+			{% for modelItemUuid in modelsListReply %}
+
 				{# Model name #}
-				{% set modelsTitlePath = [modelsListPath, itemUuid, uuids.modelNameQUuid]|reply_path %}
+				{% set modelsTitlePath = [modelsListPath, modelItemUuid, uuids.modelNameQUuid]|reply_path %}
 				{% set modelsTitleReply = replies[modelsTitlePath]|reply_str_value %}
 				<p><strong>Model title - </strong>{{modelsTitleReply}}</p>	
 
 				{# Model description #}
-				{% set modelsDescriptionPath = [modelsListPath, itemUuid, uuids.modelDescriptionQUuid]|reply_path %}
+				{% set modelsDescriptionPath = [modelsListPath, modelItemUuid, uuids.modelDescriptionQUuid]|reply_path %}
 				{% set modelsDescriptionReply = replies[modelsDescriptionPath]|reply_str_value %}
 				<p><strong>Brief description </strong>{{modelsDescriptionReply}}</p>
 
 				{# Model identifier DOI #}
-				{% set modelsIDPath = [modelsListPath, itemUuid, uuids.modelIdentifierIfAnyQLUuid]|reply_path %}
+				{% set modelsIDPath = [modelsListPath, modelItemUuid, uuids.modelIdentifierIfAnyQLUuid]|reply_path %}
 				{% set modelsIDReply = replies[modelsIDPath]|reply_str_value %}
 				<p><strong>ID </strong>{{modelsIDReply}}</p>
 
-				{# Estimated date generated #}
-				{% set modelsDateGeneratedPath = [modelsListPath, itemUuid, uuids.whatIsTheEstimatedDateForWhenTheModelWillBeCreatedQUuid]|reply_path %}
-				{% set modelsDateGeneratedReply = replies[modelsDateGeneratedPath]|reply_str_value %}
-				<p><strong>Estimated date model generated</strong>{{modelsDateGeneratedReply}} </p>
-									
-				{# Data Owner / IPR - needs km update currently empty #}
-				{% set modelsOwnerPath = [modelsListPath, itemUuid, uuids.whichOrganisationSHoldTheIntellectualPropertyRightsIprToThisModelQUuid]|reply_path %}
-				{% set modelsOwnerReply = replies[modelsOwnerPath]|reply_str_value %}
-				<p><strong>Model Owner/IPR</strong> {{modelsOwnerReply}}</p>
+				{% set modelLicencePath = [modelsListPath, modelItemUuid, uuids.whatLicenceSWillTheModelBeAvailableUnderQLUuid]|reply_path %}
+				{% set modelLicenceListReply = replies[modelLicencePath]|reply_items %}
+
+				{% if modelLicenceListReply|length > 0 %}
+					<ul>
+					{% for itemLicenceUuid in modelLicenceListReply %}
+
+						{% set modelLicenceTypePath = [modelLicencePath, itemLicenceUuid, uuids.licenceQUuid]|reply_path %}
+						{% set modelLicenceTypeReply = replies[modelLicenceTypePath]|reply_str_value %}
+
+						<p><strong>Licence: </strong>{{ km.entities.answers[modelLicenceTypeReply].label }}</p>
+
+						{% if modelLicenceTypeReply == uuids.theyWillBeAvailableUnderSomeRestrictionsAUuid %}
+							{% set modelLicenceSomeRestrictionsPath = [modelLicenceTypePath, uuids.theyWillBeAvailableUnderSomeRestrictionsAUuid]|reply_path %}
+
+							{% set whatModelLicenceConditionsPath = [modelLicenceSomeRestrictionsPath, uuids.whatConditions_2QUuid]|reply_path %}
+							{% set whatModelLicenceConditionsReply = replies[whatModelLicenceConditionsPath]|reply_str_value %}
+							<p>Conditions for access to the model: {{whatModelLicenceConditionsReply}}</p>
+
+							{% set linkToTheModelLicenceTextPath = [modelLicenceSomeRestrictionsPath, uuids.linkToTheLicenceTextQUuid]|reply_path %}
+							{% set linkToTheModelLicenceTextReply = replies[linkToTheModelLicenceTextPath]|reply_str_value %}
+							<p>Link to licence text: {{linkToTheModelLicenceTextReply}}</p>
+
+							{% set howWillReUsersBeAbleToGetAccessToModelPath = [modelLicenceSomeRestrictionsPath, uuids.howWillReUsersBeAbleToGetAccessQUuid]|reply_path %}
+							{% set howWillReUsersBeAbleToGetAccessToModelReply = replies[howWillReUsersBeAbleToGetAccessToModelPath]|reply_str_value %}
+
+							{% if howWillReUsersBeAbleToGetAccessToModelReply != uuids.throughAnotherProcessAUuid %}
+							<p>Users will get access to the model: {{ km.entities.answers[howWillReUsersBeAbleToGetAccessToModelReply].label }}</p>
+
+							{% elif howWillReUsersBeAbleToGetAccessToModelReply == uuids.throughAnotherProcessAUuid %}
+								{% set whatProcessToAccessModelPath = [howWillReUsersBeAbleToGetAccessToModelPath, uuids.throughAnotherProcessAUuid, uuids.whatProcessQUuid]|reply_path %}
+								{% set whatProcessToAccessModelReply = replies[whatProcessToAccessModelPath]|reply_str_value %}
+								<p>Method by which users will get access to the model: {{whatProcessToAccessModelReply}}</p>
+
+							{% endif %}
+
+							{% set willTheModelLicenceConditionsBePublishedAsPartOfTheMetadataPath = [modelLicenceSomeRestrictionsPath, uuids.willTheConditionsBePublishedAsPartOfTheMetadataQUuid]|reply_path %}
+							{% set modelLicenceSomeRestrictionsReply = replies[willTheModelLicenceConditionsBePublishedAsPartOfTheMetadataPath]|reply_str_value %}
+							
+							{% if modelLicenceSomeRestrictionsReply == uuids.no_128AUuid %}
+								<p>The licence conditions will not be published as part of the metadata.</p>
+							{% elif modelLicenceSomeRestrictionsReply == uuids.yes_120AUuid %}
+								<p>The licence conditions will be published as part of the metadata.</p>
+							{% endif %}
+						{% endif %}
+
+						{% set startingDateModelPath = [modelLicencePath, itemLicenceUuid, uuids.startingDateQUuid]|reply_path %}
+						{% set startingDateModelReply = replies[startingDateModelPath]|reply_str_value %}
+						<p>Starting date: {{startingDateModelReply}}</p>
+
+					{% endfor %}
+					</ul>
+				{% endif %}
 
 				{# Approximate size  #}
-				{% set modelsSizePath = [modelsListPath, itemUuid, uuids.whatIsTheApproximateSizeOfThisModelAndAssociatedMaterialQUuid]|reply_path %}
+				{% set modelsSizePath = [modelsListPath, modelItemUuid, uuids.whatIsTheApproximateSizeOfThisModelAndAssociatedMaterialQUuid]|reply_path %}
 				{% set modelsSizeReply = replies[modelsSizePath]|reply_str_value %}
 				<p><strong>Size/Quantity</strong>
 				{% if modelsSizeReply %}
@@ -2088,13 +2134,29 @@
 					<em>unknown</em>
 				{% endif %}</p>
 
-				{# Project staff responsible #}
-				{% set modelsResponsiblePersonPath = [modelsListPath, itemUuid, uuids.whoInTheProjectIsResponsibleForThisModelQUuid]|reply_path %}
-				{% set modelsResponsiblePersonReply = replies[modelsResponsiblePersonPath]|reply_str_value %}
-				<p><strong>Project staff responsible</strong> {{modelsResponsiblePersonReply}}</p>			
+				{# Data Owner / IPR - needs km update currently empty #}
+				{% set modelsOwnerPath = [modelsListPath, modelItemUuid, uuids.whichOrganisationSHoldTheIntellectualPropertyRightsIprToThisModelQUuid]|reply_path %}
+				{% set modelsOwnerReply = replies[modelsOwnerPath]|reply_str_value %}
+				<p><strong>Model Owner/IPR</strong> {{modelsOwnerReply}}</p>
+
+				{# Is the model derived from existing model(s)#}
+				{% set modelsDerivedFromExistingModelsPath = [modelsListPath, modelItemUuid, uuids.isTheModelDerivedFromExistingModelSQUuid]|reply_path %}
+				{% set modelsDerivedFromExistingModelsReply = replies[modelsDerivedFromExistingModelsPath]|reply_str_value %}
+
+				{% if modelsDerivedFromExistingModelsReply == uuids.no_2_4AUuid %}
+					<p>The model is not derived from existing models</p>
+				{% elif modelsDerivedFromExistingModelsReply == uuids.yes_2_4AUuid %}
+					<p>The model is derived from existing models</p>
+				{% endif %}
+				
+				{# Estimated date generated #}
+				{% set modelsDateGeneratedPath = [modelsListPath, modelItemUuid, uuids.whatIsTheEstimatedDateForWhenTheModelWillBeCreatedQUuid]|reply_path %}
+				{% set modelsDateGeneratedReply = replies[modelsDateGeneratedPath]|reply_str_value %}
+				<p><strong>Estimated date model generated</strong>{{modelsDateGeneratedReply}} </p>
+						
 								
 				{# Versioning of model  #}
-				{% set modelVersionControlPath = [modelsListPath, itemUuid, uuids.willYouDepositYourModelInGitHubOrOtherVersionedCodeRepositoryQUuid]|reply_path %}
+				{% set modelVersionControlPath = [modelsListPath, modelItemUuid, uuids.willYouDepositYourModelInGitHubOrOtherVersionedCodeRepositoryQUuid]|reply_path %}
 				{% set modelVersionControlReply = replies[modelVersionControlPath]|reply_str_value %}
 				{% if modelVersionControlReply == uuids.no_142AUuid %}
 					{% set modelVersionControlText = "This model will not be version controlled on a code repository." %}  
@@ -2106,7 +2168,7 @@
 					<p><strong>Model versioning</strong> {{modelVersionControlText}}</p>
 
 				{# Long term preservation plans #}
-				{% set modelsLongTermPlanPath = [modelsListPath, itemUuid, uuids.areThereLongTermPreservationPlansInPlaceForThisModelQUuid]|reply_path %}
+				{% set modelsLongTermPlanPath = [modelsListPath, modelItemUuid, uuids.areThereLongTermPreservationPlansInPlaceForThisModelQUuid]|reply_path %}
 				{% set modelsLongTermPlanReply = replies[modelsLongTermPlanPath]|reply_str_value %}
 				{% set modelsLongTermText = 'Long-Term Plan (e.g. archive with the EIDC) ' %}
 
@@ -2122,18 +2184,40 @@
 							{% set modelsRepositorySearchPath = [modelsRepositoryPath, uuids.aDomainSpecificRepository_2AUuid, uuids.searchAndSelectARepository_2QUuid]|reply_path %}
 							{% set modelsRepositorySearchReply = replies[modelsRepositorySearchPath] %}
 
-							{% set modelsLongTermPlan = 'Will be archived with ' %}
+							{% set modelsLongTermPlan = 'The model will be archived with ' %}
 								<strong>{{modelsLongTermText}}</strong> {{modelsLongTermPlan}} {{modelsRepositorySearchReply.value.value.value}}
 
 						{# Special purpose repository #}	
 						{% elif modelsRepositoryReply == uuids.aSpecialPurposeRepositoryCreatedForTheProject_2AUuid %}
+
+							{% set willYouBeAbleToSupportThisRepositoryForASufficientlyLongTimePath = [modelsRepositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProject_2AUuid, uuids.willYouBeAbleToSupportThisRepositoryForASufficientlyLongTime_2QUuid]|reply_path %}
+							{% set willYouBeAbleToSupportThisRepositoryForASufficientlyLongTimeReply = replies[willYouBeAbleToSupportThisRepositoryForASufficientlyLongTimePath]|reply_str_value %}
+							{% if willYouBeAbleToSupportThisRepositoryForASufficientlyLongTimeReply == uuids.no_127AUuid %}
+								{% set modelsSpecialRepositorySupportLevelText = "We will not support this repository for a sufficiently long time" %}
+							{% elif willYouBeAbleToSupportThisRepositoryForASufficientlyLongTimeReply == uuids.yes_118AUuid %}
+								{% set modelsSpecialRepositorySupportLevelText = "We will support this repository for a sufficiently long time" %}
+							{% endif %}
+
+							{% set whatIsTheServiceLevelYouWillBeOfferingUsersOfTheModelRepositoryPath = [modelsRepositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProject_2AUuid, uuids.whatIsTheServiceLevelYouWillBeOfferingUsersOfTheModelRepositoryQUuid]|reply_path %}
+							{% set whatIsTheServiceLevelYouWillBeOfferingUsersOfTheModelRepositoryReply = replies[whatIsTheServiceLevelYouWillBeOfferingUsersOfTheModelRepositoryPath]|reply_str_value %}
+							{% set whatIsTheServiceLevelYouWillBeOfferingUsersOfTheModelRepositoryText = km.entities.answers[whatIsTheServiceLevelYouWillBeOfferingUsersOfTheModelRepositoryReply].label|lower %}
+
+							{% set didYouArrangeForSystemAdminSecurityMaintenanceForServerPath = [modelsRepositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProject_2AUuid, uuids.didYouArrangeForSystemAdministrationAtLeastSecurityUpdatesAndHardwareMaintenanceForTheServerSQUuid]|reply_path %}
+							{% set didYouArrangeForSystemAdminSecurityMaintenanceForServerReply = replies[didYouArrangeForSystemAdminSecurityMaintenanceForServerPath]|reply_str_value %}
+							{% if didYouArrangeForSystemAdminSecurityMaintenanceForServerReply == uuids.notYet_3AUuid %}
+								{% set didYouArrangeForSystemAdminSecurityMaintenanceForServerText = "We have not yet arranged for system administration (at least security updates) and hardware maintenance for the server(s)" %}
+							{% elif didYouArrangeForSystemAdminSecurityMaintenanceForServerReply == uuids.yes_119AUuid %}
+								{% set didYouArrangeForSystemAdminSecurityMaintenanceForServerText = "We have arranged for system administration (at least security updates) and hardware maintenance for the server(s)" %}
+							{% endif %}
+
 							{% set modelsLongTermPlan = 'Will be archived in a special purpose repository created for the project' %}
 							{% set modelsSpecialRepositoryNamePath = [modelsRepositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProject_2AUuid, uuids.giveTheNameOfTheRepositoryWhenItIsKnown_2QUuid]|reply_path %}
 							{% set modelsSpecialRepositoryNameReply = replies[modelsSpecialRepositoryNamePath]|reply_str_value%}
 							{% set modelsSpecialRepositoryUrlPath = [modelsRepositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProject_2AUuid, uuids.giveTheUrlToTheRepositoryWhenItIsKnown_2QUuid]|reply_path %}
 							{% set modelsSpecialRepositoryUrlReply = replies[modelsSpecialRepositoryUrlPath]|reply_str_value%}
 
-							<strong>{{modelsLongTermText}}</strong> {{modelsLongTermPlan}}. The repository is {{modelsSpecialRepositoryNameReply}} and can be found at {{modelsSpecialRepositoryUrlReply}}.
+							<strong>{{modelsLongTermText}}</strong> {{modelsLongTermPlan}}. The repository is {{modelsSpecialRepositoryNameReply}} and can be found at {{modelsSpecialRepositoryUrlReply}}. {{modelsSpecialRepositorySupportLevelText}}. 
+							The service level we will offer will be {{whatIsTheServiceLevelYouWillBeOfferingUsersOfTheModelRepositoryText}}. {{didYouArrangeForSystemAdminSecurityMaintenanceForServerText}}.
 						
 						{# One of the NERC data centre options #}	
 						{% else %}
@@ -2142,11 +2226,7 @@
 						{% endif %} 
 					{% endif %}
 
-					{# License THIS NEEDS TO BE MOVED? 
-					{% set whatLicenceSWillTheModelBeAvailableUnderPath = [modelsLongTermPlanPath, uuids.yesItWillBeSentToARepository_2AUuid, uuids.whatLicenceSWillTheModelBeAvailableUnderQLUuid]|reply_path %}
-					{% set whatLicenceSWillTheModelBeAvailableUnderReply = replies[whatLicenceSWillTheModelBeAvailableUnderPath]|reply_str_value %}
-					<p><strong>License </strong>{{ km.entities.answers[whatLicenceSWillTheModelBeAvailableUnderReply].label }}</p>
-#}
+
 
 				{% elif modelsLongTermPlanReply == uuids.yesItWillBeKeptLocally_2AUuid %}
 					{% set modelsLongTermPlan = 'Will be kept locally' %}
@@ -2173,6 +2253,13 @@
 					{% endif %}							
 					<p><strong>{{modelsLongTermText}}</strong> {{modelsLongTermPlan}}</p>
 				{% endif %}
+
+				{# Project staff responsible #}
+				{% set modelsResponsiblePersonPath = [modelsListPath, modelItemUuid, uuids.whoInTheProjectIsResponsibleForThisModelQUuid]|reply_path %}
+				{% set modelsResponsiblePersonReply = replies[modelsResponsiblePersonPath]|reply_str_value %}
+				<p><strong>Project staff responsible</strong> {{modelsResponsiblePersonReply}}</p>	
+
+
 				<hr/>
 			{% endfor %}
 		{% endif %}	
