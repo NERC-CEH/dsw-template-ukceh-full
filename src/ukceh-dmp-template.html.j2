@@ -1005,7 +1005,7 @@
 				{% set identificationPhysicalSamplesReply = replies[identificationPhysicalSamplesPath]|reply_str_value %}
 				
 				{% if identificationPhysicalSamplesReply|length > 0 %}
-					{{km.entities.answers[identificationPhysicalSamplesReply].label}}
+					{{km.entities.answers[identificationPhysicalSamplesReply].label}}.
 
 					{% if identificationPhysicalSamplesReply == uuids.samplesWillGetAnInternalCodeAUuid %}
 						{% set fullyDocumentedPhysicalSamplesPath = [identificationPhysicalSamplesPath, uuids.samplesWillGetAnInternalCodeAUuid, uuids.isTheCodeFullyDocumentedQUuid]|reply_path %}
@@ -1016,6 +1016,7 @@
 						{% elif fullyDocumentedPhysicalSamplesReply == uuids.yes_4_2AUuid %}
 							which is fully documented.
 						{% endif %}
+
 					{% endif %}	
 				{% endif %}
 				</p>
@@ -1516,13 +1517,13 @@
 				{% set willMultiplePeopleDevelopReply = replies[willMultiplePeopleDevelopPath]|reply_str_value %}
 				
 				{% if willMultiplePeopleDevelopReply == uuids.noOnlyOnePersonWillDevelopTheScriptsWorkflowsAUuid %}
-					<p>Only one person will be develop the scripts/workflows.</p>
+					<p>Only one person will be using or developing the scripts/workflows.</p>
 				{% elif willMultiplePeopleDevelopReply == uuids.yesWeWillUseASharedDriveAUuid %}
-					<p>Multiple people will be developing the scripts/workflows, and a shared drive will be used to collaborate.</p>
+					<p>Multiple people will be using or developing the scripts/workflows, and a shared drive will be used to collaborate.</p>
 				{% elif willMultiplePeopleDevelopReply == uuids.yesWeWillDevelopLocallyUsingAVersionControlSystemAndSharedRepositoryAUuid %}
-					<p>Multiple people will be developing the scripts/workflows, and a version control system and shared repository will be used to collaborate.</p>
+					<p>Multiple people will be using or developing the scripts/workflows, and a version control system and shared repository will be used to collaborate.</p>
 				{% elif willMultiplePeopleDevelopReply == uuids.yesWeWillUseACollaborativeDevelopmentEnvironmentSuchAsDataLabsAUuid %}
-					<p>Multiple people will be developing the scripts/workflows, and a collaborate development environment, such as DataLabs, will be used to collaborate.</p>
+					<p>Multiple people will be using or developing the scripts/workflows, and a collaborate development environment, such as DataLabs, will be used to collaborate.</p>
 				{% endif %}
 
 				{# Need a GUI? #}
@@ -1855,6 +1856,9 @@
 <div class="question">
 	<h3>5. Preserving and sharing data </h3>
 
+
+	{# willYouBeWorkingWithThePhilosophyAsOpenAsPossibleForYourDataQUuid #}
+
 	<h4>5.1 Datasets this project plans to create</h4>
 	{% set datasetsPath = [uuids.preservingAndSharingDataCUuid, uuids.datasetsQUuid]|reply_path %}
 	{% set datasetListPath = [datasetsPath, uuids.specifyAListOfDatasetsYouWillBeProducingAUuid, uuids.listOfDatasetsQLUuid]|reply_path %}	
@@ -1872,7 +1876,6 @@
 			{% set datasetDescriptionReply = replies[datasetDescriptionPath]|reply_str_value %}
 			<p><strong>Brief description, including format </strong>{{datasetDescriptionReply}}</p>
 
-			{# This is where questions dataset identifier (when known) and what license(s) will the data be shared under (c8febdf1-085d-431f-8150-3bd62de3678d) #}
 			{% set datasetLicencePath = [datasetListPath, itemUuid, uuids.whatLicenceSWillTheDatasetBeSharedUnderQLUuid]|reply_path %}
 			{% set datasetLicenceListReply = replies[datasetLicencePath]|reply_items %}
 
@@ -2289,6 +2292,9 @@
 				<p><strong>Brief description </strong>{{softwareDescriptionReply}}</p>			
 				
 				{# Software identifier DOI #}
+				{% set softwarePackageIdentifierIfAnyPath = [softwareListPath, itemUuid, uuids.softwarePackageIdentifierIfAnyQLUuid]|reply_path %}
+				{% set softwarePackageIdentifierIfAnyReply = replies[softwarePackageIdentifierIfAnyPath]|reply_str_value %}
+				<p><strong>Software ID: </strong>{{softwarePackageIdentifierIfAnyReply}}</p>
 
 				{# Open source license #}
 				{% set softwareLicensePath = [softwareListPath, itemUuid, uuids.willYouBeAddingAnOpenSourceLicenceQUuid]|reply_path %}
@@ -2304,7 +2310,19 @@
 					{% set softwareLicenseWhichReply = replies[softwareLicenseWhichPath]|reply_str_value %}
 					{% set softwareLicenseInfoText = "We will use " + softwareLicenseWhichReply %}
 				{% endif %}		
-				<p><strong>Licensing</strong> {{softwareLicenseText}} {{softwareLicenseInfoText}}</p>			
+				<p><strong>Licensing</strong> {{softwareLicenseText}} {{softwareLicenseInfoText}}</p>
+
+				{# Software derived from existing package #}
+				{# CURRENT NEVER DESIRABLE
+				{% set softwarePackageDerivedFromAnExistingPackagePath = [softwareListPath, itemUuid, uuids.isTheSoftwarePackageDerivedFromAnExistingPackageQUuid]|reply_path %}
+				{% set softwarePackageDerivedFromAnExistingPackageReply = replies[softwarePackageDerivedFromAnExistingPackagePath]|reply_str_value %}
+				{% if softwarePackageDerivedFromAnExistingPackageReply == uuids.no_5_3AUuid %}
+					Software package is derived from an existing package
+				{% elif softwarePackageDerivedFromAnExistingPackageReply == uuids.yes_5_3AUuid %}
+
+				{% endif %}
+				#}
+
 				
 				{# Version control  #}
 				{% set softwareVersionControlPath = [softwareListPath, itemUuid, uuids.willYouDepositYourSoftwarePackageInGitHubOrOtherVersionedCodeRepositoryQUuid]|reply_path %}
@@ -2380,6 +2398,13 @@
 					{% endif %}							
 					<p><strong>{{softwareLongTermText}}</strong> {{softwareLongTermPlan}}</p>
 				{% endif %}
+
+				{% set whoInTheProjectIsResponsibleForThisSoftwarePackagePath = [softwareListPath, itemUuid, uuids.whoInTheProjectIsResponsibleForThisSoftwarePackageQUuid]|reply_path %}
+				{% set whoInTheProjectIsResponsibleForThisSoftwarePackageReply = replies[whoInTheProjectIsResponsibleForThisSoftwarePackagePath]|reply_str_value %}
+				<p><strong>Person responsible: </strong> {{whoInTheProjectIsResponsibleForThisSoftwarePackageReply}}</p>
+
+
+
 				<hr/>				
 			{% endfor %}
 			</ul>
