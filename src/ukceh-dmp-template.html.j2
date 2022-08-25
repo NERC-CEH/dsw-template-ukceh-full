@@ -90,7 +90,7 @@
 		<dt>Project Acronym</dt>
 			<dd>
 				{{acronymReply}}
-			</dd>	
+			</dd>
 		<dt>Project Abstract</dt> 
 			<dd>
 				{{projectAbstractReply}}
@@ -245,15 +245,44 @@
 	{# Expertise #}
 
 	{% set expertisePath = [uuids.projectInformationCUuid, uuids.willYouRequireSpecialistExpertiseInAdditionToWhatIsUsuallyAvailableQUuid]|reply_path %}
-	{% set expertise = replies[expertisePath]|reply_str_value %}
+	{% set expertiseReply = replies[expertisePath]|reply_str_value %}
 	
-	{% if expertise == uuids.noWeHaveAllTheExpertiseWeNeedAUuid %}
+	{% if expertiseReply == uuids.noWeHaveAllTheExpertiseWeNeedAUuid %}
 		<p>We have all the expertise we need and do not require any additional specialist expertise.</p>
-	{% elif expertise == uuids.yesWeWillBeTrainingExistingStaffStudentsAUuid %}
-		<p>We will be training existing staff/students to gain the expertise we require.</p>
-	{% elif expertise == uuids.yesWeWillBeRecruitingNewPeopleWithAdditionalExpertiseAUuid %}
-		<p>We will be recruiting new people with additional expertise to get the specialist skills we need.</p>
+	{% elif expertiseReply == uuids.yesWeWillBeTrainingExistingStaffStudentsAUuid %}
+		<p>We will be training existing staff/students to gain the expertise we require.
+		{% set whatKindOfTrainingPath = [expertisePath, uuids.whatKindOfTrainingQUuid]|reply_path %}
+		{% set whatKindOfTrainingReply = replies[whatKindOfTrainingPath]|reply_str_value %}
+		Training provided: ({{whatKindOfTrainingReply}}) 
+		</p>
+	{% elif expertiseReply == uuids.yesWeWillBeRecruitingNewPeopleWithAdditionalExpertiseAUuid %}
+		<p>We will be recruiting new people with additional expertise to get the specialist skills we need.
+		{% set whatKindOfExpertisePath = [expertisePath,uuids.yesWeWillBeRecruitingNewPeopleWithAdditionalExpertiseAUuid, uuids.whatKindOfExpertiseQUuid]|reply_path %}
+		{% set whatKindOfExpertiseReply = replies[whatKindOfExpertisePath]|reply_str_value %}
+		Expertise required: {{whatKindOfExpertiseReply}}
+		</p>
 	{% endif %}	
+
+	{# Hardware #}
+	{% set hardwarePath = [uuids.projectInformationCUuid, uuids.willYouRequireHardwareOrSoftwareInAdditionToWhatIsUsuallyAvailableQUuid]|reply_path %}
+	{% set hardwareReply = replies[hardwarePath]|reply_str_value %}
+
+	{% if hardwareReply == uuids.noAUuid %}
+		<p>We have all the hardware we need.</p>
+	{% elif hardwareReply == uuids.yesAUuid %}
+		{% set whatHardwareOrSoftwareWillYouRequirePath = [hardwarePath, uuids.yesAUuid, uuids.whatHardwareOrSoftwareWillYouRequireQUuid]|reply_path %}
+		{% set whatHardwareOrSoftwareWillYouRequireReply = replies[whatHardwareOrSoftwareWillYouRequirePath]|reply_str_value %}
+
+		{% set haveYouBudgetedForThisPath = [hardwarePath, uuids.yesAUuid, uuids.haveYouBudgetedForThisQUuid]|reply_path %}
+		{% set haveYouBudgetedForThisReply = replies[haveYouBudgetedForThisPath]|reply_str_value %}
+
+		{% if haveYouBudgetedForThisReply == uuids.no_2AUuid %}
+			<p>Hardware required but not budgeted for: {{whatHardwareOrSoftwareWillYouRequireReply}}</p>
+		{% elif haveYouBudgetedForThisReply == uuids. yes_2AUuid %}
+			<p>Hardware required and budgeted for: {{whatHardwareOrSoftwareWillYouRequireReply}}</p>
+		{% endif %}
+	{% endif %}	
+
 
 	</dl>
 </div>
@@ -265,17 +294,30 @@
 	<h4>2.1 Existing datasets used in this project</h4>	
 	{% set datasetUsedPath = [uuids.reUsingDataCUuid, uuids.willTheProjectUseAnyPreExistingOrThirdPartyDataQUuid]|reply_path %}
 	{% set datasetUsedReply = replies[datasetUsedPath]|reply_str_value %}
-	{% set datasetUsedListPath = [datasetUsedPath, uuids.yes_3AUuid, uuids.whatExistingDataResourcesWillYouUseQLUuid]|reply_path %}
-	{% set datasetUsedListReply = replies[datasetUsedListPath]|reply_items %}
+
 
 	{% if datasetUsedReply == uuids.no_3AUuid %}
 		{% set datasetIntroText = "No third party or existing datasets will used for this project."%}
 		{{datasetIntroText}}
 
-	{% elif datasetUsedReply == uuids.yes_3AUuid%}
+	{% elif datasetUsedReply == uuids.yes_3AUuid %}
+		{% set areYouAwareOfAnyCostOrLicensingImplicationsForTheExistingDatasetsYouPlanToUsePath = [datasetUsedPath, uuids.yes_3AUuid, uuids.areYouAwareOfAnyCostOrLicensingImplicationsForTheExistingDatasetsYouPlanToUseQUuid]|reply_path %}
+		{% set areYouAwareOfAnyCostOrLicensingImplicationsForTheExistingDatasetsYouPlanToUseReply = replies[areYouAwareOfAnyCostOrLicensingImplicationsForTheExistingDatasetsYouPlanToUsePath]|reply_str_value %}
+		
+		{% if areYouAwareOfAnyCostOrLicensingImplicationsForTheExistingDatasetsYouPlanToUseReply == uuids.no_2_3AUuid %}
+			{% set thirdPartyDataCostText = "We have not planned or budgeted for any costs of datasets that are brought into the project, such as the purchasing of a license or storing large volumes of data." %}
+		{% elif areYouAwareOfAnyCostOrLicensingImplicationsForTheExistingDatasetsYouPlanToUseReply == uuids.yesWeveCheckedAndThereAreCostAndOrLicensingImplicationsAUuid %}
+			{% set thirdPartyDataCostText = "We have planned and budgeted for any costs of datasets that are brought into the project, such as the purchasing of a license or storing large volumes of data." %}
+		{% elif areYouAwareOfAnyCostOrLicensingImplicationsForTheExistingDatasetsYouPlanToUseReply == uuids.yes_2_3AUuid %}
+			{% set thirdPartyDataCostText = "We have checked and there are no cost or licensing implications for datasets brought into this project." %}
+		{% endif %}
+		{{thirdPartyDataCostText}}
+
 		{% set datasetIntroText = "Third party or existing datasets that will be used for this project:"%}
-		{{datasetIntroText}}
-	
+		<p>{{datasetIntroText}}</p>
+
+		{% set datasetUsedListPath = [datasetUsedPath, uuids.yes_3AUuid, uuids.whatExistingDataResourcesWillYouUseQLUuid]|reply_path %}
+		{% set datasetUsedListReply = replies[datasetUsedListPath]|reply_items %}
 		{% if datasetUsedListReply|length > 0 %}
 			<ul>
 			{% for itemUuid in datasetUsedListReply%}
@@ -474,8 +516,10 @@
 		{% set modelsLicensingCostReply = replies [modelsLicensingCostPath] |reply_str_value %}	
 		{% if modelsLicensingCostReply == uuids.no_3_2AUuid %}
 			{% set modelCostText = "We have not planned or budgeted for any costs of models that are brought into the project, such as the purchasing of a license or storing large volumes of data." %}
-		{% elif modelsLicensingCostReply == uuids.yes_3_2AUuid %}
+		{% elif modelsLicensingCostReply == uuids.yesWeveCheckedAndThereAreCostAndOrLicensingImplications_2AUuid%}
 			{% set modelCostText = "We have planned and budgeted for any costs of models that are brought into the project, such as the purchasing of a license or storing large volumes of data." %}
+		{% elif modelsLicensingCostReply == uuids.yes_3_2AUuid %}
+			{% set modelCostText = "We have checked and there are no cost or licensing implications." %}
 		{% endif %}
 
 		{% set modelsIntroText = "Third party or existing models will be used for this project."%}
@@ -1795,7 +1839,29 @@
 						{% endif %}
 					</p>
 				{% endif %}
-			{% endif %}			
+			{% endif %}	
+
+			{# Project data stored in cloud accounts #}
+			{% set riskOfInfoLossHintsAndTipsPath = [processOrAnalyseDataPath, uuids.yes_5_2AUuid, uuids.isTheRiskOfInformationLossLeaksAndVandalismAcceptablyLowQUuid, uuids.exploreHintsAndTipsForGoodPractice_5AUuid]|reply_path %}
+
+			{% set doProjectMembersStoreProjectDataInCloudAccountsPath = [riskOfInfoLossHintsAndTipsPath, uuids.doProjectMembersStoreProjectDataInCloudAccountsQUuid]|reply_path %}
+			{% set doProjectMembersStoreProjectDataInCloudAccountsReply = replies[doProjectMembersStoreProjectDataInCloudAccountsPath]|reply_str_value %}
+			{% if doProjectMembersStoreProjectDataInCloudAccountsReply == uuids.no_78AUuid %}
+				Project data will not be stored in cloud accounts.
+			{% elif doProjectMembersStoreProjectDataInCloudAccountsReply == uuids.yesInUkcehOneDriveSharePointTeamsAccountAUuid %}
+				Project data will be stored in a UKCEH OneDrive/SharePoint/Teams account.
+			{% elif doProjectMembersStoreProjectDataInCloudAccountsReply == uuids.yesInThirdPartyCloudAccountSuchAsDropboxGoogleDriveOrICloudAUuid %}
+				Project data will be stored in a third-party cloud account such as Dropbox, Google Drive or iCloud.
+			{% endif %}
+
+			{# Project data sent by email #}
+			{% set willProjectMembersBeSendingDataByEmailOrOtherMessagingServicesPath = [riskOfInfoLossHintsAndTipsPath, uuids.willProjectMembersBeSendingDataByEmailOrOtherMessagingServicesQUuid]|reply_path %}
+			{% set willProjectMembersBeSendingDataByEmailOrOtherMessagingServicesReply = replies[willProjectMembersBeSendingDataByEmailOrOtherMessagingServicesPath]|reply_str_value %}
+			{% if willProjectMembersBeSendingDataByEmailOrOtherMessagingServicesReply == uuids.no_79AUuid %}
+				Project data will not be sent by email or other messaging services.
+			{% elif willProjectMembersBeSendingDataByEmailOrOtherMessagingServicesReply == uuids.yes_76AUuid %}
+				Project data will be sent by email or other messaging services.
+			{% endif %}
 
 			{# Risk of information loss etc. #}
 			{% set genericAndSpecificRisksPath = [transformationAnalysisModellingToolPath, uuids.exploreHintsAndTipsForGoodPractice_5AUuid, uuids.areAllProjectMembersAwareOfTheRisksGenericAndSpecificToTheProjectQUuid]|reply_path %}
@@ -1808,6 +1874,46 @@
 			{% endif %}
 
 			{{genericAndSpecificRisks}}
+
+			{# Impact if info is lost #}
+			{% set haveYouConsideredThePossibleImpactToTheProjectOrOrganisationIfInformationIsLostPath = [riskOfInfoLossHintsAndTipsPath, uuids.haveYouConsideredThePossibleImpactToTheProjectOrOrganisationIfInformationIsLostQUuid]|reply_path %}
+			{% set haveYouConsideredThePossibleImpactToTheProjectOrOrganisationIfInformationIsLostReply = replies[haveYouConsideredThePossibleImpactToTheProjectOrOrganisationIfInformationIsLostPath]|reply_str_value %}
+			{% if haveYouConsideredThePossibleImpactToTheProjectOrOrganisationIfInformationIsLostReply == uuids.no_81AUuid %}
+
+			{% elif haveYouConsideredThePossibleImpactToTheProjectOrOrganisationIfInformationIsLostReply == uuids.yesTheRiskIsAcceptablyLowAUuid %}
+
+			{% elif haveYouConsideredThePossibleImpactToTheProjectOrOrganisationIfInformationIsLostReply == uuids.yesThereAreMitigationMeasuresInPlaceAUuid %}
+
+			{% elif haveYouConsideredThePossibleImpactToTheProjectOrOrganisationIfInformationIsLostReply == uuids.yesWeWillNeedToDevelopMitigationMeasuresAUuid %}
+
+			{% endif %}
+
+			{# Impact if info is leaked #}
+			{% set haveYouConsideredThePossibleImpactToTheProjectOrOrganisationIfInformationLeaksPath = [riskOfInfoLossHintsAndTipsPath, uuids.haveYouConsideredThePossibleImpactToTheProjectOrOrganisationIfInformationLeaksQUuid]|reply_path %}
+			{% set haveYouConsideredThePossibleImpactToTheProjectOrOrganisationIfInformationLeaksReply = replies[haveYouConsideredThePossibleImpactToTheProjectOrOrganisationIfInformationLeaksPath]|reply_str_value %}
+			{% if haveYouConsideredThePossibleImpactToTheProjectOrOrganisationIfInformationLeaksReply == uuids.no_82AUuid %}
+
+			{% elif haveYouConsideredThePossibleImpactToTheProjectOrOrganisationIfInformationLeaksReply == uuids.yesTheRiskIsAcceptablyLow_2AUuid %}
+
+			{% elif haveYouConsideredThePossibleImpactToTheProjectOrOrganisationIfInformationLeaksReply == uuids.yesThereAreMitigationMeasuresInPlace_2AUuid %}
+
+			{% elif haveYouConsideredThePossibleImpactToTheProjectOrOrganisationIfInformationLeaksReply == uuids.yesWeWillNeedToDevelopMitigationMeasures_2AUuid %}
+
+			{% endif %}
+
+			{# Impact if info is vandalised #}
+			{% set haveYouConsideredThePossibleImpactToTheProjectOrOrganisationIfInformationIsVandalisedPath = [riskOfInfoLossHintsAndTipsPath, uuids.haveYouConsideredThePossibleImpactToTheProjectOrOrganisationIfInformationIsVandalisedQUuid]|reply_path %}
+			{% set haveYouConsideredThePossibleImpactToTheProjectOrOrganisationIfInformationIsVandalisedReply = replies[haveYouConsideredThePossibleImpactToTheProjectOrOrganisationIfInformationIsVandalisedPath]|reply_str_value %}
+			{% if haveYouConsideredThePossibleImpactToTheProjectOrOrganisationIfInformationIsVandalisedReply == uuids.no_83AUuid %}
+
+			{% elif haveYouConsideredThePossibleImpactToTheProjectOrOrganisationIfInformationIsVandalisedReply == uuids.yesTheRiskIsAcceptablyLow_3AUuid %}
+
+			{% elif haveYouConsideredThePossibleImpactToTheProjectOrOrganisationIfInformationIsVandalisedReply == uuids.yesThereAreMitigationMeasuresInPlace_3AUuid %}
+
+			{% elif haveYouConsideredThePossibleImpactToTheProjectOrOrganisationIfInformationIsVandalisedReply == uuids.yesWeWillNeedToDevelopMitigationMeasures_3AUuid %}
+
+			{% endif %}
+
 
 
 			{# Personal data protection #}
@@ -1848,6 +1954,23 @@
 				{% set personalDataProtection = 'All personal information used in this project will be anonymised as early as possible.' %}
 				{{personalDataProtection}}
 			{% endif %}
+
+
+{# This section is marked as NEVER DESRIABLE
+		{% set workingWithDataPath = [processOrAnalyseDataPath,uuids.workingWithDataQUuid, uuids.exploreHintsAndTipsForGoodPractice_6AUuid]|reply_path %}
+
+		{% set howAreYourDataStructuredListPath = [workingWithDataPath, uuids.howAreYourDataStructuredQLUuid]|reply_path %}
+		{% set howAreYourDataStructuredListReply = replies[howAreYourDataStructuredListPath]|reply_items %}
+
+		{% if howAreYourDataStructuredListReply|length > 0 %}
+			<ul>
+			{% for itemUuid in howAreYourDataStructuredListReply %}
+				{% set selectADataStructurePath = [howAreYourDataStructuredListPath, itemUuid, selectADataStructureQUuid]|reply_path  %}
+				{% set selectADataStructureReply = replies[selectADataStructurePath]|reply_str_value %}
+
+			{% endfor %}
+		{% endif %}
+#} 
 		{% endif %}
 </div>
 
