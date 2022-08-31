@@ -406,7 +406,7 @@
 				{% set datasetUsedVersionPath = [datasetUsedListPath, itemUuid, uuids.isTheDatasetOrDatabaseVersionedQUuid]|reply_path %}
 				{% set datasetUsedVersionReply = replies[datasetUsedVersionPath]|reply_str_value %}
 
-				{% set datasetUsedVersionList = [] %}
+				{# {% set datasetUsedVersionList = [] %} #}
 				{% if datasetUsedVersionReply == uuids.no_4AUuid %}
 					{% set datasetVersionFinalText = "This dataset is not versioned. " %}
 				{% elif datasetUsedVersionReply == uuids.yes_4AUuid %}
@@ -414,16 +414,18 @@
 
 					{% set datasetUsedVersionUsedPath = [datasetUsedVersionPath, uuids.yes_4AUuid, uuids.whichVersionWillYouUseQUuid]|reply_path %}
 					{% set datasetUsedVersionUsedReply = replies[datasetUsedVersionUsedPath]|reply_str_value %}
-					{% set datasetUsedVersionUsedText = "We are using the following version: " + datasetUsedVersionUsedReply + ". " %}
+					{% set datasetUsedVersionUsedText = "We are using the following version: " + datasetUsedVersionUsedReply + " and " %}
 
 					{% set datasetUsedVersionChangePath = [datasetUsedVersionPath, uuids.yes_4AUuid, uuids.willYouChangeVersionIfItUpdatesQUuid]|reply_path %}
 					{% set datasetUsedVersionChangeReply = replies[datasetUsedVersionChangePath]|reply_str_value %}
 					{% if datasetUsedVersionChangeReply == uuids.willStayWithTheOldVersionAUuid %}
-						{% set datasetUsedVersionOldPath = [datasetUsedVersionChangePath, uuids.willStayWithTheOldVersionAUuid, uuids.howWillTheOldVersionBeAvailableQUuid]|reply_path %}
-						{% set datasetUsedVersionOldReply = replies[datasetUsedVersionOldPath]|reply_str_value %}
-						{% set datasetUsedVersionChangeText = "We will not change version if the dataset updates. " %} {# , because " +  km.entities.answers[datasetUsedVersionOldReply].label + ". " %} #}
-					{% else %}
-						{% set datasetUsedVersionChangeText = "We will change version if the dataset updates. " +  km.entities.answers[datasetUsedVersionChangeReply].label + ". " %}
+						{# {% set datasetUsedVersionOldPath = [datasetUsedVersionChangePath, uuids.willStayWithTheOldVersionAUuid, uuids.howWillTheOldVersionBeAvailableQUuid]|reply_path %}
+						{% set datasetUsedVersionOldReply = replies[datasetUsedVersionOldPath]|reply_str_value %} #}
+						{% set datasetUsedVersionChangeText = "we will not change version if the dataset updates. " %} {# , because " +  km.entities.answers[datasetUsedVersionOldReply].label + ". " %} #}
+					{% elif datasetUsedVersionChangeReply == uuids.newAnalysesWillBeDoneWithTheNewestVersionAUuid %}
+						{% set datasetUsedVersionChangeText = "if the dataset updates new analyses will be done with the newest version. " %}
+					{% elif datasetUsedVersionChangeReply == uuids.allAnalysesWillBeReDoneWithTheNewestVersionAUuid %}
+						{% set datasetUsedVersionChangeText = "if the dataset updates all analyses will be re-done with the newest version. " %}
 					{% endif %}	
 					{% set datasetVersionFinalText = datasetVersionText + datasetUsedVersionUsedText + datasetUsedVersionChangeText %}
 
@@ -460,17 +462,16 @@
 		{% elif datasetHarmonisationReply == uuids.yes_5AUuid %}
 			{% set datasetShareHarmonisationPath = [datasetHarmonisationPath, uuids.yes_5AUuid, uuids.willYouBeMakingYourHarmonisationResultsAvailableToOthersQUuid]|reply_path %}	
 			{% set datasetShareHarmonisationReply = replies[datasetShareHarmonisationPath]|reply_str_value %}
-			{% if datasetShareHarmonisationReply == uuids.no_6AUuid %} {# this is now - "No, the terms and conditions of the original data prevent us from doing so" #}
+			
+			{% if datasetShareHarmonisationReply == uuids.no_6AUuid %}
 				{% set harmonisationText = "We need to harmonise different sources of existing data, but we will not make these results available because we have not considered doing this." %}
 			{% elif datasetShareHarmonisationReply == uuids.noWeWontBeAbleToMakeTheseResultsAvailableAUuid %}
 				{% set harmonisationText = "We will not make these results available, the terms and conditions of the original data prevent us from doing so" %}
 			{% elif datasetShareHarmonisationReply == uuids.noTheDataContainSensitiveOrConfidentialInformationAUuid %}
 				{% set harmonisationText = "We will not make these results available, the data contain sensitive or confidential information  " %}
-
-
 			{% elif datasetShareHarmonisationReply == uuids.yes_6AUuid%}
 				{% set harmonisationText = "We need to harmonise different sources of existing data, and we will make these results available"  %}
-			{% endif %}	
+			{% endif %}
 			<p>{{harmonisationText}}</p>	
 		{% endif %}
 
@@ -574,7 +575,7 @@
 				{% set modelUsedVersionPath = [modelsUsedListPath, itemUuid, uuids.isTheModelVersionedQUuid]|reply_path %}
 				{% set modelUsedVersionReply = replies[modelUsedVersionPath]|reply_str_value %}
 
-				{% set modelUsedVersionList = [] %}
+				{# {% set modelUsedVersionList = [] %} #}
 				{% if modelUsedVersionReply == uuids.no_11AUuid %}
 					{% set modelVersionFinalText = "This dataset is not versioned. " %}
 				{% elif modelUsedVersionReply == uuids.yes_11AUuid %}
@@ -582,21 +583,24 @@
 
 					{% set modelUsedVersionUsedPath = [modelUsedVersionPath, uuids.yes_11AUuid, uuids.whichVersionWillYouUse_2QUuid]|reply_path %}
 					{% set modelUsedVersionUsedReply = replies[modelUsedVersionUsedPath]|reply_str_value %}
-					{% set modelUsedVersionUsedText = "We are using the following version: " + modelUsedVersionUsedReply + ". " %}
+					{% set modelUsedVersionUsedText = "We are using the following version: " + modelUsedVersionUsedReply + " and " %}
 
 					{% set modelUsedVersionChangePath = [modelUsedVersionPath, uuids.yes_11AUuid, uuids.willYouChangeVersionIfItUpdates_2QUuid]|reply_path %}
 					{% set modelUsedVersionChangeReply = replies[modelUsedVersionChangePath]|reply_str_value %}
+				
 					{% if modelUsedVersionChangeReply == uuids.willStayWithTheOldVersion_2AUuid %}
-						{% set modelUsedVersionOldPath = [modelUsedVersionChangePath, uuids.willStayWithTheOldVersion_2AUuid, uuids.howWillTheOldVersionBeAvailable_2QUuid]|reply_path %}
-						{% set modelUsedVersionOldReply = replies[modelUsedVersionOldPath]|reply_str_value %}
-						{% set modelUsedVersionChangeText = "We will not change version if the dataset updates, because " +  km.entities.answers[modelUsedVersionOldReply].label + ". " %}
-					{% else %}
-						{% set modelUsedVersionChangeText = "We will change version if the dataset updates. " +  km.entities.answers[modelUsedVersionOldReply].label + ". " %}
+						{% set modelUsedVersionChangeText = "we will not change version if the dataset updates." %} 
+					{% elif modelUsedVersionChangeReply == uuids.newAnalysesWillBeDoneWithTheNewVersionAUuid %}
+						{% set modelUsedVersionChangeText = "if the dataset updates we will do new analyses with the newest version." %}
+					{% elif modelUsedVersionChangeReply == uuids.allAnalysesWillBeRedoneWithTheNewVersionAUuid %}
+						{% set modelUsedVersionChangeText = "if the dataset updates all analyses will be re-done with the newest version." %} 
 					{% endif %}	
-					{% set modelVersionFinalText = modelVersionText + modelUsedVersionUsedText + modelUsedVersionChangeText %}
 
+					{% set modelVersionFinalText = modelVersionText + modelUsedVersionUsedText + modelUsedVersionChangeText %}
+					
 				{% endif %}	
 				<p>{{modelVersionFinalText}}</p>
+				
 
 				{# Do you expect to make changes? #}
 				{% set modelUsedChangesPath = [modelsUsedListPath, itemUuid, uuids.doYouExpectToMakeChangesToTheSuppliedModelQUuid]|reply_path %}
@@ -2353,7 +2357,6 @@
 					{% endif %}
 
 
-
 				{% elif modelsLongTermPlanReply == uuids.yesItWillBeKeptLocally_2AUuid %}
 					{% set modelsLongTermPlan = 'Will be kept locally' %}
 					{% set modelsLocalLocationPath = [modelsLongTermPlanReply, uuids.yesItWillBeKeptLocally_2AUuid, uuids.pleaseProvideTheLocalLocationForThisModelQUuid]|reply_path %}
@@ -2384,7 +2387,6 @@
 				{% set modelsResponsiblePersonPath = [modelsListPath, modelItemUuid, uuids.whoInTheProjectIsResponsibleForThisModelQUuid]|reply_path %}
 				{% set modelsResponsiblePersonReply = replies[modelsResponsiblePersonPath]|reply_str_value %}
 				<p><strong>Project staff responsible</strong> {{modelsResponsiblePersonReply}}</p>	
-
 
 				<hr/>
 			{% endfor %}
