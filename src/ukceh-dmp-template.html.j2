@@ -159,28 +159,38 @@
 
 		{% for itemUuid in contributorsReply %}
 			{% set contributorNamePath = [contributorsPath, itemUuid, uuids.nameQUuid] | reply_path %}
-			{% set contributorNameReply = replies[contributorNamePath] | reply_str_value %}
+			{% set contributorNameReply = replies[contributorNamePath] | reply_str_value  %}
 			{% set contributorAffiliationPath = [contributorsPath, itemUuid, uuids.affiliationQUuid] | reply_path %}
 			{% set contributorAffiliationReply = replies[contributorAffiliationPath] | reply_str_value %}
 			{% set contributorRolePath = [contributorsPath, itemUuid, uuids.roleQUuid] | reply_path %}
 			{% set contributorRoleReply = replies[contributorRolePath] | reply_items %}
 
+{# 
+			{% if contributorNameReply and contributorNameReply.value.value.type == 'IntegrationType' %}				
+				{% set link = km.entities.integrations[nameQUuid].itemUrl|replace('${id}', contributorNameReplyReply.value.value.id) %}
+				href="{{link}}" target="_blank"{{ contributorNameReply.value.value.value }}
+			{% elif contributorNameReply and contributorNameReply.value.value.type == 'PlainType' %}
+				<li>{{ contributorNameReply.value.value.value }} </li>   
+			{% endif %} 
+#}
+
 			{# For each reply, loop through the roles and append the name of contributor to role list #}
 			{% for itemUuid in contributorRoleReply %}
 				{% if itemUuid == uuids.primaryContactChoiceUuid %}
-					{% set primaryContactList = primaryContactList.append(contributorNameReply+" ("+contributorAffiliationReply+")") %}
+					{% set primaryContactList = primaryContactList.append(contributorNameReply.split("'")[3] +" ("+contributorAffiliationReply+")") %}
 				{% elif itemUuid == uuids.projectManagerChoiceUuid %}
-					{% set projectManagerList = projectManagerList.append(contributorNameReply+" ("+contributorAffiliationReply+")") %}
+					{% set projectManagerList = projectManagerList.append(contributorNameReply.split("'")[3] +" ("+contributorAffiliationReply+")") %}
 				{% elif itemUuid == uuids.dataManagerChoiceUuid %}	
-					{% set dataManagerList = dataManagerList.append(contributorNameReply+" ("+contributorAffiliationReply+")") %}
+					{% set dataManagerList = dataManagerList.append(contributorNameReply.split("'")[3] +" ("+contributorAffiliationReply+")") %}
 				{% elif itemUuid == uuids.qualityManagerChoiceUuid %}
-					{% set qualityManagerList = qualityManagerList.append(contributorNameReply+" ("+contributorAffiliationReply+")") %}
+					{% set qualityManagerList = qualityManagerList.append(contributorNameReply.split("'")[3] +" ("+contributorAffiliationReply+")") %}
 				{% elif itemUuid == uuids.researcherChoiceUuid %}
-					{% set researcherList = researcherList.append(contributorNameReply+" ("+contributorAffiliationReply+")") %}
+					{% set researcherList = researcherList.append(contributorNameReply.split("'")[3] +" ("+contributorAffiliationReply+")") %}
 				{% endif %}
 			{% endfor %}
 		{% endfor %}
 
+		
 		{# Reorganise the role lists into a dictionary #}
 		{% set roleDict = {
 			"primaryContact" : {"headerText" : "Primary contact", 
@@ -198,20 +208,24 @@
 
 		{# key and .items() are required arguments when looping through a dictionary #}
 		{# or python3/jinja will mistake it for a list #}
-		{# otherwise the same method, can access values with dict.item or dict["item"]#}
+		{# otherwise the same method, can access values with dict.item or dict["item"] #}
 		<dt>Contributors</dt>
 			<dd>
 				<ul style = "list-style-type:none;">
 				{% for key, role in roleDict.items() %}
 					<li><b>{{role.headerText}}:</b>
-					{% if role.contributorInfo | length > 0 %}	
-						{{role.contributorInfo | join(", ")}}</li>
+					{% if role.contributorInfo | length > 0 %}
+						
+						{{role.contributorInfo | join(", ")}}
+
+						</li>
 					{% else %}
 						<span style="color: red;">{{missingInformationText}}</span></li>
 					{% endif %}
 				{% endfor %} 	
 				</ul>
 			</dd>	
+	
 	{% endif %}
 
 	{# Partners and subcontractors #}
@@ -2160,11 +2174,19 @@
 				<p><strong> {{depositDateText}} </strong> {{depositDate}}</p>
 				<p><strong>Planned access embargo </strong> {{embargoText}}</p>
 				<p><strong>{{longTermText}}</strong> {{datasetLongTermPlan}}</p>
-				{% if notKeptWhyReply%}
-					<p><strong>Reason not kept </strong> {{km.entities.answers[notKeptWhyReply].label}}
+				{% if notKeptWhyReply == uuids.otherReasonS_3AUuid %}
+					{% set notKeptWhyPleaseSpecifyPath =  [notKeptWhyPath, uuids.otherReasonS_3AUuid, uuids.pleaseSpecify_5QUuid]|reply_path %}
+					{% set notKeptWhyPleaseSpecifyReply = replies[notKeptWhyPleaseSpecifyPath]|reply_str_value%}
+					<p><strong>Reason not kept </strong> {{notKeptWhyPleaseSpecifyReply}} </p>
+				{% else %}
+					<p><strong>Reason not kept </strong> {{km.entities.answers[notKeptWhyReply].label}} </p>
 				{% endif %}	
 			{% endif %}
 
+			{% set whoInTheProjectIsResponsibleForThisDatasetPath = [datasetListPath, itemUuid, uuids.whoInTheProjectIsResponsibleForThisDatasetQUuid]|reply_path %}
+			{% set whoInTheProjectIsResponsibleForThisDatasetReply = replies[whoInTheProjectIsResponsibleForThisDatasetPath]|reply_str_value %}
+			<p><strong>Person Responsible for dataset: </strong> {{whoInTheProjectIsResponsibleForThisDatasetReply}} </p>
+		
 		<hr/>
 		{% endfor %}
 		</ul>
@@ -2623,9 +2645,33 @@
 			</ul>
 		{% endif %}
 	{% endif %}
+
+
+
+	{% set willRepositoriesChargeForServicesPath = [uuids.preservingAndSharingDataCUuid, uuids.willAnyOfTheRepositoriesYouUseChargeYouForTheirServicesQUuid]|reply_path %}
+	{% set willRepositoriesChargeForServicesReply = replies[willRepositoriesChargeForServicesPath]|reply_str_value %}
+
+	{% if willRepositoriesChargeForServicesReply == uuids.no_138AUuid %}
+		{% set willRepositoriesChargeForServicesText = "None of the repositories we use will charge us for their services." %}
+	{% elif willRepositoriesChargeForServicesReply == uuids.yes_129AUuid %}
+		{% set howWillYouBePayingForTheseServicesPath = [willRepositoriesChargeForServicesPath, uuids.yes_129AUuid, uuids.howWillYouBePayingForTheseServicesQUuid]|reply_path %}
+		{% set howWillYouBePayingForTheseServicesReply = replies[howWillYouBePayingForTheseServicesPath]|reply_str_value %}
+ 		
+		{% if howWillYouBePayingForTheseServicesReply == uuids.weWillPayForTheseCostsByOtherMeansAUuid %}
+			{% set howWillYouPayForTheCostsOfTheseServicesPath = [howWillYouBePayingForTheseServicesPath,uuids.weWillPayForTheseCostsByOtherMeansAUuid, uuids.howWillYouPayForTheseCostsQUuid]|reply_path %}
+			{% set howWillYouPayForTheCostsOfTheseServicesReply = replies[howWillYouPayForTheCostsOfTheseServicesPath]|reply_str_value %}
+			{% set willRepositoriesChargeForServicesText =  "The repositories will be charging for their services and we will pay for these costs by " + howWillYouPayForTheCostsOfTheseServicesReply|lower + "." %}
+		{% else %}
+			{% set willRepositoriesChargeForServicesText =  "The repositories will be charging for their services and " + km.entities.answers[howWillYouBePayingForTheseServicesReply].label|lower + "." %}
+		{% endif %}
+
+	{% endif %}
+	<p>{{willRepositoriesChargeForServicesText}}</p>
+
+
 </div>
 
-{# Section #}
+{# ---- Section 6 ---- #}
 <div class="question">
 {% if ctx.phaseUuid == "e6b3786d-9246-4179-b78e-d99c8ca9435c" %}
 	<h3>6. Project closure </h3>
