@@ -2646,13 +2646,15 @@
 		{% endif %}
 	{% endif %}
 
+	<h4>5.5 Miscellaneous </h4>
 
-
+	{# Will repositories charge #}
 	{% set willRepositoriesChargeForServicesPath = [uuids.preservingAndSharingDataCUuid, uuids.willAnyOfTheRepositoriesYouUseChargeYouForTheirServicesQUuid]|reply_path %}
 	{% set willRepositoriesChargeForServicesReply = replies[willRepositoriesChargeForServicesPath]|reply_str_value %}
 
 	{% if willRepositoriesChargeForServicesReply == uuids.no_138AUuid %}
 		{% set willRepositoriesChargeForServicesText = "None of the repositories we use will charge us for their services." %}
+		<p>{{willRepositoriesChargeForServicesText}}</p>
 	{% elif willRepositoriesChargeForServicesReply == uuids.yes_129AUuid %}
 		{% set howWillYouBePayingForTheseServicesPath = [willRepositoriesChargeForServicesPath, uuids.yes_129AUuid, uuids.howWillYouBePayingForTheseServicesQUuid]|reply_path %}
 		{% set howWillYouBePayingForTheseServicesReply = replies[howWillYouBePayingForTheseServicesPath]|reply_str_value %}
@@ -2664,9 +2666,66 @@
 		{% else %}
 			{% set willRepositoriesChargeForServicesText =  "The repositories will be charging for their services and " + km.entities.answers[howWillYouBePayingForTheseServicesReply].label|lower + "." %}
 		{% endif %}
+		<p>{{willRepositoriesChargeForServicesText}}</p>
+	{% elif willRepositoriesChargeForServicesReply == uuids.notApplicableWeWontDepositAnyProjectDataAUuid %}
+		{# do nothing? #}
+	{% endif %}
+	
+	{# Recurring fees #}
+	{% set recurringFeesToKeepDataOrDocumentsAvailablePath = [uuids.preservingAndSharingDataCUuid, uuids.areThereAnyOtherRecurringFeesToKeepDataOrDocumentsAvailableQUuid]|reply_path %}
+	{% set recurringFeesToKeepDataOrDocumentsAvailableReply = replies[recurringFeesToKeepDataOrDocumentsAvailablePath]|reply_str_value %}
+	{% if recurringFeesToKeepDataOrDocumentsAvailableReply == uuids.no_139AUuid %}
+		{% set recurringFeesToKeepDataOrDocumentsAvailableText = "There are no other recurring fees to keep data or documents available." %}
+		<p>{{recurringFeesToKeepDataOrDocumentsAvailableText}}</p>
+	{% elif recurringFeesToKeepDataOrDocumentsAvailableReply == uuids.yes_130AUuid %}
+		{% set recurringFeesToKeepDataOrDocumentsAvailableText = "There are other recurring fees to keep data or documents available." %}
+		<p>{{recurringFeesToKeepDataOrDocumentsAvailableText}}</p>
+	{% elif recurringFeesToKeepDataOrDocumentsAvailableReply == uuids.notApplicableWeWontDepositAnyProjectData_2AUuid %}
+		{# do nothing? #}
+	{% endif %}
+
+	{# Time and effort to prepare data #}
+	{% set budgetForTheTimeTakenToPrepareDataForPublicationPath = [uuids.preservingAndSharingDataCUuid, uuids.didYouBudgetForTheTimeAndEffortItWillTakeToPrepareTheDataForPublicationQUuid]|reply_path %}
+	{% set budgetForTheTimeTakenToPrepareDataForPublicationReply = replies[budgetForTheTimeTakenToPrepareDataForPublicationPath]|reply_str_value %}
+	{% if budgetForTheTimeTakenToPrepareDataForPublicationReply == uuids.no_140AUuid %}
+		{% set budgetForTheTimeTakenToPrepareDataForPublicationText = "We have not budgeted for the time and effort it will take to prepare the data for publication." %}
+		<p>{{budgetForTheTimeTakenToPrepareDataForPublicationText}}</p>
+	{% elif budgetForTheTimeTakenToPrepareDataForPublicationReply == uuids.yes_131AUuid %}
+		{% set budgetForTheTimeTakenToPrepareDataForPublicationText = "We have budgeted for the time and effort it will take to prepare the data for publication." %}
+		<p>{{budgetForTheTimeTakenToPrepareDataForPublicationText}}</p>
+	{% elif budgetForTheTimeTakenToPrepareDataForPublicationReply == uuids.notApplicableWeWontDepositAnyProjectData_3AUuid %}
+		{# do nothing? #}
+	{% endif %}
+
+	{#  data deposited in different repositories can be recognised as belonging to the same study #}
+	{% set dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyPath = [uuids.preservingAndSharingDataCUuid, uuids.willYouBeMakingSureThatBlocksOfDataDepositedInDifferentRepositoriesCanBeRecognisedAsBelongingToTheSameStudyQUuid]|reply_path %}
+	{% set dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyReply = replies[dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyPath]|reply_str_value %}
+	{% if dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyReply == uuids.no_141AUuid %}
+		<p> We will not be making sure that blocks of data deposited in different repositories can be recognised as belonging to the same study. </p>
+
+	{% elif dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyReply == uuids.allDataWillBeDepositedInTheSameRepositoryAndLinkedWhereRelevantAUuid %}
+		{% set dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyText = km.entities.answers[dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyReply].label + "." %}
+		<p> {{dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyText}} </p>
+
+	{% elif dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyReply == uuids.yesAllDatasetsWillHaveLinksToTheRelatedDataAUuid %}
+		{% set dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyText = "We will be making sure that blocks of data deposited in different repositories can be recognised as belonging to the same study by linking related data." %}
+		<p> {{dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyText}} </p>	
+
+	{% elif dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyReply == uuids.yesAllDatasetsWillBeLinkedFromASingleCatalogEntryAUuid %}
+		{% set dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyText = "We will be making sure that blocks of data deposited in different repositories can be recognised as belonging to the same study by linking all datasets from a single catalogue entry." %}
+		<p> {{dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyText}} </p>	
+
+	{% elif dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyReply == uuids.yesWeHaveMadeOtherArrangementsAUuid %}
+		{% set dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyOtherArrangementsPath = [dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyPath, uuids.yesWeHaveMadeOtherArrangementsAUuid, uuids.whatOtherArrangements_8QUuid]|reply_path %}
+		{% set dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyOtherArrangementsReply = replies[dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyOtherArrangementsPath]|reply_str_value %}
+		<p> We have made other arrangements to ensure that blocks of data deposited in different repositories can be recognised as belonging to the same study: {{dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyOtherArrangementsReply}} </p>
+
+	{% elif dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyReply == uuids.notApplicableWeWontDepositAnyProjectData_4AUuid %}
+		{# do nothing? #}
 
 	{% endif %}
-	<p>{{willRepositoriesChargeForServicesText}}</p>
+
+
 
 
 </div>
