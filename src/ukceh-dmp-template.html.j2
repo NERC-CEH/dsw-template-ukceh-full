@@ -1997,8 +1997,230 @@
 <div class="question">
 	<h3>5. Preserving and sharing data </h3>
 
+	{# working with the philosophy 'as open as possible' #}
+	{% set workingWithThePhilosophyAsOpenAsPossiblePath = [uuids.preservingAndSharingDataCUuid, uuids.willYouBeWorkingWithThePhilosophyAsOpenAsPossibleForYourDataQUuid]|reply_path %}
+	{% set workingWithThePhilosophyAsOpenAsPossibleReply = replies[workingWithThePhilosophyAsOpenAsPossiblePath]|reply_path %}
 
-	{# willYouBeWorkingWithThePhilosophyAsOpenAsPossibleForYourDataQUuid #}
+	{# Funder requirement to deposit #}
+	{% set funderRequirementToDepositWithRepositoryPath = [uuids.preservingAndSharingDataCUuid, uuids.isThereAFunderRequirementThatAnyOfYourDataAreDepositedWithALongTermRepositoryQUuid]|reply_path %}
+	{% set funderRequirementToDepositWithRepositoryReply = replies[funderRequirementToDepositWithRepositoryPath]|reply_str_value %}
+	{% if funderRequirementToDepositWithRepositoryReply == uuids.no_6_2AUuid %}
+		<p> There is no funder requirement to deposit our data with a long-term repository </p>
+	{% elif funderRequirementToDepositWithRepositoryReply == uuids.yes_6_2AUuid %}
+		{% set estimateTheVolumeOfDataYouAreLikelyToBeDepositingWithARepositoryPath = [funderRequirementToDepositWithRepositoryPath, uuids.yes_6_2AUuid, uuids.estimateTheVolumeOfDataYouAreLikelyToBeDepositingWithARepositoryQUuid]|reply_path %}
+		{% set estimateTheVolumeOfDataYouAreLikelyToBeDepositingWithARepositoryReply = replies[estimateTheVolumeOfDataYouAreLikelyToBeDepositingWithARepositoryPath]|reply_str_value %}
+		{% set estimateTheVolumeOfDataYouAreLikelyToBeDepositingWithARepositoryText = "Estimate of volume of data we are likely to be depositing with a repository: " + km.entities.answers[estimateTheVolumeOfDataYouAreLikelyToBeDepositingWithARepositoryReply].label %}
+		<p> {{estimateTheVolumeOfDataYouAreLikelyToBeDepositingWithARepositoryText}} </p>
+	{% elif funderRequirementToDepositWithRepositoryReply == uuids.notApplicableNoDataBeingGeneratedAUuid %}
+		{# do nothing? #}
+	{% endif %}
+
+	{# Can data become open immediately #}
+	{% set canAllOfYourDataBecomeCompletelyOpenImmediatelyPath = [uuids.preservingAndSharingDataCUuid, uuids.canAllOfYourDataBecomeCompletelyOpenImmediatelyQUuid]|reply_path %}
+	{% set canAllOfYourDataBecomeCompletelyOpenImmediatelyReply = replies[canAllOfYourDataBecomeCompletelyOpenImmediatelyPath]|reply_str_value %}
+
+	{% if canAllOfYourDataBecomeCompletelyOpenImmediatelyReply == uuids.no_107AUuid %}
+		{# are there legals reasons why not #}
+		{% set areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenPath = [canAllOfYourDataBecomeCompletelyOpenImmediatelyPath, uuids.no_107AUuid, uuids.areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenQUuid]|reply_path %}
+		{% set areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenReply = replies[areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenPath]|reply_str_value %}
+		{% set canAllOfYourDataBecomeCompletelyOpenImmediatelyText = "Our data cannot become completely open immediately." %}
+		<p>{{canAllOfYourDataBecomeCompletelyOpenImmediatelyText}}</p>
+
+		{% if areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenReply == uuids.no_108AUuid %}
+			{% set areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenText = "There are no legal reasons why (some of) our data can not be completely open." %}
+			{{areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenText}}
+
+		{% elif areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenReply == uuids.yes_102AUuid %}
+			{% set areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenText = "There are legal reasons why (some of) our data can not be completely open." %}
+			{{areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenText}}
+			
+			{# are there privacy reasons #}
+			{% set areTherePrivacyReasonsWhyYourDataCanNotBeOpenPath = [areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenPath, uuids.yes_102AUuid, uuids.areTherePrivacyReasonsWhyYourDataCanNotBeOpenQUuid]|reply_path %}
+			{% set areTherePrivacyReasonsWhyYourDataCanNotBeOpenReply = replies[areTherePrivacyReasonsWhyYourDataCanNotBeOpenPath]|reply_str_value %}
+			{% if areTherePrivacyReasonsWhyYourDataCanNotBeOpenReply == uuids.no_113AUuid %}
+				{% set areTherePrivacyReasonsWhyYourDataCanNotBeOpenText = "There are no privacy reasons why our data can not be open." %}
+				{{areTherePrivacyReasonsWhyYourDataCanNotBeOpenText}}
+
+			{% elif areTherePrivacyReasonsWhyYourDataCanNotBeOpenReply == uuids.yes_103AUuid %}
+				{% set areTherePrivacyReasonsWhyYourDataCanNotBeOpenText = "There are privacy reasons why our data can not be open." %}
+				{{areTherePrivacyReasonsWhyYourDataCanNotBeOpenText}}
+
+				{# are there restrictions on where the data need to be stored #}
+				{% set areThereRestrictionsOnWhereTheDataNeedToBeStoredPath = [areTherePrivacyReasonsWhyYourDataCanNotBeOpenPath, uuids.yes_103AUuid, uuids.areThereRestrictionsOnWhereTheDataNeedToBeStoredQUuid ]|reply_path %}
+				{% set areThereRestrictionsOnWhereTheDataNeedToBeStoredReply = replies[areThereRestrictionsOnWhereTheDataNeedToBeStoredPath]|reply_str_value %}
+				{% if areThereRestrictionsOnWhereTheDataNeedToBeStoredReply == uuids.no_109AUuid %}
+					{% set areThereRestrictionsOnWhereTheDataNeedToBeStoredText = "There are no restrictions on where the data need to be stored." %} 
+				{% elif areThereRestrictionsOnWhereTheDataNeedToBeStoredReply == uuids.yesTheyMustStayInTheSameCountryAUuid %}
+					{% set areThereRestrictionsOnWhereTheDataNeedToBeStoredText = "The data must be stored in the same country." %} 
+				{% elif areThereRestrictionsOnWhereTheDataNeedToBeStoredReply == uuids.yesTheyMustStayInTheSameInstituteAUuid %}
+					{% set areThereRestrictionsOnWhereTheDataNeedToBeStoredText = "The data must be stored in the same institute." %} 
+				{% endif %}
+				{{areThereRestrictionsOnWhereTheDataNeedToBeStoredText}}
+
+				{# pseudonymisation #}
+				{% set couldPseudonymisationBeUsedToMakeTheDataMoreOpenlyAvailablePath = [areTherePrivacyReasonsWhyYourDataCanNotBeOpenPath, uuids.yes_103AUuid, uuids.couldPseudonymisationBeUsedToMakeTheDataMoreOpenlyAvailableQUuid ]|reply_path %}
+				{% set couldPseudonymisationBeUsedToMakeTheDataMoreOpenlyAvailableReply = replies[couldPseudonymisationBeUsedToMakeTheDataMoreOpenlyAvailableQUuid]|reply_str_value %}
+				{% if couldPseudonymisationBeUsedToMakeTheDataMoreOpenlyAvailableReply == uuids.no_110AUuid %}
+					{% set couldPseudonymisationBeUsedToMakeTheDataMoreOpenlyAvailableText = "Pseudonymisation could not be used to make the data more openly available." %} 
+				{% elif couldPseudonymisationBeUsedToMakeTheDataMoreOpenlyAvailableReply == uuids.yes_104AUuid %}
+					{% set couldPseudonymisationBeUsedToMakeTheDataMoreOpenlyAvailableText = "Pseudonymisation could be used to make the data more openly available." %} 
+				{% endif %}
+				{{couldPseudonymisationBeUsedToMakeTheDataMoreOpenlyAvailableText}}
+
+				{# anonymisation #}
+				{% set couldAnonymisationBeUsedToMakeTheDataMoreOpenlyAvailablePath = [areTherePrivacyReasonsWhyYourDataCanNotBeOpenPath, uuids.yes_103AUuid, uuids.couldAnonymisationBeUsedToMakeTheDataMoreOpenlyAvailableQUuid ]|reply_path %}
+				{% set couldAnonymisationBeUsedToMakeTheDataMoreOpenlyAvailableReply = replies[couldAnonymisationBeUsedToMakeTheDataMoreOpenlyAvailablePath]|reply_str_value %}
+				{% if couldAnonymisationBeUsedToMakeTheDataMoreOpenlyAvailableReply == uuids.no_111AUuid %}
+					{% set couldAnonymisationBeUsedToMakeTheDataMoreOpenlyAvailableText = "Anonymisation could not be used to make the data more openly available." %} 
+				{% elif couldAnonymisationBeUsedToMakeTheDataMoreOpenlyAvailableReply == uuids.yes_105AUuid %}
+					{% set couldAnonymisationBeUsedToMakeTheDataMoreOpenlyAvailableText = "Anonymisation could be used to make the data more openly available." %} 
+				{% endif %}
+				{{couldAnonymisationBeUsedToMakeTheDataMoreOpenlyAvailableText}}
+
+				{# aggregation #}
+				{% set couldYouUseDataAggregationToMakeTheDataOpenlyAvailablePath = [areTherePrivacyReasonsWhyYourDataCanNotBeOpenPath, uuids.yes_103AUuid, uuids.couldYouUseDataAggregationToMakeTheDataOpenlyAvailableQUuid ]|reply_path %}
+				{% set couldYouUseDataAggregationToMakeTheDataOpenlyAvailableReply = replies[couldYouUseDataAggregationToMakeTheDataOpenlyAvailablePath]|reply_str_value %}
+				{% if couldYouUseDataAggregationToMakeTheDataOpenlyAvailableReply == uuids.no_112AUuid %}
+					{% set couldYouUseDataAggregationToMakeTheDataOpenlyAvailableText = "Aggregation could not be used to make the data more openly available." %} 
+				{% elif couldYouUseDataAggregationToMakeTheDataOpenlyAvailableReply == uuids.yes_106AUuid %}
+					{% set couldYouUseDataAggregationToMakeTheDataOpenlyAvailableText = "Aggregation could be used to make the data more openly available." %} 
+				{% endif %}
+				{{couldYouUseDataAggregationToMakeTheDataOpenlyAvailableText}}
+			{% endif %}
+
+			{# IP Reasons #}
+			{% set areThereIpReasonsWhyYourDataCanNotBeOpenPath = [areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenPath, uuids.yes_102AUuid, uuids.areThereIpReasonsWhyYourDataCanNotBeOpenQUuid]|reply_path %}
+			{% set areThereIpReasonsWhyYourDataCanNotBeOpenReply = replies[areThereIpReasonsWhyYourDataCanNotBeOpenPath]|reply_str_value %}
+
+			{% if areThereIpReasonsWhyYourDataCanNotBeOpenReply == uuids.no_116AUuid %}
+				{% set areThereIpReasonsWhyYourDataCanNotBeOpenText = "There are no IP reasons why our data can not be open." %}
+				{{areThereIpReasonsWhyYourDataCanNotBeOpenText}}
+			{% elif areThereIpReasonsWhyYourDataCanNotBeOpenReply == uuids.yes_107AUuid %}
+				{% set areThereIpReasonsWhyYourDataCanNotBeOpenText = "There are IP reasons why our data can not be open." %}
+				<p>{{areThereIpReasonsWhyYourDataCanNotBeOpenText}}</p>
+
+				{# Is it clear who owns the data #}
+				{% set isItClearWhoOwnsDataAndDocumentsPath = [areThereIpReasonsWhyYourDataCanNotBeOpenPath, uuids.yes_107AUuid, uuids.isItClearWhoOwnsDataAndDocumentsQUuid]|reply_path %}
+				{% set isItClearWhoOwnsDataAndDocumentsReply = replies[isItClearWhoOwnsDataAndDocumentsPath]|reply_str_value %}
+				{% if isItClearWhoOwnsDataAndDocumentsReply == uuids.no_114AUuid %}
+					{% set isItClearWhoOwnsDataAndDocumentsText = "It is not clear who owns the data and documents." %} 
+				{% elif isItClearWhoOwnsDataAndDocumentsReply == uuids.yes_108AUuid %}
+					{% set isItClearWhoOwnsDataAndDocumentsText = "It is clear who owns the data and documents." %} 
+				{% endif %}
+				{{isItClearWhoOwnsDataAndDocumentsText}}
+
+				{# will someone be given power to move data after project#}
+				{% set willSomeoneBeGivenPowerToMoveDataAfterProjectPath = [areThereIpReasonsWhyYourDataCanNotBeOpenPath, uuids.yes_107AUuid, uuids.willSomeoneBeGivenDecisionPowerToMoveDocumentsOrDataToANewPlaceAfterTheProjectHasFinishedQUuid]|reply_path %}
+				{% set willSomeoneBeGivenPowerToMoveDataAfterProjectReply = replies[willSomeoneBeGivenPowerToMoveDataAfterProjectPath]|reply_str_value %}
+				{% if willSomeoneBeGivenPowerToMoveDataAfterProjectReply == uuids.no_115AUuid %}
+					{% set willSomeoneBeGivenPowerToMoveDataAfterProjectText = "No one will be given decision power to move documents or data to a new place after the project has finished." %} 
+				{% elif willSomeoneBeGivenPowerToMoveDataAfterProjectReply == uuids.yes_109AUuid %}
+					{% set willSomeoneBeGivenPowerToMoveDataAfterProjectText = "Someone will be given decision power to move documents or data to a new place after the project has finished." %} 
+				{% endif %}
+				{{willSomeoneBeGivenPowerToMoveDataAfterProjectText}}
+			{% endif %}
+
+			{# allowing authenticated access #}
+			{% set willYouBeAllowingAuthenticatedAccessToTheDataPath = [areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenPath, uuids.yes_102AUuid, uuids.willYouBeAllowingAuthenticatedAccessToTheDataQUuid]|reply_path %}
+			{% set willYouBeAllowingAuthenticatedAccessToTheDataReply = replies[willYouBeAllowingAuthenticatedAccessToTheDataPath]|reply_str_value %}
+			
+			{% if willYouBeAllowingAuthenticatedAccessToTheDataReply == uuids.no_119AUuid %}
+				{% set willYouBeAllowingAuthenticatedAccessToTheDataText = "We will not be allowing authenticated access to the data." %}
+				{{willYouBeAllowingAuthenticatedAccessToTheDataText}}
+			{% elif willYouBeAllowingAuthenticatedAccessToTheDataReply == uuids.yes_110AUuid %}
+
+				{# who will take care of authentication #}
+				{% set whoWillTakeCareOfAuthenticationOfPotentialUsersPath = [willYouBeAllowingAuthenticatedAccessToTheDataPath, uuids.yes_110AUuid, uuids.whoWillTakeCareOfAuthenticationOfPotentialUsersQUuid]|reply_path %}
+				{% set whoWillTakeCareOfAuthenticationOfPotentialUsersReply = replies[whoWillTakeCareOfAuthenticationOfPotentialUsersPath]|reply_str_value %}
+				{% if whoWillTakeCareOfAuthenticationOfPotentialUsersReply == uuids.weWillMakeOtherArrangementsAUuid %}
+					{% set whoWillTakeCareOfAuthenticationOfPotentialUsersWhatOtherArrangementsPath = [whoWillTakeCareOfAuthenticationOfPotentialUsersPath, uuids.weWillMakeOtherArrangementsAUuid, uuids.whatOtherArrangements_6QUuid]|reply_path %}
+					{% set whoWillTakeCareOfAuthenticationOfPotentialUsersWhatOtherArrangementsReply = replies[whoWillTakeCareOfAuthenticationOfPotentialUsersWhatOtherArrangementsPath]|reply_str_value %}
+					{% set whoWillTakeCareOfAuthenticationOfPotentialUsersText = "We will make other arrangements to take care of authentication of potential users:" + whoWillTakeCareOfAuthenticationOfPotentialUsersWhatOtherArrangementsReply %}
+				{% else %}
+					{% set whoWillTakeCareOfAuthenticationOfPotentialUsersText = km.entities.answers[whoWillTakeCareOfAuthenticationOfPotentialUsersReply].label + " to take care of authentication of potential users." %} 
+				{% endif %}
+				<p>{{whoWillTakeCareOfAuthenticationOfPotentialUsersText}}</p>
+
+				{# who will take care of authorisation #}
+				{% set whoWillTakeCareOfAuthorizationOfPotentialUsersPath = [willYouBeAllowingAuthenticatedAccessToTheDataPath, uuids.yes_110AUuid, uuids.whoWillTakeCareOfAuthorizationOfPotentialUsersQUuid]|reply_path %}
+				{% set whoWillTakeCareOfAuthorizationOfPotentialUsersReply = replies[whoWillTakeCareOfAuthorizationOfPotentialUsersPath]|reply_str_value %}
+
+				{% if whoWillTakeCareOfAuthorizationOfPotentialUsersReply == uuids.weWillMakeUseOfAnExistingDataAccessCommitteeAUuid %}
+					{% set whoWillTakeCareOfAuthorizationOfPotentialUsersExistingDataAccessCommitteePath = [whoWillTakeCareOfAuthorizationOfPotentialUsersPath, uuids.weWillMakeUseOfAnExistingDataAccessCommitteeAUuid, uuids.whichExistingDataAccessCommitteeQUuid]|reply_path %}
+					{% set whoWillTakeCareOfAuthorizationOfPotentialUserssExistingDataAccessCommitteeReply = replies[whoWillTakeCareOfAuthorizationOfPotentialUsersExistingDataAccessCommitteePath]|reply_str_value %}
+					{% set whoWillTakeCareOfAuthenticationOfPotentialUsersText = "We will make make use of an existing access committee to take care of authorisation of potential users:" + whoWillTakeCareOfAuthorizationOfPotentialUserssExistingDataAccessCommitteeReply %}
+				
+				{% elif whoWillTakeCareOfAuthorizationOfPotentialUsersReply == uuids.weWillMakeOtherArrangements_2AUuid %}
+					{% set whoWillTakeCareOfAuthorizationOfPotentialUsersWhatOtherArrangementsPath = [whoWillTakeCareOfAuthorizationOfPotentialUsersPath, uuids.weWillMakeOtherArrangements_2AUuid, uuids.whatOtherArrangements_7QUuid]|reply_path %}
+					{% set whoWillTakeCareOfAuthorizationOfPotentialUserssWhatOtherArrangementsReply = replies[whoWillTakeCareOfAuthorizationOfPotentialUsersWhatOtherArrangementsPath]|reply_str_value %}
+					{% set whoWillTakeCareOfAuthenticationOfPotentialUsersText = "We will make other arrangements to take care of authorisation of potential users:" + whoWillTakeCareOfAuthorizationOfPotentialUserssWhatOtherArrangementsReply %}
+				
+				{% else %}
+					{% set whoWillTakeCareOfAuthenticationOfPotentialUsersText = "Authorisation of potential users: " + km.entities.answers[whoWillTakeCareOfAuthorizationOfPotentialUsersReply].label %} 
+				{% endif %}
+				<p>{{whoWillTakeCareOfAuthenticationOfPotentialUsersText}}</p>
+
+				{#criteria for application to access the data #}
+				{% set areTheCriteriaForApplicationToAccessTheDataOpenlyAvailablePath = [willYouBeAllowingAuthenticatedAccessToTheDataPath, uuids.yes_110AUuid, uuids.areTheCriteriaForApplicationToAccessTheDataOpenlyAvailableQUuid]|reply_path %}
+				{% set areTheCriteriaForApplicationToAccessTheDataOpenlyAvailableReply = replies[areTheCriteriaForApplicationToAccessTheDataOpenlyAvailablePath]|reply_str_value %}
+				{% if areTheCriteriaForApplicationToAccessTheDataOpenlyAvailableReply == uuids.no_117AUuid %}
+					The criteria for application to access the data are not openly available.
+				{% elif areTheCriteriaForApplicationToAccessTheDataOpenlyAvailableReply == uuids.yes_111AUuid %}
+					The criteria for application to access the data are openly available.
+				{% endif %}
+
+				{# auditing for re-use #}
+				{% set hasAuditingForTheReUseBeenArrangedPath = [willYouBeAllowingAuthenticatedAccessToTheDataPath, uuids.yes_110AUuid, uuids.hasAuditingForTheReUseBeenArrangedQUuid]|reply_path %}
+				{% set hasAuditingForTheReUseBeenArrangedReply = replies[hasAuditingForTheReUseBeenArrangedPath]|reply_str_value %}
+				{% if hasAuditingForTheReUseBeenArrangedReply == uuids.no_118AUuid %}
+					Auditing for the re-use has not been been arranged.
+				{% elif hasAuditingForTheReUseBeenArrangedReply == uuids.yes_112AUuid %}
+					Auditing for the re-use has been arranged.
+				{% endif %}
+			{% endif %}
+		{% endif %}
+
+		{# are there business reasons why not #}
+		{% set areThereBusinessReasonsWhySomeOfYourDataCanNotBeCompletelyOpenPath = [canAllOfYourDataBecomeCompletelyOpenImmediatelyPath, uuids.no_107AUuid, uuids.areThereBusinessReasonsWhySomeOfYourDataCanNotBeCompletelyOpenQUuid]|reply_path %}
+		{% set areThereBusinessReasonsWhySomeOfYourDataCanNotBeCompletelyOpenReply = replies[areThereBusinessReasonsWhySomeOfYourDataCanNotBeCompletelyOpenPath]|reply_str_value %}
+		{% if areThereBusinessReasonsWhySomeOfYourDataCanNotBeCompletelyOpenReply == uuids.no_120AUuid %}
+			There are no business reasons why our data can not be completely open.
+		{% elif areThereBusinessReasonsWhySomeOfYourDataCanNotBeCompletelyOpenReply == uuids.yesPatentsStillNeedToBeAppliedForAUuid %}
+			There are business reasons why our data can not be completely open: Patents need to be applied for.
+		{% elif areThereBusinessReasonsWhySomeOfYourDataCanNotBeCompletelyOpenReply == uuids.yesOtherBusinessReasonsAUuid %}
+			{% set areThereBusinessReasonsWhySomeOfYourDataCanNotBeCompletelyOpenOtherReasonsPath = [areThereBusinessReasonsWhySomeOfYourDataCanNotBeCompletelyOpenPath, uuids.yesOtherBusinessReasonsAUuid, uuids.whatOtherReasonsQUuid]|reply_path %}
+			{% set areThereBusinessReasonsWhySomeOfYourDataCanNotBeCompletelyOpenOtherReasonsReply = replies[areThereBusinessReasonsWhySomeOfYourDataCanNotBeCompletelyOpenOtherReasonsPath]|reply_str_value %}
+			There are business reasons why our data can not be completely open: {{areThereBusinessReasonsWhySomeOfYourDataCanNotBeCompletelyOpenOtherReasonsReply}}.
+		{% endif %}
+
+
+		{# are there other reasons why not #}
+		{% set areThereOtherReasonsWhySomeOfYourDataCanNotBeCompletelyOpenPath = [canAllOfYourDataBecomeCompletelyOpenImmediatelyPath, uuids.no_107AUuid, uuids.areThereOtherReasonsWhySomeOfYourDataCanNotBeCompletelyOpenQUuid]|reply_path %}
+		{% set areThereOtherReasonsWhySomeOfYourDataCanNotBeCompletelyOpenReply = replies[areThereOtherReasonsWhySomeOfYourDataCanNotBeCompletelyOpenPath]|reply_str_value %}
+		{% if areThereOtherReasonsWhySomeOfYourDataCanNotBeCompletelyOpenReply == uuids.no_121AUuid %}
+			There are no other reasons why our data can not be completely open.
+		{% elif areThereOtherReasonsWhySomeOfYourDataCanNotBeCompletelyOpenReply == uuids.yesPapersNeedToBeSubmittedFirstAUuid %}
+			Other reasons why our data can not be completely open: Papers need to be submitted first.
+		{% elif areThereOtherReasonsWhySomeOfYourDataCanNotBeCompletelyOpenReply == uuids.yesOtherReasonsAUuid %}
+			{% set areThereOtherReasonsWhySomeOfYourDataCanNotBeCompletelyOpenOtherReasonsPath = [areThereOtherReasonsWhySomeOfYourDataCanNotBeCompletelyOpenPath, uuids.yesOtherReasonsAUuid, uuids.whatOtherReasonsAreThereNotToOpenAllDataImmediatelyQUuid]|reply_path %}
+			{% set areThereOtherReasonsWhySomeOfYourDataCanNotBeCompletelyOpenOtherReasonsReply = replies[areThereOtherReasonsWhySomeOfYourDataCanNotBeCompletelyOpenOtherReasonsPath]|reply_str_value %}
+			Other reasons why our data can not be completely open: {{areThereOtherReasonsWhySomeOfYourDataCanNotBeCompletelyOpenOtherReasonsReply}}.
+		{% endif %}
+
+		{# willYouUseALimitedEmbargoQUuid#} 
+
+
+
+
+
+	{% elif canAllOfYourDataBecomeCompletelyOpenImmediatelyReply == uuids.yes_101AUuid %}
+
+	{% elif canAllOfYourDataBecomeCompletelyOpenImmediatelyReply == uuids.notApplicableNoDataBeingUsed_2AUuid %}
+		{# do nothing? #}
+	{% endif %}
+
+	{# willYourResearchDataBePeerReviewedThroughADataJournalQUuid #}
+
 
 	<h4>5.1 Datasets this project plans to create</h4>
 	{% set datasetsPath = [uuids.preservingAndSharingDataCUuid, uuids.datasetsQUuid]|reply_path %}
