@@ -2005,7 +2005,7 @@
 	{% set funderRequirementToDepositWithRepositoryPath = [uuids.preservingAndSharingDataCUuid, uuids.isThereAFunderRequirementThatAnyOfYourDataAreDepositedWithALongTermRepositoryQUuid]|reply_path %}
 	{% set funderRequirementToDepositWithRepositoryReply = replies[funderRequirementToDepositWithRepositoryPath]|reply_str_value %}
 	{% if funderRequirementToDepositWithRepositoryReply == uuids.no_6_2AUuid %}
-		<p> There is no funder requirement to deposit our data with a long-term repository </p>
+		<p>There is no funder requirement to deposit our data with a long-term repository.</p>
 	{% elif funderRequirementToDepositWithRepositoryReply == uuids.yes_6_2AUuid %}
 		{% set estimateTheVolumeOfDataYouAreLikelyToBeDepositingWithARepositoryPath = [funderRequirementToDepositWithRepositoryPath, uuids.yes_6_2AUuid, uuids.estimateTheVolumeOfDataYouAreLikelyToBeDepositingWithARepositoryQUuid]|reply_path %}
 		{% set estimateTheVolumeOfDataYouAreLikelyToBeDepositingWithARepositoryReply = replies[estimateTheVolumeOfDataYouAreLikelyToBeDepositingWithARepositoryPath]|reply_str_value %}
@@ -2207,19 +2207,30 @@
 			Other reasons why our data can not be completely open: {{areThereOtherReasonsWhySomeOfYourDataCanNotBeCompletelyOpenOtherReasonsReply}}.
 		{% endif %}
 
-		{# willYouUseALimitedEmbargoQUuid#} 
-
-
-
-
+		{# willYouUseALimitedEmbargo #}
+		{% set willYouUseALimitedEmbargoPath = [canAllOfYourDataBecomeCompletelyOpenImmediatelyPath, uuids.no_107AUuid, uuids.willYouUseALimitedEmbargoQUuid]|reply_path %}
+		{% set willYouUseALimitedEmbargoReply = replies[willYouUseALimitedEmbargoPath]|reply_str_value %}
+		{% if willYouUseALimitedEmbargoReply == uuids.noSomeRestrictedDataWillBeEmbargoedIndefinitelyAUuid %}
+			<p>Some restricted data will not be released.</p>
+		{% elif willYouUseALimitedEmbargoReply == uuids.yesDataThatIsNotLegallyRestrainedWillBeReleasedAfterAFixedTimePeriodUnconditionallyAUuid %}
+			<p>Data that are not legally restrained will be released after a fixed time period.</p>
+		{% endif %}
 
 	{% elif canAllOfYourDataBecomeCompletelyOpenImmediatelyReply == uuids.yes_101AUuid %}
+		<p> All of our can become completely open immediately.</p>
 
 	{% elif canAllOfYourDataBecomeCompletelyOpenImmediatelyReply == uuids.notApplicableNoDataBeingUsed_2AUuid %}
 		{# do nothing? #}
 	{% endif %}
 
 	{# willYourResearchDataBePeerReviewedThroughADataJournalQUuid #}
+	{% set willYourResearchDataBePeerReviewedThroughADataJournalPath = [uuids.preservingAndSharingDataCUuid, uuids.willYourResearchDataBePeerReviewedThroughADataJournalQUuid]|reply_path %}
+	{% set willYourResearchDataBePeerReviewedThroughADataJournalReply = replies[willYourResearchDataBePeerReviewedThroughADataJournalPath]|reply_str_value %}
+	{% if willYourResearchDataBePeerReviewedThroughADataJournalReply == uuids.no_7_2AUuid %}
+		<p>Our research data will not be peer-reviewed through a data journal.</p>
+	{% elif willYourResearchDataBePeerReviewedThroughADataJournalReply == uuids.yes_7_2AUuid %}
+		<p>Our research data will be peer-reviewed through a data journal.</p>
+	{% endif %}
 
 
 	<h4>5.1 Datasets this project plans to create</h4>
