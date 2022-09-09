@@ -7,7 +7,7 @@
 <h4>UKCEH Project</h4> 
 <dl>
 	<dt>Project name</dt> <dd>{{projectName}}</dd>	
-	<dt>Grant reference</dt> <dd>{{projectNumber}}</dd>
+	<dt>Project number</dt> <dd>{{projectNumber}}</dd>
 </dl>
 
 {# ---- Document details ---- #}
@@ -52,21 +52,28 @@
 <dl>
 	<dt>First 3-6 months of grant</dt>
 		<dd>
-			Some text about 3-6 months of grant for UKCEH
+			The EIDC will agree the initial DMP with you. It is however a dynamic document and changes can be agreed during the lifetime of the project.
 		</dd>
 	<dt>Annually</dt>
 		<dd>
-			Some text about annually for UKCEH
+			The EIDC will contact you to review the agreed DMP annually during the grant period. Any changes need to be agreed.
 		</dd>	
 	<dt>6 - 9 months before grant end</dt>
 		<dd>
-			Some text about 6-9 months of grant for UKCEH
+			Detailed planning should start for the deposit of any datasets identified as of long-term value in Section 4*. 
+			For datasets to be archived at the EIDC, specific details regarding deposit and subsequent access to data will be defined in an EIDC Service Agreement (SA). The SA(s) should be appended to this document when developed.
 		</dd>
 	<dt>End of grant</dt>
 		<dd>
-			Some text about end of grant for UKCEH
+			Soon after the end of the grant the EIDC will review the DMP to confirm that the Preservation Plan has been implemented for each dataset identified as of long-term value. 
+			The EIDC are required to report the outcome of each grant DMP to NERC.
 		</dd>
 </dl>
+
+<p>*<i>Datasets can and should be deposited to the EIDC as soon as they are complete. The EIDC will issue a Digital Object Identifier (DOI) and implement any agreed embargo on data access. </i></p>
+DOIs issued for datasets archived at the EIDC can be used as a persistent citation reference and link to discover information about the dataset.  
+Archiving data at the EIDC (or agreed alternative) will help you meet NERC Data Policy, satisfy the requirements of science journals and your research institution, 
+comply with legal data-sharing obligations under UK law and can ensure their reusability in the future for you and the scientific community as a whole.
 
 {# ---- Section ---- #}
 <div class="question">
@@ -1305,18 +1312,70 @@
 				{% endif %}
 
 				{# Managing data in the workspace #} 
-				{% set managingDataInWorkspacePath = [sharedWorkingSpaceForDataPath, uuids.yes_52AUuid, uuids.howWillYouManageDataInTheWorkSpaceQUuid]|reply_path %}
+				{% set managingDataInWorkspacePath = [sharedWorkingSpaceForDataPath, uuids.yes_52AUuid, uuids.howWillYouManageDataInTheWorkSpaceQUuid, uuids.exploreHintsAndTipsForGoodPractice_3AUuid]|reply_path %}
 
 				{% set workingWithDataInOtherFormThanArchivedPath = [managingDataInWorkspacePath, uuids.exploreHintsAndTipsForGoodPractice_3AUuid, uuids.willYouBeWorkingWithYourDataInAnotherFormThanTheWayItWillBeArchivedQUuid]|reply_path %}
 				{% set workingWithDataInOtherFormThanArchivedReply = replies[workingWithDataInOtherFormThanArchivedPath]|reply_str_value %}
+{#
 				{% set firstDataComeInPath = [managingDataInWorkspacePath, uuids.exploreHintsAndTipsForGoodPractice_3AUuid, uuids.howWillYourFirstDataComeInQUuid]|reply_path %}
 				{% set firstDataComeInReply = replies[firstDataComeInPath]|reply_str_value %}
-
+#}
 				{% if workingWithDataInOtherFormThanArchivedReply == uuids.noDataFormatWillBeArchivedInTheSameWayWeWorkWithItAUuid %}
 					<p>We will archive project data in the same format(s) we'll use to work on it.</p>
 				{% elif workingWithDataInOtherFormThanArchivedReply == uuids.yesThereWillBeAConversionStepBeforeArchivingAUuid %}
 					<p>The data will require a format conversion step before being archived in order to ensure it is readable and remains understandable in the future.</p>
 				{% endif %}
+
+				
+
+				{# When will raw data become available #}
+				{% set whenWillYourRawDataBecomeAvailablePath = [managingDataInWorkspacePath, uuids.whenWillYourRawDataBecomeAvailableQUuid]|reply_path %}
+				{% set whenWillYourRawDataBecomeAvailableReply = replies[whenWillYourRawDataBecomeAvailablePath]|reply_str_value %}
+				{% set whenWillYourRawDataBecomeAvailabletext = km.entities.answers[whenWillYourRawDataBecomeAvailableReply].label %}
+				{{whenWillYourRawDataBecomeAvailabletext}}.
+
+
+				{# how much raw data kept in workspace #}
+
+				{% set howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpacePath = [managingDataInWorkspacePath, uuids.howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpaceQUuid]|reply_path %}
+				{% set howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpaceReply = replies[howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpacePath]|reply_str_value %}
+		
+				{{km.entities.answers[howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpaceReply].label}}
+
+
+				{% if howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpaceReply == uuids.rawDataCanBeCleanedOutOrArchivedQuicklyAUuid %}
+					{% set doYourRawDataNeedToBeArchivedPath = [howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpacePath, uuids.rawDataCanBeCleanedOutOrArchivedQuicklyAUuid, uuids.doYourRawDataNeedToBeArchivedQUuid]|reply_path %}
+					{% set doYourRawDataNeedToBeArchivedReply = replies[doYourRawDataNeedToBeArchivedPath]|reply_str_value %}
+					{% if doYourRawDataNeedToBeArchivedReply == uuids.noItIsAlsoStoredElsewhereCanBeRecoveredEasilyAUuid %}
+						and does not need to be archived as it is stored elsewhere and can be recovered easily.
+					{% elif doYourRawDataNeedToBeArchivedReply == uuids.noItCanBeRemeasuredEasilyAndMoreCheaplyThanArchivingAUuid %}
+						and does not need to be archived as it can be remeasured easily and more cheaply than archiving.
+					{% elif doYourRawDataNeedToBeArchivedReply == uuids.yes_55AUuid %}
+						and needs to be archived.
+					{% endif %}
+				{% endif %}
+
+				{# Volume of intermediate data #}	
+				{% set didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptPath = [managingDataInWorkspacePath, uuids.didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptQUuid]|reply_path %}
+				{% set didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptReply = replies[didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptPath]|reply_str_value %}
+				<p>{{km.entities.answers[didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptReply].label}} 
+
+				{% if didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptReply == uuids.aLargeVolumeOfIntermediateDataWillBeInTheWorkSpaceAUuid %}
+					{% set isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpPath = [didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptPath, uuids.aLargeVolumeOfIntermediateDataWillBeInTheWorkSpaceAUuid, uuids.isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpQUuid]|reply_path %}
+					{% set isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpReply = replies[isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpPath]|reply_str_value %}
+					and {{km.entities.answers[isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpReply].label|lower}}.
+
+					{% if isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpReply == uuids.weCanOffloadIntermediateResultsToAScratchAreaThatIsNotBackedUpAUuid %}
+						{% set areYouSureYouWillNotNeedABackupOfTheDataStoredOnTheScratchFileSystemsPath = [isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpPath, uuids.weCanOffloadIntermediateResultsToAScratchAreaThatIsNotBackedUpAUuid, uuids.areYouSureYouWillNotNeedABackupOfTheDataStoredOnTheScratchFileSystemsQUuid]|reply_path %}
+						{% set areYouSureYouWillNotNeedABackupOfTheDataStoredOnTheScratchFileSystemsReply = replies[areYouSureYouWillNotNeedABackupOfTheDataStoredOnTheScratchFileSystemsPath]|reply_str_value %}
+						{% if areYouSureYouWillNotNeedABackupOfTheDataStoredOnTheScratchFileSystemsReply == uuids.no_53AUuid %}
+							We are not sure that we will not need a backup of the data stored on the scratch file systems.
+						{% elif areYouSureYouWillNotNeedABackupOfTheDataStoredOnTheScratchFileSystemsReply == uuids.yes_56AUuid %}
+							We are sure that we will not need a backup of the data stored on the scratch file systems.
+						{% endif %}
+					{% endif %}
+				{% endif %}
+				</p>
 
 				{% if workingWithDataInOtherFormThanArchivedReply %}
 					{% if firstDataComeInReply == uuids.initialDataWillNeedToBeMadeAvailableThroughALocalNetworkCopyAUuid %}	
@@ -1331,6 +1390,9 @@
 
 				<p>When data first comes in {{firstDataComeIn}} </p>
 				{% endif %}
+
+
+
 
 				{# Availability and reliability of workspace #}
 
@@ -2020,29 +2082,29 @@
 	{% set canAllOfYourDataBecomeCompletelyOpenImmediatelyReply = replies[canAllOfYourDataBecomeCompletelyOpenImmediatelyPath]|reply_str_value %}
 
 	{% if canAllOfYourDataBecomeCompletelyOpenImmediatelyReply == uuids.no_107AUuid %}
-		{# are there legals reasons why not #}
-		{% set areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenPath = [canAllOfYourDataBecomeCompletelyOpenImmediatelyPath, uuids.no_107AUuid, uuids.areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenQUuid]|reply_path %}
-		{% set areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenReply = replies[areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenPath]|reply_str_value %}
 		{% set canAllOfYourDataBecomeCompletelyOpenImmediatelyText = "Our data cannot become completely open immediately." %}
 		<p>{{canAllOfYourDataBecomeCompletelyOpenImmediatelyText}}</p>
 
+		{# are there legals reasons why not #}
+		{% set areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenPath = [canAllOfYourDataBecomeCompletelyOpenImmediatelyPath, uuids.no_107AUuid, uuids.areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenQUuid]|reply_path %}
+		{% set areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenReply = replies[areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenPath]|reply_str_value %}
 		{% if areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenReply == uuids.no_108AUuid %}
-			{% set areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenText = "There are no legal reasons why (some of) our data can not be completely open." %}
+			{% set areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenText = "There are no legal reasons why (some of) our data cannot be completely open." %}
 			{{areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenText}}
 
 		{% elif areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenReply == uuids.yes_102AUuid %}
-			{% set areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenText = "There are legal reasons why (some of) our data can not be completely open." %}
+			{% set areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenText = "There are legal reasons why (some of) our data cannot be completely open." %}
 			{{areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenText}}
 			
 			{# are there privacy reasons #}
 			{% set areTherePrivacyReasonsWhyYourDataCanNotBeOpenPath = [areThereLegalReasonsWhySomeOfYourDataCanNotBeCompletelyOpenPath, uuids.yes_102AUuid, uuids.areTherePrivacyReasonsWhyYourDataCanNotBeOpenQUuid]|reply_path %}
 			{% set areTherePrivacyReasonsWhyYourDataCanNotBeOpenReply = replies[areTherePrivacyReasonsWhyYourDataCanNotBeOpenPath]|reply_str_value %}
 			{% if areTherePrivacyReasonsWhyYourDataCanNotBeOpenReply == uuids.no_113AUuid %}
-				{% set areTherePrivacyReasonsWhyYourDataCanNotBeOpenText = "There are no privacy reasons why our data can not be open." %}
+				{% set areTherePrivacyReasonsWhyYourDataCanNotBeOpenText = "There are no privacy reasons why our data cannot be open." %}
 				{{areTherePrivacyReasonsWhyYourDataCanNotBeOpenText}}
 
 			{% elif areTherePrivacyReasonsWhyYourDataCanNotBeOpenReply == uuids.yes_103AUuid %}
-				{% set areTherePrivacyReasonsWhyYourDataCanNotBeOpenText = "There are privacy reasons why our data can not be open." %}
+				{% set areTherePrivacyReasonsWhyYourDataCanNotBeOpenText = "There are privacy reasons why our data cannot be open." %}
 				{{areTherePrivacyReasonsWhyYourDataCanNotBeOpenText}}
 
 				{# are there restrictions on where the data need to be stored #}
@@ -2096,7 +2158,7 @@
 				{% set areThereIpReasonsWhyYourDataCanNotBeOpenText = "There are no IP reasons why our data can not be open." %}
 				{{areThereIpReasonsWhyYourDataCanNotBeOpenText}}
 			{% elif areThereIpReasonsWhyYourDataCanNotBeOpenReply == uuids.yes_107AUuid %}
-				{% set areThereIpReasonsWhyYourDataCanNotBeOpenText = "There are IP reasons why our data can not be open." %}
+				{% set areThereIpReasonsWhyYourDataCanNotBeOpenText = "There are IP reasons why our data cannot be open." %}
 				<p>{{areThereIpReasonsWhyYourDataCanNotBeOpenText}}</p>
 
 				{# Is it clear who owns the data #}
@@ -2184,13 +2246,13 @@
 		{% set areThereBusinessReasonsWhySomeOfYourDataCanNotBeCompletelyOpenPath = [canAllOfYourDataBecomeCompletelyOpenImmediatelyPath, uuids.no_107AUuid, uuids.areThereBusinessReasonsWhySomeOfYourDataCanNotBeCompletelyOpenQUuid]|reply_path %}
 		{% set areThereBusinessReasonsWhySomeOfYourDataCanNotBeCompletelyOpenReply = replies[areThereBusinessReasonsWhySomeOfYourDataCanNotBeCompletelyOpenPath]|reply_str_value %}
 		{% if areThereBusinessReasonsWhySomeOfYourDataCanNotBeCompletelyOpenReply == uuids.no_120AUuid %}
-			There are no business reasons why our data can not be completely open.
+			There are no business reasons why our data cannot be completely open.
 		{% elif areThereBusinessReasonsWhySomeOfYourDataCanNotBeCompletelyOpenReply == uuids.yesPatentsStillNeedToBeAppliedForAUuid %}
-			There are business reasons why our data can not be completely open: Patents need to be applied for.
+			There are business reasons why our data cannot be completely open: Patents need to be applied for.
 		{% elif areThereBusinessReasonsWhySomeOfYourDataCanNotBeCompletelyOpenReply == uuids.yesOtherBusinessReasonsAUuid %}
 			{% set areThereBusinessReasonsWhySomeOfYourDataCanNotBeCompletelyOpenOtherReasonsPath = [areThereBusinessReasonsWhySomeOfYourDataCanNotBeCompletelyOpenPath, uuids.yesOtherBusinessReasonsAUuid, uuids.whatOtherReasonsQUuid]|reply_path %}
 			{% set areThereBusinessReasonsWhySomeOfYourDataCanNotBeCompletelyOpenOtherReasonsReply = replies[areThereBusinessReasonsWhySomeOfYourDataCanNotBeCompletelyOpenOtherReasonsPath]|reply_str_value %}
-			There are business reasons why our data can not be completely open: {{areThereBusinessReasonsWhySomeOfYourDataCanNotBeCompletelyOpenOtherReasonsReply}}.
+			There are business reasons why our data cannot be completely open: {{areThereBusinessReasonsWhySomeOfYourDataCanNotBeCompletelyOpenOtherReasonsReply}}.
 		{% endif %}
 
 
@@ -2230,6 +2292,8 @@
 		<p>Our research data will not be peer-reviewed through a data journal.</p>
 	{% elif willYourResearchDataBePeerReviewedThroughADataJournalReply == uuids.yes_7_2AUuid %}
 		<p>Our research data will be peer-reviewed through a data journal.</p>
+	{% elif willYourResearchDataBePeerReviewedThroughADataJournalReply == uuids.notApplicableNoDataBeingUsed_1AUuid %}
+		{# do nothing? #}
 	{% endif %}
 
 
@@ -2239,6 +2303,53 @@
 	{% set datasetListReply = replies[datasetListPath]|reply_items %}
 	
 	{% if datasetListReply|length > 0 %}
+
+		{# test table #}
+		<section>
+		<html>
+		<body>
+		<P style="page-break-before: always">
+		
+		{% set tableHeaders = ['Title', 'Description', 'License'] %}
+
+		<table>
+		<thead>
+		<tr>
+		{% for item in tableHeaders %}
+		<th class="c1">{{item}}</th>
+		{% endfor %}
+		</tr>
+		</thead>
+
+		{% for itemUuid in datasetListReply %}
+			{% set datasetTitlePath = [datasetListPath, itemUuid, uuids.datasetNameQUuid]|reply_path %}
+			{% set datasetTitleReply = replies[datasetTitlePath]|reply_str_value %}
+			
+			{% set datasetDescriptionPath = [datasetListPath, itemUuid, uuids.datasetDescriptionQUuid]|reply_path %}
+			{% set datasetDescriptionReply = replies[datasetDescriptionPath]|reply_str_value %}
+
+			<TR>
+			<TD class="c2">{{datasetTitleReply}}</TD>
+			<TD class="c2">{{datasetDescriptionReply}}</TD>
+			<TD class="c2">OGL etc </TD>
+			</TR>
+		{% endfor %}
+		<style>
+			table, th, td {
+				border: 1px solid black;
+				border-collapse: collapse;
+			}
+		</style>
+		</table>
+
+		<P style="page-break-before: always">
+		
+		</body>
+		</html>
+		</section>
+
+		{# end of test table #}
+
 		<ul>
 		{% for itemUuid in datasetListReply %}
 
@@ -2879,7 +2990,7 @@
 		{% endif %}
 	{% endif %}
 
-	<h4>5.5 Miscellaneous </h4>
+	<h4>5.5 Data publication costs </h4>
 
 	{# Will repositories charge #}
 	{% set willRepositoriesChargeForServicesPath = [uuids.preservingAndSharingDataCUuid, uuids.willAnyOfTheRepositoriesYouUseChargeYouForTheirServicesQUuid]|reply_path %}
