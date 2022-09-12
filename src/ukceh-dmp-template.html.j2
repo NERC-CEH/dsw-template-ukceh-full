@@ -48,6 +48,7 @@
 </dl>
 
 {# ---- Timeline text ---- #}
+{#
 <h4 class="newpage">Timeline</h4>
 <dl>
 	<dt>First 3-6 months of grant</dt>
@@ -74,7 +75,7 @@
 DOIs issued for datasets archived at the EIDC can be used as a persistent citation reference and link to discover information about the dataset.  
 Archiving data at the EIDC (or agreed alternative) will help you meet NERC Data Policy, satisfy the requirements of science journals and your research institution, 
 comply with legal data-sharing obligations under UK law and can ensure their reusability in the future for you and the scientific community as a whole.
-
+#}
 {# ---- Section ---- #}
 <div class="question">
 	<h3 class = "newpager">1. Project Information</h3>
@@ -532,7 +533,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 
 	{% if modelsUsedReply == uuids.no_10AUuid %}
 		{% set modelsIntroText = "No third party or existing models will used for this project."%}
-		<p>{{datasetIntroText}}</p>
+		<p>{{modelsIntroText}}</p>
 	{% elif modelsUsedReply == uuids.yes_10AUuid %}
 		{% set modelsLicensingCostPath = [modelsUsedPath, uuids.yes_10AUuid, uuids.areYouAwareOfAnyCostOrLicensingImplicationsForTheExistingModelsYouPlanToUseQUuid]|reply_path %}
 		{% set modelsLicensingCostReply = replies [modelsLicensingCostPath] |reply_str_value %}	
@@ -1311,41 +1312,36 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 					<p>For this project we won't need to keep the storage in the same place as where the computing takes place.</p>
 				{% endif %}
 
+
 				{# Managing data in the workspace #} 
+
 				{% set managingDataInWorkspacePath = [sharedWorkingSpaceForDataPath, uuids.yes_52AUuid, uuids.howWillYouManageDataInTheWorkSpaceQUuid, uuids.exploreHintsAndTipsForGoodPractice_3AUuid]|reply_path %}
 
-				{% set workingWithDataInOtherFormThanArchivedPath = [managingDataInWorkspacePath, uuids.exploreHintsAndTipsForGoodPractice_3AUuid, uuids.willYouBeWorkingWithYourDataInAnotherFormThanTheWayItWillBeArchivedQUuid]|reply_path %}
+				{% set workingWithDataInOtherFormThanArchivedPath = [managingDataInWorkspacePath, uuids.willYouBeWorkingWithYourDataInAnotherFormThanTheWayItWillBeArchivedQUuid]|reply_path %}
 				{% set workingWithDataInOtherFormThanArchivedReply = replies[workingWithDataInOtherFormThanArchivedPath]|reply_str_value %}
-{#
-				{% set firstDataComeInPath = [managingDataInWorkspacePath, uuids.exploreHintsAndTipsForGoodPractice_3AUuid, uuids.howWillYourFirstDataComeInQUuid]|reply_path %}
-				{% set firstDataComeInReply = replies[firstDataComeInPath]|reply_str_value %}
-#}
 				{% if workingWithDataInOtherFormThanArchivedReply == uuids.noDataFormatWillBeArchivedInTheSameWayWeWorkWithItAUuid %}
 					<p>We will archive project data in the same format(s) we'll use to work on it.</p>
 				{% elif workingWithDataInOtherFormThanArchivedReply == uuids.yesThereWillBeAConversionStepBeforeArchivingAUuid %}
 					<p>The data will require a format conversion step before being archived in order to ensure it is readable and remains understandable in the future.</p>
 				{% endif %}
 
-				
-
 				{# When will raw data become available #}
+
 				{% set whenWillYourRawDataBecomeAvailablePath = [managingDataInWorkspacePath, uuids.whenWillYourRawDataBecomeAvailableQUuid]|reply_path %}
 				{% set whenWillYourRawDataBecomeAvailableReply = replies[whenWillYourRawDataBecomeAvailablePath]|reply_str_value %}
 				{% set whenWillYourRawDataBecomeAvailabletext = km.entities.answers[whenWillYourRawDataBecomeAvailableReply].label %}
 				{{whenWillYourRawDataBecomeAvailabletext}}.
-
 
 				{# how much raw data kept in workspace #}
 
 				{% set howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpacePath = [managingDataInWorkspacePath, uuids.howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpaceQUuid]|reply_path %}
 				{% set howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpaceReply = replies[howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpacePath]|reply_str_value %}
 		
-				{{km.entities.answers[howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpaceReply].label}}
-
-
 				{% if howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpaceReply == uuids.rawDataCanBeCleanedOutOrArchivedQuicklyAUuid %}
 					{% set doYourRawDataNeedToBeArchivedPath = [howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpacePath, uuids.rawDataCanBeCleanedOutOrArchivedQuicklyAUuid, uuids.doYourRawDataNeedToBeArchivedQUuid]|reply_path %}
 					{% set doYourRawDataNeedToBeArchivedReply = replies[doYourRawDataNeedToBeArchivedPath]|reply_str_value %}
+					{{km.entities.answers[howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpaceReply].label}}
+
 					{% if doYourRawDataNeedToBeArchivedReply == uuids.noItIsAlsoStoredElsewhereCanBeRecoveredEasilyAUuid %}
 						and does not need to be archived as it is stored elsewhere and can be recovered easily.
 					{% elif doYourRawDataNeedToBeArchivedReply == uuids.noItCanBeRemeasuredEasilyAndMoreCheaplyThanArchivingAUuid %}
@@ -1353,12 +1349,17 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 					{% elif doYourRawDataNeedToBeArchivedReply == uuids.yes_55AUuid %}
 						and needs to be archived.
 					{% endif %}
+				{% else %}
+					{{km.entities.answers[howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpaceReply].label}}
+
 				{% endif %}
 
-				{# Volume of intermediate data #}	
+
+				{# Volume of intermediate data #}
+
 				{% set didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptPath = [managingDataInWorkspacePath, uuids.didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptQUuid]|reply_path %}
 				{% set didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptReply = replies[didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptPath]|reply_str_value %}
-				<p>{{km.entities.answers[didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptReply].label}} 
+				<p>{{km.entities.answers[didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptReply].label}}
 
 				{% if didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptReply == uuids.aLargeVolumeOfIntermediateDataWillBeInTheWorkSpaceAUuid %}
 					{% set isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpPath = [didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptPath, uuids.aLargeVolumeOfIntermediateDataWillBeInTheWorkSpaceAUuid, uuids.isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpQUuid]|reply_path %}
@@ -1377,6 +1378,15 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{% endif %}
 				</p>
 
+
+				{# storage needs change over time howDoesTheStorageNeedChangeOverTimeQUuid #}
+
+
+
+
+				{% set firstDataComeInPath = [managingDataInWorkspacePath, uuids.howWillYourFirstDataComeInQUuid]|reply_path %}
+				{% set firstDataComeInReply = replies[firstDataComeInPath]|reply_str_value %}
+
 				{% if workingWithDataInOtherFormThanArchivedReply %}
 					{% if firstDataComeInReply == uuids.initialDataWillNeedToBeMadeAvailableThroughALocalNetworkCopyAUuid %}	
 						{% set firstDataComeIn = 'it will need to be made available through a network copy.' %}
@@ -1390,9 +1400,6 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 
 				<p>When data first comes in {{firstDataComeIn}} </p>
 				{% endif %}
-
-
-
 
 				{# Availability and reliability of workspace #}
 
@@ -2279,7 +2286,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 		{% endif %}
 
 	{% elif canAllOfYourDataBecomeCompletelyOpenImmediatelyReply == uuids.yes_101AUuid %}
-		<p> All of our can become completely open immediately.</p>
+		<p> All of our data can become completely open immediately.</p>
 
 	{% elif canAllOfYourDataBecomeCompletelyOpenImmediatelyReply == uuids.notApplicableNoDataBeingUsed_2AUuid %}
 		{# do nothing? #}
@@ -2304,7 +2311,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 	
 	{% if datasetListReply|length > 0 %}
 
-		{# test table #}
+		{# test table 
 		<section>
 		<html>
 		<body>
@@ -2348,7 +2355,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 		</html>
 		</section>
 
-		{# end of test table #}
+		 end of test table #}
 
 		<ul>
 		{% for itemUuid in datasetListReply %}
