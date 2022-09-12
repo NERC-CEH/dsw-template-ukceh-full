@@ -1,7 +1,7 @@
 {
     "templateId": "ukceh-full-dmp",
     "organizationId": "UKCEH",
-    "version": "0.0.2",
+    "version": "0.0.4",
     "name": "UKCEH FULL DMP",
     "description": "DMP to satisfy UKCEH requirements",
     "license": "Apache-2.0",

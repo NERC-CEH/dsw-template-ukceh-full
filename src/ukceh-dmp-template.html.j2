@@ -1329,8 +1329,10 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 
 				{% set whenWillYourRawDataBecomeAvailablePath = [managingDataInWorkspacePath, uuids.whenWillYourRawDataBecomeAvailableQUuid]|reply_path %}
 				{% set whenWillYourRawDataBecomeAvailableReply = replies[whenWillYourRawDataBecomeAvailablePath]|reply_str_value %}
-				{% set whenWillYourRawDataBecomeAvailabletext = km.entities.answers[whenWillYourRawDataBecomeAvailableReply].label %}
-				{{whenWillYourRawDataBecomeAvailabletext}}.
+				{% if whenWillYourRawDataBecomeAvailableReply %}
+					{% set whenWillYourRawDataBecomeAvailabletext = km.entities.answers[whenWillYourRawDataBecomeAvailableReply].label %} 
+					{{whenWillYourRawDataBecomeAvailabletext}}.
+				{% endif %}
 
 				{# how much raw data kept in workspace #}
 
@@ -1349,9 +1351,8 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 					{% elif doYourRawDataNeedToBeArchivedReply == uuids.yes_55AUuid %}
 						and needs to be archived.
 					{% endif %}
-				{% else %}
-					{{km.entities.answers[howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpaceReply].label}}
-
+				{% elif howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpaceReply %}
+					{{km.entities.answers[howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpaceReply].label}}.
 				{% endif %}
 
 
@@ -1359,24 +1360,26 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 
 				{% set didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptPath = [managingDataInWorkspacePath, uuids.didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptQUuid]|reply_path %}
 				{% set didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptReply = replies[didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptPath]|reply_str_value %}
-				<p>{{km.entities.answers[didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptReply].label}}
+				{% if didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptReply %}
+					<p>{{km.entities.answers[didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptReply].label}}
+				{% endif %}
 
 				{% if didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptReply == uuids.aLargeVolumeOfIntermediateDataWillBeInTheWorkSpaceAUuid %}
 					{% set isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpPath = [didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptPath, uuids.aLargeVolumeOfIntermediateDataWillBeInTheWorkSpaceAUuid, uuids.isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpQUuid]|reply_path %}
 					{% set isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpReply = replies[isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpPath]|reply_str_value %}
-					and {{km.entities.answers[isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpReply].label|lower}}.
+					and {{km.entities.answers[isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpReply].label|lower}}. </p>
 
 					{% if isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpReply == uuids.weCanOffloadIntermediateResultsToAScratchAreaThatIsNotBackedUpAUuid %}
 						{% set areYouSureYouWillNotNeedABackupOfTheDataStoredOnTheScratchFileSystemsPath = [isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpPath, uuids.weCanOffloadIntermediateResultsToAScratchAreaThatIsNotBackedUpAUuid, uuids.areYouSureYouWillNotNeedABackupOfTheDataStoredOnTheScratchFileSystemsQUuid]|reply_path %}
 						{% set areYouSureYouWillNotNeedABackupOfTheDataStoredOnTheScratchFileSystemsReply = replies[areYouSureYouWillNotNeedABackupOfTheDataStoredOnTheScratchFileSystemsPath]|reply_str_value %}
 						{% if areYouSureYouWillNotNeedABackupOfTheDataStoredOnTheScratchFileSystemsReply == uuids.no_53AUuid %}
-							We are not sure that we will not need a backup of the data stored on the scratch file systems.
+							We are not sure that we will not need a backup of the data stored on the scratch file systems. 
 						{% elif areYouSureYouWillNotNeedABackupOfTheDataStoredOnTheScratchFileSystemsReply == uuids.yes_56AUuid %}
 							We are sure that we will not need a backup of the data stored on the scratch file systems.
 						{% endif %}
 					{% endif %}
 				{% endif %}
-				</p>
+				
 
 
 				{# storage needs change over time howDoesTheStorageNeedChangeOverTimeQUuid #}
@@ -1387,7 +1390,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{% set firstDataComeInPath = [managingDataInWorkspacePath, uuids.howWillYourFirstDataComeInQUuid]|reply_path %}
 				{% set firstDataComeInReply = replies[firstDataComeInPath]|reply_str_value %}
 
-				{% if workingWithDataInOtherFormThanArchivedReply %}
+				{% if firstDataComeInReply %}
 					{% if firstDataComeInReply == uuids.initialDataWillNeedToBeMadeAvailableThroughALocalNetworkCopyAUuid %}	
 						{% set firstDataComeIn = 'it will need to be made available through a network copy.' %}
 					{% elif firstDataComeInReply == uuids.weWillNeedAHighSpeedNetworkConnectionToCopyTheInitialDataAUuid %}
@@ -1398,7 +1401,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 						{% set firstDataComeIn = 'no special planning is needed.' %}	
 					{% endif %}
 
-				<p>When data first comes in {{firstDataComeIn}} </p>
+					<p>When data first comes in {{firstDataComeIn}} </p>
 				{% endif %}
 
 				{# Availability and reliability of workspace #}
@@ -1506,7 +1509,13 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 					{% set dataCopiedByRemoteUsers = 'Users accessing the workspace remotely will be allowed to copy data in and out for computations requiring high performance.' %}
 				{% endif %}
 
-				{{workspaceAccessControl}} {{accessControl}} {{dataCopiedByRemoteUsers}}
+				{% if accessControl %}
+					{{workspaceAccessControl}} {{accessControl}} {{dataCopiedByRemoteUsers}}
+				{% elif workspaceAccessControl %}
+					{{workspaceAccessControl}} {{accessControl}} {{dataCopiedByRemoteUsers}}
+				{% elif dataCopiedByRemoteUsers%}
+					{{workspaceAccessControl}} {{accessControl}} {{dataCopiedByRemoteUsers}}
+				{% endif %}
 
 					
 			{% elif sharedWorkingSpaceForDataReply == uuids.no_55AUuid %}
