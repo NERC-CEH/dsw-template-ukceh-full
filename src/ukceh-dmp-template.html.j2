@@ -22,7 +22,7 @@
         <dd>{{ ctx.package.name }}, {{ ctx.package.version }} (<span class="package-id"><span class="organization-id">{{ ctx.package.organizationId }}</span>:<span class="km-id">{{ ctx.package.kmId }}</span>:<span class="version">{{ ctx.package.version }}</span></span>)</dd>
 	<dt>Description</dt> 
 		<dd>
-			This Data Management Plan (DMP) details the data management tasks and responsibilities in your science project.  
+			This Data Management Plan (DMP) summarises the data management tasks and responsibilities in your science project.  
 			It is a live document to be updated with content as required and reviewed during the lifetime of the project.
 		</dd>
 	<dt>Copyright of DMP</dt> 
@@ -31,12 +31,8 @@
 		</dd>	
 	<dt>Scope of DMP</dt> 
 		<dd>
-			<em>This document, together with other referenced documents, defines the responsibilities and procedures to be adopted
-				to ensure that environmental data and information produced as part of the project are reliable, fit for purpose and
-				consistent with document objectives and deliverables. It summarises the system of internal management that governs the 
-				decisions and instructions concerning project data management. This Data Management Plan covers staff responsibilities, 
-				data collection policies, resourcing of data management, data quality, IPR considerations, policies on access to data and
-				data dissemination during the project and arrangements for long-term management of data beyond the project.</em>
+			<em>This Data Management Plan document summarises staff responsibilities, data collection policies, resourcing of data management, data quality, IPR considerations, policies on access to data and data dissemination during the project and arrangements for long-term management of data beyond the project. 
+			Necessary details are set out in supplementary documents stored with key project documentation.</em>
 		</dd>
 	<dt>Policies applicable to data and models in this research</dt> 
 		<dd>
@@ -48,34 +44,38 @@
 </dl>
 
 {# ---- Timeline text ---- #}
-{#
+
 <h4 class="newpage">Timeline</h4>
 <dl>
-	<dt>First 3-6 months of grant</dt>
+	<dt>Proposal stage</dt>
 		<dd>
-			The EIDC will agree the initial DMP with you. It is however a dynamic document and changes can be agreed during the lifetime of the project.
+			Generate the DMP based on planned approach.
+		</dd>
+	<dt>First 3-6 months of project</dt>
+		<dd>
+			The proposal DMP should be updated to reflect the need for more planning. Data Management Planning is dynamic and updates can be made during the lifetime of the project.
 		</dd>
 	<dt>Annually</dt>
 		<dd>
-			The EIDC will contact you to review the agreed DMP annually during the grant period. Any changes need to be agreed.
+			The plan should be reviewed and updated at least annually.
 		</dd>	
-	<dt>6 - 9 months before grant end</dt>
+	<dt>6-9 months before project end</dt>
 		<dd>
-			Detailed planning should start for the deposit of any datasets identified as of long-term value in Section 4*. 
-			For datasets to be archived at the EIDC, specific details regarding deposit and subsequent access to data will be defined in an EIDC Service Agreement (SA). The SA(s) should be appended to this document when developed.
+			Detailed planning should start for the deposit of any datasets identified as of long-term value*. 
+			For datasets to be archived at the EIDC, specific details regarding deposit and subsequent access to data will be defined in an EIDC Service Agreement (SA). 
+			The SA(s) should be appended to this document when developed. Other data centres will have similar documents. 
 		</dd>
-	<dt>End of grant</dt>
+	<dt>End of project</dt>
 		<dd>
-			Soon after the end of the grant the EIDC will review the DMP to confirm that the Preservation Plan has been implemented for each dataset identified as of long-term value. 
-			The EIDC are required to report the outcome of each grant DMP to NERC.
+			Review the DMP to confirm that the Preservation Plan has been implemented for each dataset identified as of long-term value.
 		</dd>
 </dl>
 
 <p>*<i>Datasets can and should be deposited to the EIDC as soon as they are complete. The EIDC will issue a Digital Object Identifier (DOI) and implement any agreed embargo on data access. </i></p>
 DOIs issued for datasets archived at the EIDC can be used as a persistent citation reference and link to discover information about the dataset.  
-Archiving data at the EIDC (or agreed alternative) will help you meet NERC Data Policy, satisfy the requirements of science journals and your research institution, 
+Archiving data at the EIDC (or agreed alternative) will help you meet NERC Data Policy, satisfy the requirements of science journals and UKCEH, 
 comply with legal data-sharing obligations under UK law and can ensure their reusability in the future for you and the scientific community as a whole.
-#}
+
 {# ---- Section ---- #}
 <div class="question">
 	<h3 class = "newpager">1. Project Information</h3>
@@ -133,22 +133,31 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 					{% for itemUuid in funderReply %}
 						{% set funderNamePath = [funderPath, itemUuid, uuids.funderQUuid]|reply_path %}
 							{% set funderNameReply = replies[funderNamePath] %}
+						
 						{% set fundingStatusPath = [funderPath, itemUuid, uuids.fundingStatusQUuid]|reply_path %}
 						{% set fundingStatusReply = replies[fundingStatusPath]|reply_str_value %}
-						{% set fundingStatus = 'Unknown' %}
-						{% set grantPath = [funderPath, itemUuid, uuids.grantNumberQUuid]|reply_path %}
-						{% set grantReply = replies[grantPath]|reply_str_value %}						
-
+						{% set fundingStatusText = 'Unknown' %}
 						{% if fundingStatusReply %}
-							{% set fundingStatus = km.entities.answers[fundingStatusReply].label %}
-							{% if fundingStatusReply == uuids.grantedAUuid %}
-								<li>{{ funderNameReply.value.value.value }} (status: <span style="color: green;">{{fundingStatus}}</span>, grant number: {{grantReply}})</li>
-							{% elif fundingStatusReply == uuids.rejectedAUuid %}
-								<li>{{ funderNameReply.value.value.value }} (status: <span style="color: red;">{{fundingStatus}}</span>, grant number: {{grantReply}})</li>
-							{% elif fundingStatusReply == uuids.appliedAUuid or fundingStatusReply == uuids.plannedAUuid %}
-								<li>{{ funderNameReply.value.value.value }} (status: <span style="color: orange;">{{fundingStatus}}</span>, grant number: {{grantReply}})</li>
-							{% endif %}
+							{% set fundingStatusText = km.entities.answers[fundingStatusReply].label %}
 						{% endif %}
+
+						{% set grantPath = [funderPath, itemUuid, uuids.grantNumberQUuid]|reply_path %}
+						{% set grantReply = replies[grantPath]|reply_str_value %}
+						{% set grantReplyText = "Information not supplied" %}
+						{% if grantReply %}
+							{% set grantReplyText = grantReply %}
+						{% endif %}
+						
+						{% if fundingStatusReply == uuids.grantedAUuid %}
+							<li>{{ funderNameReply.value.value.value }} (status: <span style="color: green;">{{fundingStatusText}}</span>, grant number: {{grantReplyText}})</li>
+						{% elif fundingStatusReply == uuids.rejectedAUuid %}
+							<li>{{ funderNameReply.value.value.value }} (status: <span style="color: red;">{{fundingStatusText}}</span>, grant number: {{grantReplyText}})</li>
+						{% elif fundingStatusReply == uuids.appliedAUuid or fundingStatusReply == uuids.plannedAUuid %}
+							<li>{{ funderNameReply.value.value.value }} (status: <span style="color: orange;">{{fundingStatusText}}</span>, grant number: {{grantReplyText}})</li>
+						{% else %}
+							<li>{{ funderNameReply.value.value.value }} (status: <span style="color: red;">{{fundingStatusText}}</span>, grant number: {{grantReplyText}})</li>
+						{% endif %}
+						
 					{% endfor %}
 				</ul>
 			{% endif %}
@@ -524,7 +533,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 </div>	
 
 <div>
-	<h4>2.2 Existing models used in this project</h4>	
+	<h4>2.2 Existing models used in this project</h4>
 	{# Models section #}
 	{% set modelsUsedPath = [uuids.reUsingDataCUuid, uuids.willTheProjectUseAnyPreExistingOrThirdPartyModelsQUuid]|reply_path %}
 	{% set modelsUsedReply = replies[modelsUsedPath]|reply_str_value %}
@@ -565,10 +574,10 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{% set modelUsedAvailabilityPath = [modelsUsedListPath, itemUuid, uuids.whereIsThisModelAvailableQUuid]|reply_path %}
 				{% set modelUsedAvailabilityReply = replies[modelUsedAvailabilityPath]|reply_items %}
 				
-				<p><strong>Data are available from: </strong>
+				<p><strong>Model is available from: </strong>
 				{% set modelUsedAvailabilityList = [] %}
 				{% for itemUuid in modelUsedAvailabilityReply %}
-					{%set modelUsedAvailabilityList = modelUsedAvailabilityList.append(km.entities.choices[itemUuid].label)%}
+					{%set modelUsedAvailabilityList = modelUsedAvailabilityList.append(km.entities.choices[itemUuid].label|replace("From ", "")|capitalize)%}
 				{% endfor %}
 
 				{% if modelUsedAvailabilityList| length > 0 %}
@@ -587,11 +596,11 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{% set modelUsedFormatPath = [modelsUsedListPath, itemUuid, uuids.doYouKnowInWhatFormatOrLanguageTheModelIsAvailableQUuid]|reply_path %}
 				{% set modelUsedFormatReply = replies[modelUsedFormatPath]|reply_str_value %}
 				{% if modelUsedFormatReply == uuids.iCanDirectlyUseItAUuid %}
-					{% set formatText = "We know the format of this data, it is suitable for our work and we can use it directly." %}
+					{% set modelFormatText = "We know the format/language of this model, it is suitable for our work and we can use it directly." %}
 				{% elif modelUsedFormatReply == uuids.iNeedToConvertItBeforeUsingAUuid %}
-					{% set formatText = "We know the format of this data, it is suitable for our work but we need to convert it to another format before using." %}	
+					{% set modelFormatText = "We know the format/language of this model, it is suitable for our work but we need to convert it to another format/language before using." %}	
 				{% endif %}
-				<p>{{formatText}}</p>
+				<p>{{modelFormatText}}</p>
 
 				{# Dataset version text generation section #}
 				{% set modelUsedVersionPath = [modelsUsedListPath, itemUuid, uuids.isTheModelVersionedQUuid]|reply_path %}
@@ -599,9 +608,9 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 
 				{# {% set modelUsedVersionList = [] %} #}
 				{% if modelUsedVersionReply == uuids.no_11AUuid %}
-					{% set modelVersionFinalText = "This dataset is not versioned. " %}
+					{% set modelVersionFinalText = "This model is not versioned. " %}
 				{% elif modelUsedVersionReply == uuids.yes_11AUuid %}
-					{% set modelVersionText = "This dataset is versioned. " %}
+					{% set modelVersionText = "This model is versioned. " %}
 
 					{% set modelUsedVersionUsedPath = [modelUsedVersionPath, uuids.yes_11AUuid, uuids.whichVersionWillYouUse_2QUuid]|reply_path %}
 					{% set modelUsedVersionUsedReply = replies[modelUsedVersionUsedPath]|reply_str_value %}
@@ -611,11 +620,11 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 					{% set modelUsedVersionChangeReply = replies[modelUsedVersionChangePath]|reply_str_value %}
 				
 					{% if modelUsedVersionChangeReply == uuids.willStayWithTheOldVersion_2AUuid %}
-						{% set modelUsedVersionChangeText = "we will not change version if the dataset updates." %} 
+						{% set modelUsedVersionChangeText = "we will not change version if the model updates." %} 
 					{% elif modelUsedVersionChangeReply == uuids.newAnalysesWillBeDoneWithTheNewVersionAUuid %}
-						{% set modelUsedVersionChangeText = "if the dataset updates we will do new analyses with the newest version." %}
+						{% set modelUsedVersionChangeText = "if the model updates we will do new analyses with the newest version." %}
 					{% elif modelUsedVersionChangeReply == uuids.allAnalysesWillBeRedoneWithTheNewVersionAUuid %}
-						{% set modelUsedVersionChangeText = "if the dataset updates all analyses will be re-done with the newest version." %} 
+						{% set modelUsedVersionChangeText = "if the model updates all analyses will be re-done with the newest version." %} 
 					{% endif %}	
 
 					{% set modelVersionFinalText = modelVersionText + modelUsedVersionUsedText + modelUsedVersionChangeText %}
@@ -652,7 +661,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{% elif modelUsedAvailabilityReply == uuids.iWillKeepACopyAndMakeItAvailableWithMyResults_2AUuid %}
 					{% set modelUsedAvailabilityText = "We will make a copy of this version of the model to make it available along with our results, allowing others to reproduce our results." %}
 				{% elif modelUsedAvailabilityReply == uuids.itWillBeAvailableBothFromTheProviderAndTogetherWithMyData_2AUuid %}
-					{% set modelUsedAvailabilityText = "This version of the model will be available from the provider and we will make a copy of this version to make it available along with our results, allowing others to reproduce our results." %}
+					{% set modelUsedAvailabilityText = "This version of the model will be available from the provider and we will make this version available along with our results, allowing others to reproduce our results." %}
 				{% endif %}
 				<p>{{modelUsedAvailabilityText}}</p>
 
@@ -924,7 +933,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{% set whichModelsForNewDatasetsReply = replies[whichModelsForNewDatasetsPath]|reply_items %}
 				
 				{% if whichModelsForNewDatasetsReply %}
-					<p>We will use the following models to generate new datasets:</p>
+					<p>We will use the following to generate new datasets:</p>
 					{% for itemUuid in whichModelsForNewDatasetsReply %}
 						<li>{{ km.entities.choices[itemUuid].label }}</li>
 					{% endfor %}
@@ -2315,17 +2324,28 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 
 	<h4>5.1 Datasets this project plans to create</h4>
 	{% set datasetsPath = [uuids.preservingAndSharingDataCUuid, uuids.datasetsQUuid]|reply_path %}
+	{% set datasetsReply = replies[datasetsPath]|reply_str_value %}
+	{% if datasetsReply == uuids.iWillNotBeProducingAnyDatasetsAsPartOfThisProjectAUuid %}
+		No data will be created by this project.
+	{% endif %}
+
 	{% set datasetListPath = [datasetsPath, uuids.specifyAListOfDatasetsYouWillBeProducingAUuid, uuids.listOfDatasetsQLUuid]|reply_path %}	
 	{% set datasetListReply = replies[datasetListPath]|reply_items %}
 	
 	{% if datasetListReply|length > 0 %}
 
-		{# test table 
+		{# test table #}
 		<section>
 		<html>
 		<body>
 		<P style="page-break-before: always">
-		
+		<style>
+			table, th, td {
+				border: 1px solid black;
+				border-collapse: collapse;
+			}
+		</style>
+
 		{% set tableHeaders = ['Title', 'Description', 'License'] %}
 
 		<table>
@@ -2350,12 +2370,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 			<TD class="c2">OGL etc </TD>
 			</TR>
 		{% endfor %}
-		<style>
-			table, th, td {
-				border: 1px solid black;
-				border-collapse: collapse;
-			}
-		</style>
+
 		</table>
 
 		<P style="page-break-before: always">
@@ -2364,7 +2379,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 		</html>
 		</section>
 
-		 end of test table #}
+		 {# end of test table #}
 
 		<ul>
 		{% for itemUuid in datasetListReply %}
@@ -2972,14 +2987,29 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{% set samplesLongTermPlanPath = [samplesListPath, itemUuid, uuids.areThereLongTermPreservationPlansInPlaceForThisPhysicalCollectionQUuid]|reply_path %}
 				{% set samplesLongTermPlanReply = replies[samplesLongTermPlanPath]|reply_str_value %}
 
-				{% if samplesLongTermPlanReply == uuids.yesItWillBeStoredAtASpecialisedUkcehFacilityAUuid %}
+				{% if samplesLongTermPlanReply == uuids.noItWillNotBeKeptItInPerpetuity_2AUuid %}
+					{% set samplesLongTermText = "It will not be kept in perpetuity." %}
+					{% set whySamplesNotKeptPath = [samplesLongTermPlanPath, uuids.noItWillNotBeKeptItInPerpetuity_2AUuid, uuids.why_9QUuid]|reply_path %}
+					{% set whySamplesNotKeptReply = replies[whySamplesNotKeptPath]|reply_str_value %}
+
+					{% if whySamplesNotKeptReply %}
+						{% if whySamplesNotKeptReply == uuids.otherReasonS_8AUuid %}
+							{% set samplesPleaseSpecifyPath = [whySamplesNotKeptPath, uuids.otherReasonS_8AUuid, uuids.pleaseSpecify_14QUuid]|reply_path %}
+							{% set samplesPleaseSpecifyReply = replies[samplesPleaseSpecifyPath]|reply_str_value  %}
+							{% set samplesLongTermText = "It will not be kept in perpetuity. " + samplesPleaseSpecifyReply + "."%}
+						{% else %}	
+							{% set samplesLongTermText = "It will not be kept in perpetuity. " + km.entities.answers[whySamplesNotKeptReply].label %}
+						{% endif %}
+					{% endif %}
+
+				{% elif samplesLongTermPlanReply == uuids.yesItWillBeStoredAtASpecialisedUkcehFacilityAUuid %}
 					{% set samplesLongTermText = "It will be stored at a specialised UKCEH facility." %}
+
 				{% elif samplesLongTermPlanReply == uuids.yesItWillBeArchivedInASpecialisedFacilityAUuid %}
 					{% set nameOfFacilityPath = [samplesLongTermPlanPath, uuids.yesItWillBeArchivedInASpecialisedFacilityAUuid, uuids.nameOfFacilityQUuid]|reply_path %}
 					{% set nameOfFacilityReply = replies[nameOfFacilityPath]|reply_str_value %}
 					{% set lenghtSampleKeptPath = [samplesLongTermPlanPath, uuids.yesItWillBeArchivedInASpecialisedFacilityAUuid, uuids.howLongWillThisCollectionBeKeptQUuid]|reply_path %}
 					{% set lenghtSampleKeptReply = replies[lenghtSampleKeptPath]|reply_str_value %}
-
 					{% if lenghtSampleKeptReply == uuids.forAFixedPeriod_4AUuid %}
 						{% set specifyLengthKeptPath = [lenghtSampleKeptPath, uuids.forAFixedPeriod_4AUuid, uuids.specifyForHowLongCollectionWillBeKeptQUuid]|reply_path %}
 						{% set specifyLengthKeptReply = replies[specifyLengthKeptPath]|reply_str_value %}
@@ -2987,16 +3017,6 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 					{% elif lenghtSampleKeptReply == uuids.asLongAsTechnicallyPossible_4AUuid %}
 						{% set samplesLongTermText = "It will be archived in the following specialised facility: " + nameOfFacilityReply + " and will be kept " + km.entities.answers[lenghtSampleKeptReply].label %}
 					{% endif %}
-				{% elif samplesLongTermPlanReply == uuids.noItWillNotBeKeptItInPerpetuity_2AUuid %}	
-					{% set whySamplesNotKeptPath = [samplesLongTermPlanPath, uuids.noItWillNotBeKeptItInPerpetuity_2AUuid, uuids.why_9QUuid]|reply_path %}
-					{% set whySamplesNotKeptReply = replies[whySamplesNotKeptPath]|reply_str_value %}
-					{% if whySamplesNotKeptReply == uuids.otherReasonS_8AUuid %}
-						{% set samplesPleaseSpecifyPath = [whySamplesNotKeptPath, uuids.otherReasonS_8AUuid, uuids.pleaseSpecify_14QUuid] %}
-						{% set samplesPleaseSpecifyReply = replies[samplesPleaseSpecifyPath].label %}
-						{% set samplesLongTermText = "It will not be kept in perpetuity. " + samplesPleaseSpecifyReply %}
-					{% else %}	
-						{% set samplesLongTermText = "It will not be kept in perpetuity. " + km.entities.answers[whySamplesNotKeptReply].label %}
-					{% endif%}	
 				{% endif %}	
 				<p><strong>Long term preservation plan</strong> {{samplesLongTermText}}</p>			
 
