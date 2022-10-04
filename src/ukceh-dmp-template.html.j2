@@ -4,6 +4,9 @@
 {% set projectName = replies[projectNamePath]|reply_str_value %}
 {% set projectNumberPath = [uuids.projectInformationCUuid, uuids.projectNumberQUuid]|reply_path %}
 {% set projectNumber = replies[projectNumberPath]|reply_str_value %}
+
+{% set funderPath = [uuids.projectInformationCUuid, uuids.fundingQLUuid]|reply_path %}
+{% set funderReply = replies[funderPath]|reply_items %}
 <h4>UKCEH Project</h4> 
 <dl>
 	<dt>Project name</dt> <dd>{{projectName}}</dd>	
@@ -39,6 +42,18 @@
 			<ul>
 				<li><a href="https://www.legislation.gov.uk/ukpga/2018/12/pdfs/ukpga_20180012_en.pdf" target="_blank">Data Protection Act 2018</a>,</li>
 				<li><a href="https://gdpr-info.eu/" target="_blank">General Data Protection Regulation (GDPR)</a></li>
+				{% if funderReply|length > 0 %}
+					{% for itemUuid in funderReply %}
+						{% set funderNamePath = [funderPath, itemUuid, uuids.funderQUuid]|reply_path %}
+						{% set funderNameReply = replies[funderNamePath]|reply_str_value %}
+						{% set funderNameReplySplit = funderNameReply.split("'")[3] %}
+						{% if (funderNameReplySplit == "Natural Environment Research Council" or funderNameReplySplit == "NERC") %}
+							<li><a href="https://www.ukri.org/about-us/nerc/our-policies-and-standards/nerc-data-policy/" target="_blank">NERC Data Policy</a></li>
+						{% else %}
+							<li><a href="https://cehacuk.sharepoint.com/sites/research-data-management/SitePages/Data-Policies.aspx" target="_blank">UKCEH guidance on data policy</a></li>
+						{% endif %}
+					{% endfor %}
+				{% endif %}
 			</ul>
 		</dd>					
 </dl>
@@ -47,27 +62,22 @@
 
 <h4 class="newpage">Timeline</h4>
 <dl>
-	<dt>Proposal stage</dt>
+	<dt>Before submitting the proposal</dt>
 		<dd>
-			Generate the DMP based on planned approach.
+			We will generate an outline DMP based on key aspects of our planned approach.
 		</dd>
 	<dt>First 3-6 months of project</dt>
 		<dd>
-			The proposal DMP should be updated to reflect the need for more planning. Data Management Planning is dynamic and updates can be made during the lifetime of the project.
+			We will update the proposal DMP to fully consider all planned data activities during the project.
 		</dd>
-	<dt>Annually</dt>
+	<dt>During the project</dt>
 		<dd>
-			The plan should be reviewed and updated at least annually.
+			We will review the DMP regularly (at least annually) and update as necessary to reflect changes.
+			Detailed planning will start for the deposit of any datasets identified as of long-term value 6-9 months before project end.
 		</dd>	
-	<dt>6-9 months before project end</dt>
-		<dd>
-			Detailed planning should start for the deposit of any datasets identified as of long-term value*. 
-			For datasets to be archived at the EIDC, specific details regarding deposit and subsequent access to data will be defined in an EIDC Service Agreement (SA). 
-			The SA(s) should be appended to this document when developed. Other data centres will have similar documents. 
-		</dd>
 	<dt>End of project</dt>
 		<dd>
-			Review the DMP to confirm that the Preservation Plan has been implemented for each dataset identified as of long-term value.
+			We will review the DMP to confirm that the Preservation Plan has been implemented for each dataset identified as of long-term value.
 		</dd>
 </dl>
 
@@ -81,8 +91,6 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 	<h3 class = "newpager">1. Project Information</h3>
 	{% set acronymPath = [uuids.projectInformationCUuid, uuids.projectAcronymOrShortNameQUuid]|reply_path %}
 	{% set acronymReply = replies[acronymPath]|reply_str_value %}
-	{% set funderPath = [uuids.projectInformationCUuid, uuids.fundingQLUuid]|reply_path %}
-	{% set funderReply = replies[funderPath]|reply_items %}
 	
 	{# Abstract #}
 	{% set projectAbstractPath = [uuids.projectInformationCUuid, uuids.projectAbstractQUuid]|reply_path %}
@@ -95,10 +103,15 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 			<dd>
 				{{projectName}}
 			</dd>
-		<dt>Project Acronym</dt>
+
+		{% if acronymReply %}
+			<dt>Project Acronym</dt>
 			<dd>
 				{{acronymReply}}
 			</dd>
+		{% else %}
+			<br>
+		{% endif %}
 		<dt>Project Abstract</dt> 
 			<dd>
 				{{projectAbstractReply}}
@@ -312,7 +325,33 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 		{% elif haveYouBudgetedForThisReply == uuids. yes_2AUuid %}
 			<p>Hardware required and budgeted for: {{whatHardwareOrSoftwareWillYouRequireReply}}</p>
 		{% endif %}
-	{% endif %}	
+	{% endif %}
+
+
+	{# Data volume #}
+	{% set dataVolumePath = [uuids.projectInformationCUuid, uuids.whatVolumeOfDataYouWillBeWorkingWithQUuid]|reply_path %}
+	{% set dataVolumeReply = replies[dataVolumePath]|reply_str_value %}
+
+	{% if dataVolumeReply == uuids.totalDataVolumeIs1TbAUuid %}
+		The total volume of this project will collect is >1Tb. 
+
+		{% set storageLimitationsOfDataVolumePath = [dataVolumePath, uuids.totalDataVolumeIs1TbAUuid, uuids.haveYouConsideredTheStorageLimitationsOfWorkingWithThisVolumeOfDataQUuid]|reply_path %}
+		{% set storageLimitationsOfDataVolumeReply = replies[storageLimitationsOfDataVolumePath]|reply_str_value %}
+		
+		{% if storageLimitationsOfDataVolumeReply == uuids.yes_40AUuid %}
+			{% set arrangementsToAvoidStorageProblemsPath = [storageLimitationsOfDataVolumePath, uuids.yes_40AUuid, uuids.specifyAnyArrangementsYouHaveMadeToAvoidProblemsQUuid]|reply_path %}
+			{% set arrangementsToAvoidStorageProblemsReply = replies[arrangementsToAvoidStorageProblemsPath]|reply_str_value %}
+			Arrangements to avoid problems working with this volume of data: {{arrangementsToAvoidStorageProblemsReply}}
+
+		{% elif storageLimitationsOfDataVolumeReply == uuids.no_38AUuid %}
+			We haven't yet considered the storage limitations on working with this volume of data.
+		{% endif %}
+
+	{% elif dataVolumeReply == uuids.totalDataVolumeIsSmallEnoughThatItWontBeAProblemAUuid %}
+		<p>The total volume of data this project will collect is small enough (<1Tb) that it won't be a problem or pose storage constraints.</p> 
+	{% elif dataVolumeReply == uuids.dataVolumeIs100GbBut1TbSoMightCauseAnIssueWithStorageOrCosts_1AUuid %}
+		<p>Data volume is > 100 GB but < 1 TB so might cause an issue with storage or costs.</p>
+	{% endif %}
 
 
 	</dl>
@@ -336,13 +375,13 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 		{% set areYouAwareOfAnyCostOrLicensingImplicationsForTheExistingDatasetsYouPlanToUseReply = replies[areYouAwareOfAnyCostOrLicensingImplicationsForTheExistingDatasetsYouPlanToUsePath]|reply_str_value %}
 		
 		{% if areYouAwareOfAnyCostOrLicensingImplicationsForTheExistingDatasetsYouPlanToUseReply == uuids.no_2_3AUuid %}
-			{% set thirdPartyDataCostText = "We have not planned or budgeted for any costs of datasets that are brought into the project, such as the purchasing of a license or storing large volumes of data." %}
+			<p style="color:red"> We have not planned or budgeted for any costs of datasets that are brought into the project, such as the purchasing of a license or storing large volumes of data.
 		{% elif areYouAwareOfAnyCostOrLicensingImplicationsForTheExistingDatasetsYouPlanToUseReply == uuids.yesWeveCheckedAndThereAreCostAndOrLicensingImplicationsAUuid %}
-			{% set thirdPartyDataCostText = "We have planned and budgeted for any costs of datasets that are brought into the project, such as the purchasing of a license or storing large volumes of data." %}
+			We have planned and budgeted for any costs of datasets that are brought into the project, such as the purchasing of a license or storing large volumes of data.
 		{% elif areYouAwareOfAnyCostOrLicensingImplicationsForTheExistingDatasetsYouPlanToUseReply == uuids.yes_2_3AUuid %}
-			{% set thirdPartyDataCostText = "We have checked and there are no cost or licensing implications for datasets brought into this project." %}
+			We have checked and there are no cost or licensing implications for datasets brought into this project.
 		{% endif %}
-		{{thirdPartyDataCostText}}
+		
 
 		{% set datasetIntroText = "Third party or existing datasets that will be used for this project:"%}
 		<p>{{datasetIntroText}}</p>
@@ -466,10 +505,12 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{% set datasetUsedMakeAvailablePath = [datasetUsedListPath, itemUuid, uuids.howWillYouMakeSureTheSameDataWillBeAvailableForOthersToReproduceYourResultsQUuid]|reply_path %}
 				{% set datasetUsedMakeAvailableReply = replies[datasetUsedMakeAvailablePath]|reply_str_value %}
 				
-				{% if datasetUsedMakeAvailableReply %}
-					<p><strong>Availability of data version</strong> {{km.entities.answers[datasetUsedMakeAvailableReply].label}}</p>
-				{% else %}
+				{% if datasetUsedMakeAvailableReply == uuids.willNotBeAvailableAUuid %}
+					<p><strong>Availability of data version</strong>  <span style="color: red;"> {{km.entities.answers[datasetUsedMakeAvailableReply].label}}</span></p>
+				{% elif datasetUsedMakeAvailableReply is none %}
 					<p><strong>Availability of data version</strong> <span style="color: red;">{{missingInformationText}}</span></p>
+				{% else %}
+					<p><strong>Availability of data version</strong> {{km.entities.answers[datasetUsedMakeAvailableReply].label}}</p>
 				{% endif %}	
 
 				{% set datasetUsedApproximateSizePath = [datasetUsedListPath, itemUuid, uuids.whatIsTheApproximateSizeOfTheDataset_1QUuid]|reply_path %}
@@ -542,20 +583,22 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 
 	{% if modelsUsedReply == uuids.no_10AUuid %}
 		{% set modelsIntroText = "No third party or existing models will used for this project."%}
-		<p>{{modelsIntroText}}</p>
+		{{modelsIntroText}}
 	{% elif modelsUsedReply == uuids.yes_10AUuid %}
+		{% set modelsIntroText = "Third party or existing models will be used for this project."%}
+
 		{% set modelsLicensingCostPath = [modelsUsedPath, uuids.yes_10AUuid, uuids.areYouAwareOfAnyCostOrLicensingImplicationsForTheExistingModelsYouPlanToUseQUuid]|reply_path %}
 		{% set modelsLicensingCostReply = replies [modelsLicensingCostPath] |reply_str_value %}	
 		{% if modelsLicensingCostReply == uuids.no_3_2AUuid %}
-			{% set modelCostText = "We have not planned or budgeted for any costs of models that are brought into the project, such as the purchasing of a license or storing large volumes of data." %}
+			{{modelsIntroText}} <p style="color:red"> We have not planned or budgeted for any costs of models that are brought into the project, such as the purchasing of a license or storing large volumes of data.
 		{% elif modelsLicensingCostReply == uuids.yesWeveCheckedAndThereAreCostAndOrLicensingImplications_2AUuid%}
-			{% set modelCostText = "We have planned and budgeted for any costs of models that are brought into the project, such as the purchasing of a license or storing large volumes of data." %}
+			{{modelsIntroText}} We have planned and budgeted for any costs of models that are brought into the project, such as the purchasing of a license or storing large volumes of data.
 		{% elif modelsLicensingCostReply == uuids.yes_3_2AUuid %}
-			{% set modelCostText = "We have checked and there are no cost or licensing implications." %}
+			{{modelsIntroText}} We have checked and there are no cost or licensing implications.
 		{% endif %}
 
-		{% set modelsIntroText = "Third party or existing models will be used for this project."%}
-		<p>{{modelsIntroText}} {{modelCostText}}</p>
+		
+		{{modelCostText}}
 
 		<p>The following third party or existing models will be used for this project:</p>
 			{% if modelsUsedListReply|length > 0 %}
@@ -739,9 +782,16 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 						{% endfor %}
 						</ul>
 					{% endif %}	
-				{% endif %}
 				
-				{# Question on equipment used tbc #}
+				
+					{# equipment used #}
+					{% set isTheEquipmentUsedCompletelyStandardAndWellDescribedPath = [usingInstrumentsPath, uuids.yes_17AUuid, uuids.isTheEquipmentUsedCompletelyStandardAndWellDescribedQUuid]|reply_path %}
+					{% set isTheEquipmentUsedCompletelyStandardAndWellDescribedReply = replies[isTheEquipmentUsedCompletelyStandardAndWellDescribedPath]|reply_str_value %}
+					{% if isTheEquipmentUsedCompletelyStandardAndWellDescribedReply %}
+						The equipment used is {{km.entities.answers[isTheEquipmentUsedCompletelyStandardAndWellDescribedReply].label|lower}}.
+					{% endif %}
+
+				{% endif %}
 
 				{# Section on transport of raw data and processing #}
 				{% set willYouNeedTransportPath = [observationalOrExperimentalPath, uuids.yes_15AUuid, uuids.willYouNeedToTransferTransportRawDataFromThePlaceItWasCollectedToWhereItWillBeProcessedQUuid]|reply_path %}
@@ -904,7 +954,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{% set formalOwnershipDataReply = replies[formalOwnershipDataPath]|reply_str_value %}
 
 				<p>
-					The Intellectual Property Rights (IPR), are held
+					The Intellectual Property Rights (IPR) are held
 					{% if formalOwnershipDataReply == uuids.theProjectFunderHoldsTheIprAUuid %}
 						by the funder.
 					{% elif formalOwnershipDataReply == uuids.thePartyMeasuringTheDataOwnsItAUuid %}
@@ -1015,7 +1065,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 					{% if howWillTheDataBeCapturedOtherMethodsReply == uuids.allImmediatelyInDigitalFormAUuid %}
 						Data will be captured immediately in digital form.
 					{% elif howWillTheDataBeCapturedOtherMethodsReply == uuids.dataWillFirstBeCapturedOnPaperAUuid %}
-						Data will be captured on paper first,
+						Data will be captured on paper first
 						{% set whoWillDoDataEntryPath = [howWillTheDataBeCapturedOtherMethodsPath, uuids.dataWillFirstBeCapturedOnPaperAUuid, uuids.whoWillDoTheDataEntryQUuid]|reply_path %}
 						{% set whoWillDoDataEntryReply = replies[whoWillDoDataEntryPath]|reply_str_value %}
 
@@ -1188,29 +1238,6 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 					{% endif %}
 				{% endfor %}
 			{% endif %}
-
-			{# Data volume #}
-			{% set dataVolumePath = [createOrCollectEnvironmentalDataPath, uuids.yes_14AUuid, uuids.whatVolumeOfDataYouWillBeWorkingWithQUuid]|reply_path %}
-			{% set dataVolumeReply = replies[dataVolumePath]|reply_str_value %}
-
-			{% if dataVolumeReply == uuids.totalDataVolumeIs1TbAUuid %}
-				<p>The total volume of this project will collect is >1Tb.</p>
-
-				{% set storageLimitationsOfDataVolumePath = [dataVolumePath, uuids.haveYouConsideredTheStorageLimitationsOfWorkingWithThisVolumeOfDataQUuid]|reply_path %}
-				{% set storageLimitationsOfDataVolumeReply = replies[storageLimitationsOfDataVolumePath]|reply_str_value %}
-				
-				{% if storageLimitationsOfDataVolumeReply == uuids.yes_39AUuid %}
-					{% set arrangementsToAvoidStorageProblemsPath = [storageLimitationsOfDataVolumePath, yes_39AUuid, uuids.specifyAnyArrangementsYouHaveMadeToAvoidProblemsQUuid]|reply_path %}
-					{% set arrangementsToAvoidStorageProblemsReply = replies[arrangementsToAvoidStorageProblems]|reply_str_value %}
-
-					{{ arrangementsToAvoidStorageProblemsReply }}
-				{% elif storageLimitationsOfDataVolumeReply == uuids.no_38AUuid %}
-					<p>We haven't yet considered the storage limitations on working with this volume of data.</p>
-				{% endif %}
-
-			{% elif dataVolumeReply == uuids.totalDataVolumeIsSmallEnoughThatItWontBeAProblemAUuid %}
-				<p>The total volume of data this project will collect is small enough (<1Tb) that it won't be a problem or pose storage constraints.</p> 
-			{% endif %}
 		
 			{# Personal data #}
 			{% set consentForPersonalDataPath = [createOrCollectEnvironmentalDataPath, uuids.yes_14AUuid, uuids.willYouNeedConsentForAnyNewlyCollectedPersonalDataQUuid]|reply_path %}
@@ -1236,11 +1263,11 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 
 			{% set fileSystemToStoreDataPath = [processOrAnalyseDataPath, uuids.yes_5_2AUuid, uuids.areYouUsingAFileSystemWithFilesAndFoldersToStoreDataQUuid]|reply_path %}
 			{% set fileSystemToStoreDataReply = replies[fileSystemToStoreDataPath]|reply_str_value %} 
-			
+			<h5> File system and data storage</h5>
 			{% if fileSystemToStoreDataReply == uuids.no_47AUuid %}
-				<p>We are not using a file system with files and folders to store data.</p>
+				We are not using a file system with files and folders to store data.
 			{% elif  fileSystemToStoreDataReply == uuids.yes_48AUuid %}
-				<p>We are using a file system with files and folders to store data.</p>
+				We are using a file system with files and folders to store data.
 				
 				{% set standardNamingProcedurePath = [fileSystemToStoreDataPath, uuids.yes_48AUuid, uuids.doYouHaveAStandardProcedureInPlaceForFolderAndFileNamingQUuid]|reply_path %}
 				{% set standardNamingProcedureReply = replies[standardNamingProcedurePath]|reply_str_value %} 
@@ -1248,16 +1275,16 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{% if standardNamingProcedureReply == uuids.yes_49AUuid %}
 					{% set fileNamingProcedurePath = [standardNamingProcedurePath, uuids.yes_49AUuid, uuids.describeYourFileNamingProcedureQUuid]|reply_path %}
 					{% set fileNamingProcedureReply = replies[fileNamingProcedurePath]|reply_str_value %}
-					<p>This project will use a file and folders system to store data and will follow a standard naming procedure: {{fileNamingProcedureReply}}<p/>
+					Our standard file naming procedure: {{fileNamingProcedureReply}}. 
 				{% endif %}
 
 				{% set metadataEmbeddedPath = [fileSystemToStoreDataPath, uuids.yes_48AUuid, uuids.willAllTheMetadataThatIsEmbeddedInTheFileNamesAlsoBeAvailableInSupportingDocumentsQUuid]|reply_path %}
 				{% set metadataEmbeddedReply = replies[metadataEmbeddedPath]|reply_str_value %}
 
 				{% if metadataEmbeddedReply == uuids.noFileNamesShouldBeConsideredAsStandAlonePartsOfTheMetadataAUuid %}
-					<p>Filenames will be considered as stand-alone parts of the metadata, and will not be explicitly available elsewhere.<p>
+					Filenames will be considered as stand-alone parts of the metadata, and will not be explicitly available elsewhere.
 				{% elif metadataEmbeddedReply == uuids.yesAllMetadataIsAlsoExplicitlyAvailableElsewhereAUuid %}
-					<p>Metadata embedded in file names will also be explicitly available elsewhere.</p>
+					Metadata embedded in file names will also be explicitly available elsewhere.
 				{% endif %}
 
 			{% endif %}
@@ -1275,7 +1302,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 
 				{# Relational databases #}
 				{% if handlingChangesInDataReply %}
-					{% set handlingChangesInData = km.entities.answers[handlingChangesInDataReply].label %}
+					{% set handlingChangesInData = km.entities.answers[handlingChangesInDataReply].label|capitalize %}
 					{{handlingChangesInData}}.</p>
 				{% endif %} 
 			{% endif %}
@@ -1295,7 +1322,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 			{{storageSystem}}
 
 			{# Shared working space #}
-			
+			<h5>Shared workspace</h5>
 			{% set sharedWorkingSpaceForDataPath = [processOrAnalyseDataPath, uuids.yes_5_2AUuid, uuids.willYouBeUsingASharedWorkingSpaceToWorkWithYourDataQUuid]|reply_path %}
 			{% set sharedWorkingSpaceForDataReply = replies[sharedWorkingSpaceForDataPath]|reply_str_value %}
 
@@ -1540,6 +1567,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 			{% endif %}
 
 			{# Transformation/analysis/modelling tools #}
+			<h5>Processing, analysing and modelling tools</h5>
 			{% set transformationAnalysisModellingToolPath = [processOrAnalyseDataPath, uuids.yes_5_2AUuid, uuids.willYouBeUsingATransformationAnalysisModellingToolSuchAsRPythonOrFmeToProcessAndAnalyseModelYourDataQUuid]|reply_path %}
 			{% set transformationAnalysisModellingToolReply = replies[transformationAnalysisModellingToolPath]|reply_str_value %}
 
@@ -1680,9 +1708,9 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{% set graphicalUserInterfaceReply = replies[graphicalUserInterfacePath]|reply_str_value %}
 				
 				{% if graphicalUserInterfaceReply == uuids.no_60AUuid %}
-					<p>The running of scripts/workflows/models does not need to be controlled using a Graphical User Interface (GUI)</p>
+					The running of scripts/workflows/models does not need to be controlled using a Graphical User Interface (GUI).
 				{% elif graphicalUserInterfaceReply == uuids.yesWeWillUseAToolEGShinyToRunWorkflowsAndAnalyseResultsAUuid %}
-					<p>We will use a tool (e.g. Shiny) to run workflows and analyse results.</p>
+					We will use a tool (e.g. Shiny) to run workflows and analyse results.
 				{% endif %}
 
 				{# Remote computers #}
@@ -1690,9 +1718,9 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{% set remoteComputerReply = replies[remoteComputerPath]|reply_str_value %}
 
 				{% if remoteComputerReply == uuids.no_61AUuid %}
-					<p>The running of scripts/workflows/models does not require remote computers to be run.</p>
+					The running of scripts/workflows/models does not require remote computers to be run.
 				{% elif remoteComputerReply == uuids.yes_61AUuid %}
-					<p>The running of scripts/workflows/models requires remote computers to be run.</p>
+					The running of scripts/workflows/models requires remote computers to be run.
 				{% endif %}
 
 				{# High performance computing #}
@@ -1860,6 +1888,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				<p>We will make use of metadata fields in our output data files to describe what the data are and how they were obtained, and we will also provide additional information in documentation.</p>
 			{% endif %}
 
+			<h5>Quality Checks</h5>
 			{# Validate integrity #}
 			{% set willYouValidateIntegrityOfResultsPath = [processOrAnalyseDataPath, uuids.yes_5_2AUuid, uuids.willYouValidateTheIntegrityOfYourResultsBeforePublishingTheDataOrArticlesReportsBasedOnTheDataQUuid]|reply_path %}
 			{% set willYouValidateIntegrityOfResultsReply = replies[willYouValidateIntegrityOfResultsPath]|reply_str_value %}
@@ -1900,6 +1929,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{% endif %}				
 			{% endif %}
 
+			<h5>Security</h5>
 			{# Is the risk of information loss acceptably low #}
 			{% set riskOfInformationLossPath = [processOrAnalyseDataPath, uuids.yes_5_2AUuid, uuids.isTheRiskOfInformationLossLeaksAndVandalismAcceptablyLowQUuid]|reply_path %}
 			{% set riskOfInformationLossReply = replies[riskOfInformationLossPath]|reply_str_value %}
@@ -1909,9 +1939,9 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{% set dataStoredExternallyReply = replies[dataStoredExternallyPath]|reply_str_value %}
 
 				{% if dataStoredExternallyReply == uuids.no_74AUuid %}
-					<p>Project members will not store data or software externally (e.g. computers in the lab/field, external hard drives), which means we will need to make sure data is adequately backed-up and who has access to facilities where data are stored.</p>
+					<p>Project members will not store data or software externally (e.g. computers in the lab/field, external hard drives), which means we will need to make sure data are adequately backed-up and control who has access to facilities where data are stored.</p>
 				{% elif dataStoredExternallyReply == uuids.yes_72AUuid %}
-					<p>Project members will store data or software externally (e.g. computers in the lab/field, external hard drives), which means we will need to make sure data is adequately backed-up and who has access to facilities where data are stored.</p>
+					<p>Project members will store data or software externally (e.g. computers in the lab/field, external hard drives).</p>
 				{% endif %}
 
 				{# Do project members carry data with them #}
@@ -2333,22 +2363,18 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 	{% set datasetListReply = replies[datasetListPath]|reply_items %}
 	
 	{% if datasetListReply|length > 0 %}
+		<p> <span style="color: rgb(46, 77, 127);"> A csv table of datasets listed here will be made available via email after submission.</span></p>
 
 		{# test table #}
-		<section>
-		<html>
-		<body>
+{#		
+		
 		<P style="page-break-before: always">
-		<style>
-			table, th, td {
-				border: 1px solid black;
-				border-collapse: collapse;
-			}
-		</style>
+		
 
 		{% set tableHeaders = ['Title', 'Description', 'License'] %}
 
 		<table>
+		<div class = "rotated">
 		<thead>
 		<tr>
 		{% for item in tableHeaders %}
@@ -2370,16 +2396,20 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 			<TD class="c2">OGL etc </TD>
 			</TR>
 		{% endfor %}
-
+		</div>
 		</table>
+		<style>
+			table, th, td {
+				border: 1px solid black;
+				border-collapse: collapse;
+			}
+		</style>
 
+		
 		<P style="page-break-before: always">
 		
-		</body>
-		</html>
-		</section>
-
-		 {# end of test table #}
+#}
+		 {#end of test table #}
 
 		<ul>
 		{% for itemUuid in datasetListReply %}
@@ -2391,6 +2421,15 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 			{% set datasetDescriptionPath = [datasetListPath, itemUuid, uuids.datasetDescriptionQUuid]|reply_path %}
 			{% set datasetDescriptionReply = replies[datasetDescriptionPath]|reply_str_value %}
 			<p><strong>Brief description, including format </strong>{{datasetDescriptionReply}}</p>
+
+			{# ID #}
+			{% set datasetIDPath = [datasetListPath, itemUuid, uuids.datasetIdentifierIfAnyQUuid]|reply_path %}
+			{% set datasetIDReply = replies[datasetIDPath]|reply_str_value %}
+			{% if datasetIDReply %}
+				{{datasetIDReply}}
+			{% else %}
+				Dataset identifier not yet known or not given.
+			{% endif %}
 
 			{% set datasetLicencePath = [datasetListPath, itemUuid, uuids.whatLicenceSWillTheDatasetBeSharedUnderQLUuid]|reply_path %}
 			{% set datasetLicenceListReply = replies[datasetLicencePath]|reply_items %}
@@ -2444,13 +2483,6 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				</ul>
 			{% endif %}
 			
-
-			{% set datasetExistingDataPath = [datasetListPath, itemUuid, uuids.areDataDerivedFromExistingDataQUuid]|reply_path %}
-			{% set datasetExistingDataReply = replies[datasetExistingDataPath]|reply_str_value %}
-			{% if datasetExistingDataReply %}
-				<p><strong>Are data derived from existing data? </strong>{{ km.entities.answers[datasetExistingDataReply].label }}</p>
-			{% endif %}
-
 			{% set datasetSizePath = [datasetListPath, itemUuid, uuids.whatIsTheApproximateSizeOfTheDatasetQUuid]|reply_path %}
 			{% set datasetSizeReply = replies[datasetSizePath]|reply_str_value %}
 			<p><strong>Size/Quantity</strong>
@@ -2459,6 +2491,18 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 			{% set datasetOwnerPath = [datasetListPath, itemUuid, uuids.whichOrganisationSHoldTheIntellectualPropertyRightsIprToThisDatasetQUuid]|reply_path %}
 			{% set datasetOwnerReply = replies[datasetOwnerPath]|reply_str_value %}
 			<p><strong>Data Owner/IPR</strong> {{datasetOwnerReply}}</p>
+
+			{% set doYouConsiderThisToBeEnvironmentalDataOrAnInformationProductPath = [datasetListPath, itemUuid, uuids.doYouConsiderThisToBeEnvironmentalDataOrAnInformationProductQUuid]|reply_path %}
+			{% set doYouConsiderThisToBeEnvironmentalDataOrAnInformationProductReply = replies[doYouConsiderThisToBeEnvironmentalDataOrAnInformationProductPath]|reply_str_value %}
+			{% if doYouConsiderThisToBeEnvironmentalDataOrAnInformationProductReply %}
+				<p><strong>Type of Data</strong> {{ km.entities.answers[doYouConsiderThisToBeEnvironmentalDataOrAnInformationProductReply].label}}</p>
+			{% endif %}
+
+			{% set datasetExistingDataPath = [datasetListPath, itemUuid, uuids.areDataDerivedFromExistingDataQUuid]|reply_path %}
+			{% set datasetExistingDataReply = replies[datasetExistingDataPath]|reply_str_value %}
+			{% if datasetExistingDataReply %}
+				<p><strong>Are data derived from existing data? </strong>{{ km.entities.answers[datasetExistingDataReply].label }}</p>
+			{% endif %}
 
 			{% set datasetDateGeneratedPath = [datasetListPath, itemUuid, uuids.whatIsTheEstimatedDateForWhenTheDatasetWillBeGeneratedQUuid]|reply_path %}
 			{% set datasetDateGeneratedReply = replies[datasetDateGeneratedPath]|reply_str_value %}
@@ -2549,12 +2593,16 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				<p><strong> {{depositDateText}} </strong> {{depositDate}}</p>
 				<p><strong>Planned access embargo </strong> {{embargoText}}</p>
 				<p><strong>{{longTermText}}</strong> {{datasetLongTermPlan}}</p>
-				{% if notKeptWhyReply == uuids.otherReasonS_3AUuid %}
-					{% set notKeptWhyPleaseSpecifyPath =  [notKeptWhyPath, uuids.otherReasonS_3AUuid, uuids.pleaseSpecify_5QUuid]|reply_path %}
-					{% set notKeptWhyPleaseSpecifyReply = replies[notKeptWhyPleaseSpecifyPath]|reply_str_value%}
-					<p><strong>Reason not kept </strong> {{notKeptWhyPleaseSpecifyReply}} </p>
+				{% if notKeptWhyReply %}	
+					{% if notKeptWhyReply == uuids.otherReasonS_3AUuid %}
+						{% set notKeptWhyPleaseSpecifyPath =  [notKeptWhyPath, uuids.otherReasonS_3AUuid, uuids.pleaseSpecify_5QUuid]|reply_path %}
+						{% set notKeptWhyPleaseSpecifyReply = replies[notKeptWhyPleaseSpecifyPath]|reply_str_value%}
+						<p><strong>Reason not kept </strong> {{notKeptWhyPleaseSpecifyReply}} </p>
+					{% elif notKeptWhyReply == (uuids.datasetIsOfNoLongTermValueAUuid) or (uuids.inadequateAndOrInsufficientFundsOrInfrastructureAUuid) or (uuids.itIsNotAFunderRequirementAUuid) or (theDataCanBeRegeneratedByAModelWithoutSignificantComputingBarriersAUuid) or (theCostOfRegeneratingTheDataDoesNotExceedTheCostOfCurationAUuid) %}
+						<p><strong>Reason not kept </strong> {{km.entities.answers[notKeptWhyReply].label}} </p>
+					{% endif %}
 				{% else %}
-					<p><strong>Reason not kept </strong> {{km.entities.answers[notKeptWhyReply].label}} </p>
+					<p><strong>Reason not kept </strong> <span style="color: red;">Reason not given</span>
 				{% endif %}	
 			{% endif %}
 

@@ -13,7 +13,15 @@
 }
 
 @page rotated { 
-  size : landscape 
+  size : landscape;
+}
+
+table .landscape {
+  page: rotated;
+  transform-origin: top left;
+  transform: translateX(100vw) rotate(90deg);
+  width: 100vh;
+  height: 100vw;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -36,6 +44,10 @@ h3 {
 
 h4 {
   font-size: 16pt;
+}
+
+h5 {
+  font-size: 12pt
 }
 
 html, body {
