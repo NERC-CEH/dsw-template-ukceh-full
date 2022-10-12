@@ -1939,7 +1939,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{% set dataStoredExternallyReply = replies[dataStoredExternallyPath]|reply_str_value %}
 
 				{% if dataStoredExternallyReply == uuids.no_74AUuid %}
-					<p>Project members will not store data or software externally (e.g. computers in the lab/field, external hard drives), which means we will need to make sure data are adequately backed-up and control who has access to facilities where data are stored.</p>
+					<p>Project members will not store data or software externally (e.g. computers in the lab/field, external hard drives connected to those computers), which means we will need to make sure data are adequately backed-up and control who has access to facilities where data are stored.</p>
 				{% elif dataStoredExternallyReply == uuids.yes_72AUuid %}
 					<p>Project members will store data or software externally (e.g. computers in the lab/field, external hard drives).</p>
 				{% endif %}
@@ -1958,9 +1958,9 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 						{% set areDataEncryptedReply = replies[areDataEncryptedPath]|reply_str_value %}
 
 						{% if areDataEncryptedReply == uuids.no_76AUuid %}
-							Data will not be encryped.
+							Data will not be encrypted.
 						{% elif areDataEncryptedReply == uuids.yes_74AUuid %}
-							Data will be encryped.
+							Data will be encrypted.
 						{% endif %}
 
 						{# Password protection#}
@@ -2449,15 +2449,27 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 
 						{% set whatLicenceConditionsPath = [datasetLicenceSomeRestrictionsPath, uuids.whatConditions_1QUuid]|reply_path %}
 						{% set whatLicenceConditionsReply = replies[whatLicenceConditionsPath]|reply_str_value %}
-						{{whatLicenceConditionsReply}}
+						{% if whatLicenceConditionsReply %}
+							{{whatLicenceConditionsReply}}
+						{% else %}
+							Licence conditions not given.
+						{% endif %}
 
 						{% set linkToTheLicenceTextPath = [datasetLicenceSomeRestrictionsPath, uuids.linkToTheLicenceText_1QUuid]|reply_path %}
 						{% set linkToTheLicenceTextReply = replies[linkToTheLicenceTextPath]|reply_str_value %}
-						{{linkToTheLicenceTextReply}}
+						{% if linkToTheLicenceTextReply %}
+							{{linkToTheLicenceTextReply}}
+						{% else %}
+							Link to the licence text not given.
+						{% endif %}
 
 						{% set howWillReUsersBeAbleToGetAccessPath = [datasetLicenceSomeRestrictionsPath, uuids.howWillReUsersBeAbleToGetAccess_1QUuid]|reply_path %}
 						{% set howWillReUsersBeAbleToGetAccessReply = replies[howWillReUsersBeAbleToGetAccessPath]|reply_str_value %}
-						<p>Users will get access to the data: {{ km.entities.answers[howWillReUsersBeAbleToGetAccessReply].label }}</p>
+						{% if howWillReUsersBeAbleToGetAccessReply %}
+							<p>Users will get access to the data: {{ km.entities.answers[howWillReUsersBeAbleToGetAccessReply].label }}</p>
+						{% else %}
+							Details of how users will get access not given.
+						{% endif %}
 
 						{% if howWillReUsersBeAbleToGetAccessReply == uuids.throughAnotherProcess_1AUuid %}
 							{% set whatProcessPath = [howWillReUsersBeAbleToGetAccessPath, uuids.throughAnotherProcess_1AUuid, uuids.whatProcess_1QUuid]|reply_path %}
@@ -2477,7 +2489,9 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 
 					{% set startingDatePath = [datasetLicencePath, itemLicenceUuid, uuids.startingDate_1QUuid]|reply_path %}
 					{% set startingDateReply = replies[startingDatePath]|reply_str_value %}
-					<p>Starting date: {{startingDateReply}}</p>
+					{% if startingDateReply %}
+						<p>Starting date: {{startingDateReply}}</p>
+					{% endif %}
 
 				{% endfor %}
 				</ul>
@@ -2572,13 +2586,19 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{% set depositDate = 'NA' %}
 				{% set localLocationPath = [datasetLongTermPlanPath, uuids.yesItWillBeKeptLocallyAUuid, uuids.pleaseProvideTheLocalLocationForThisDatasetQUuid]|reply_path %}
 				{% set localLocationReply = replies[localLocationPath]|reply_str_value %}
+				
 				{% set localStorageWhyPath = [datasetLongTermPlanPath, uuids.yesItWillBeKeptLocallyAUuid, uuids.why_1QUuid]|reply_path %}
 				{% set localStorageWhyReply = replies[localStorageWhyPath]|reply_str_value %}
+
+				{% set localStorageWhypleaseSpecifyPath = [localStorageWhyPath, uuids.other_2_1AUuid, uuids.pleaseSpecify_2_1QUuid]|reply_path %}
+            	{% set localStorageWhypleaseSpecifyReply = replies[localStorageWhypleaseSpecifyPath]|reply_str_value %}
 
 				<p><strong> {{depositDateText}} </strong> {{depositDate}}</p>
 				<p><strong>{{longTermText}}</strong> {{datasetLongTermPlan}}</p>
 				<p><strong>Local storage location: </strong> {{localLocationReply}}</p>
-				{% if localStorageWhyReply%}
+				{% if localStorageWhyReply == uuids.other_2_1AUuid %}
+                	<p><strong>Reason to store locally </strong> {{localStorageWhypleaseSpecifyReply}}</p>
+				{% else %}
 					<p><strong>Reason to store locally </strong> {{km.entities.answers[localStorageWhyReply].label}}</p>
 				{% endif %}
 
@@ -3086,14 +3106,18 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 	{% elif willRepositoriesChargeForServicesReply == uuids.yes_129AUuid %}
 		{% set howWillYouBePayingForTheseServicesPath = [willRepositoriesChargeForServicesPath, uuids.yes_129AUuid, uuids.howWillYouBePayingForTheseServicesQUuid]|reply_path %}
 		{% set howWillYouBePayingForTheseServicesReply = replies[howWillYouBePayingForTheseServicesPath]|reply_str_value %}
- 		
-		{% if howWillYouBePayingForTheseServicesReply == uuids.weWillPayForTheseCostsByOtherMeansAUuid %}
-			{% set howWillYouPayForTheCostsOfTheseServicesPath = [howWillYouBePayingForTheseServicesPath,uuids.weWillPayForTheseCostsByOtherMeansAUuid, uuids.howWillYouPayForTheseCostsQUuid]|reply_path %}
-			{% set howWillYouPayForTheCostsOfTheseServicesReply = replies[howWillYouPayForTheCostsOfTheseServicesPath]|reply_str_value %}
-			{% set willRepositoriesChargeForServicesText =  "The repositories will be charging for their services and we will pay for these costs by " + howWillYouPayForTheCostsOfTheseServicesReply|lower + "." %}
-		{% else %}
-			{% set willRepositoriesChargeForServicesText =  "The repositories will be charging for their services and " + km.entities.answers[howWillYouBePayingForTheseServicesReply].label|lower + "." %}
+ 		{% set willRepositoriesChargeForServicesText = "The repositories will be charging for their services." %}
+
+		{% if howWillYouBePayingForTheseServicesReply %}
+			{% if howWillYouBePayingForTheseServicesReply == uuids.weWillPayForTheseCostsByOtherMeansAUuid %}
+				{% set howWillYouPayForTheCostsOfTheseServicesPath = [howWillYouBePayingForTheseServicesPath,uuids.weWillPayForTheseCostsByOtherMeansAUuid, uuids.howWillYouPayForTheseCostsQUuid]|reply_path %}
+				{% set howWillYouPayForTheCostsOfTheseServicesReply = replies[howWillYouPayForTheCostsOfTheseServicesPath]|reply_str_value %}
+				{% set willRepositoriesChargeForServicesText =  "The repositories will be charging for their services and we will pay for these costs by " + howWillYouPayForTheCostsOfTheseServicesReply|lower + "." %}
+			{% elif howWillYouBePayingForTheseServicesReply == (uuids.weHaveBudgetedForTheseCostsInTheProjectAUuid) or (uuids.theseCostsWillBeCarriedByOneOfTheDepartmentsInvolvedInTheProjectAUuid) or (uuids.theseCostsWillBeCarriedByOneOfTheInstitutesInvolvedInTheProjectAUuid) %}
+				{% set willRepositoriesChargeForServicesText =  "The repositories will be charging for their services and " + km.entities.answers[howWillYouBePayingForTheseServicesReply].label|lower + "." %}
+			{% endif %}
 		{% endif %}
+
 		<p>{{willRepositoriesChargeForServicesText}}</p>
 	{% elif willRepositoriesChargeForServicesReply == uuids.notApplicableWeWontDepositAnyProjectDataAUuid %}
 		{# do nothing? #}
