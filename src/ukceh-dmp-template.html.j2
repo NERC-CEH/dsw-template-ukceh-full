@@ -1,3 +1,190 @@
+{# Contradiction warning boxes #}
+
+{# Ch 3 yes collecting data, Ch 5 no not collecting data - need to do reverse #}
+{% set createOrCollectEnvironmentalDataPath = [uuids.creatingAndCollectingDataCUuid, uuids.willYourProjectCollectOrCreateResearchDataOrDataRelatedToolsQUuid]|reply_path %}
+{% set createOrCollectEnvironmentalDataReply = replies[createOrCollectEnvironmentalDataPath]|reply_str_value %}
+
+{% set datasetsPath = [uuids.preservingAndSharingDataCUuid, uuids.datasetsQUuid]|reply_path %}
+{% set datasetsReply = replies[datasetsPath]|reply_str_value %}
+
+{% set modelsPath = [uuids.preservingAndSharingDataCUuid, uuids.modelsQUuid]|reply_path %}
+{% set modelsReply = replies[modelsPath]|reply_str_value%}
+
+{% set softwarePath = [uuids.preservingAndSharingDataCUuid, uuids.softwarePackagesQUuid]|reply_path %}
+{% set softwareReply = replies[softwarePath]|reply_str_value%}
+
+{% if (createOrCollectEnvironmentalDataReply == uuids.yes_14AUuid) and (datasetsReply == uuids.iWillNotBeProducingAnyDatasetsAsPartOfThisProjectAUuid) and (modelsReply == uuids.iWillNotBeProducingModelsAsPartOfThisProjectAUuid ) and (softwareReply == uuids.iWillNotBeProducingAnySoftwarePackagesAsPartOfThisProjectAUuid) %}
+<h6 class = box>
+	<span style="color: red;">
+	<p><b>Issue preventing DMP submission</b> <br>
+	Chapter 3 question 1 you have said your project will collect or create research data, models or other data-related tools 
+	but in Chapter 5 you said you are not producing any! </p>
+	</span>
+</h6>
+{% elif(createOrCollectEnvironmentalDataReply == uuids.no_14AUuid) and ((datasetsReply == uuids.specifyAListOfDatasetsYouWillBeProducingAUuid) or (modelsReply == uuids.specifyAListOfModelsYouWillBeProducingAUuid ) or (softwareReply == uuids.specifyAListOfSoftwarePackagesYouWillBeProducingAUuid)) %}
+<h6 class = box>
+	<span style="color: red;">
+	<p><b>Issue preventing DMP submission</b> <br>
+	Chapter 3 question 1 you have said your project will not collect or create research data, models or other data-related tools 
+	but in Chapter 5 you said you are producing some! </p>
+	</span>
+</h6>
+{% endif %}
+
+{# Yes to reusing and/or collecting data (chapters 2 and 3) but no not applicable to Q's in Ch 5 #}
+{% set workingWithThePhilosophyAsOpenAsPossiblePath = [uuids.preservingAndSharingDataCUuid, uuids.willYouBeWorkingWithThePhilosophyAsOpenAsPossibleForYourDataQUuid]|reply_path %}
+{% set workingWithThePhilosophyAsOpenAsPossibleReply = replies[workingWithThePhilosophyAsOpenAsPossiblePath]|reply_str_value %}
+
+{% set funderRequirementToDepositWithRepositoryPath = [uuids.preservingAndSharingDataCUuid, uuids.isThereAFunderRequirementThatAnyOfYourDataAreDepositedWithALongTermRepositoryQUuid]|reply_path %}
+{% set funderRequirementToDepositWithRepositoryReply = replies[funderRequirementToDepositWithRepositoryPath]|reply_str_value %}
+
+{% set canAllOfYourDataBecomeCompletelyOpenImmediatelyPath = [uuids.preservingAndSharingDataCUuid, uuids.canAllOfYourDataBecomeCompletelyOpenImmediatelyQUuid]|reply_path %}
+{% set canAllOfYourDataBecomeCompletelyOpenImmediatelyReply = replies[canAllOfYourDataBecomeCompletelyOpenImmediatelyPath]|reply_str_value %}
+
+{% set willYourResearchDataBePeerReviewedThroughADataJournalPath = [uuids.preservingAndSharingDataCUuid, uuids.willYourResearchDataBePeerReviewedThroughADataJournalQUuid]|reply_path %}
+{% set willYourResearchDataBePeerReviewedThroughADataJournalReply = replies[willYourResearchDataBePeerReviewedThroughADataJournalPath]|reply_str_value %}
+
+{% if (createOrCollectEnvironmentalDataReply == uuids.yes_14AUuid) and ((workingWithThePhilosophyAsOpenAsPossibleReply == uuids.notApplicableNoDataBeingUsedAUuid) or (funderRequirementToDepositWithRepositoryReply == uuids.notApplicableNoDataBeingGeneratedAUuid) or (canAllOfYourDataBecomeCompletelyOpenImmediatelyReply == uuids.notApplicableNoDataBeingUsed_2AUuid) or (willYourResearchDataBePeerReviewedThroughADataJournalReply == uuids.notApplicableNoDataBeingUsed_1AUuid)) %}
+<h6 class = box>
+	<span style="color: red;">
+	<p><b>Issue preventing DMP submission</b> <br>
+	Chapter 3 question 1 you have said your project will collect or create research data, models or other data-related tools 
+	but in Chapter 5 you said not applicable to a question about your data (one or more of Q's 1 - 4)! </p>
+	</span>
+</h6>
+{% endif %}
+
+{#
+If YES to (creating OR reusing data) but NO to processing/analysing --> warning about inconsistency
+If NO to (creating AND reusing data) but YES to processing/analysing --> warning about inconsistency
+#}
+{% set datasetUsedPath = [uuids.reUsingDataCUuid, uuids.willTheProjectUseAnyPreExistingOrThirdPartyDataQUuid]|reply_path %}
+{% set datasetUsedReply = replies[datasetUsedPath]|reply_str_value %}
+
+{% set processOrAnalyseDataPath = [uuids.processingAndAnalysingDataCUuid, uuids.willYourProjectProcessOrAnalyseResearchDataQUuid]|reply_path %}
+{% set processOrAnalyseDataReply = replies[processOrAnalyseDataPath]|reply_str_value %}
+
+{% if ((createOrCollectEnvironmentalDataReply == uuids.yes_14AUuid) or (datasetUsedReply == uuids.yes_3AUuid)) and (processOrAnalyseDataReply == uuids.no_5_2AUuid) %}
+<h6 class = box>
+	<span style="color: red;">
+	<p><b>Inconsistency warning</b> <br>
+	You have said your project will collect or create research (Chapter 3 Q1)  or re-use data (Chapter 2 Q1)
+	but in Chapter 4 you said you are not processing any data! </p>
+	</span>
+</h6>
+{% elif ((createOrCollectEnvironmentalDataReply == uuids.no_14AUuid) and (datasetUsedReply == uuids.no_3AUuid)) and (processOrAnalyseDataReply == uuids.yes_5_2AUuid) %}
+<h6 class = box>
+	<span style="color: red;">
+	<p><b>Inconsistency warning</b> <br>
+	Chapter 3 question 1 you have said your project will not collect, create research or re-use data
+	but in Chapter 4 you said you are processing data! </p>
+	</span>
+</h6>
+{% endif %}
+
+
+{# Get other scenarios from launch planner task
+Warning about inconsistency scenarios:
+Chapter 1 asks "What volume of data you will be working with?" (I will change this to "What volume of data will you be working with?") and give 3 choices.
+Chapter 2 asks for the size of individual 3rd party datasets. It will be tricky to check for inconsistencies other than perhaps if any one dataset > 1TB but Ch1 said < 1TB?
+Chapter 5 asks "Estimate the volume of data you are likely to be depositing with a repository" BUT ONLY IF THE ANSWER IS YES TO "Is there a funder requirement that any of your data are deposited with a long term repository?"
+Check would be: If answer in Ch5 says more data than Ch1 = inconsistent
+#}
+
+
+
+{# Datasets size #}
+{% set dataVolumePath = [uuids.projectInformationCUuid, uuids.whatVolumeOfDataYouWillBeWorkingWithQUuid]|reply_path %}
+{% set dataVolumeReply = replies[dataVolumePath]|reply_str_value %}
+
+{#
+{% if dataVolumeReply == uuids.totalDataVolumeIs1TbAUuid %}
+{% elif dataVolumeReply == uuids.totalDataVolumeIsSmallEnoughThatItWontBeAProblemAUuid %}
+{% elif dataVolumeReply == uuids.dataVolumeIs100GbBut1TbSoMightCauseAnIssueWithStorageOrCosts_1AUuid %}
+{% endif %}
+#}
+
+{# datasets re-used #}
+{% set datasetUsedPath = [uuids.reUsingDataCUuid, uuids.willTheProjectUseAnyPreExistingOrThirdPartyDataQUuid]|reply_path %}
+{% set datasetUsedReply = replies[datasetUsedPath]|reply_str_value %}
+{% set datasetUsedListPath = [datasetUsedPath, uuids.yes_3AUuid, uuids.whatExistingDataResourcesWillYouUseQLUuid]|reply_path %}
+{% set datasetUsedListReply = replies[datasetUsedListPath]|reply_items %}
+{% set datasetUsedApproximateSizeList = [] %}
+
+{% if datasetUsedListReply|length > 0 %}
+	{% for itemUuid in datasetUsedListReply%}
+		{% set datasetUsedApproximateSizePath = [datasetUsedListPath, itemUuid, uuids.whatIsTheApproximateSizeOfTheDataset_1QUuid]|reply_path %}
+		{% set datasetUsedApproximateSizeReply = replies[datasetUsedApproximateSizePath]|reply_str_value %}
+		{% set datasetUsedApproximateSizeList = datasetUsedApproximateSizeList.append(datasetUsedApproximateSizeReply) %}
+	{% endfor %}
+{% endif %}
+
+{# datasets created #}
+{% set datasetsPath = [uuids.preservingAndSharingDataCUuid, uuids.datasetsQUuid]|reply_path %}
+{% set datasetListPath = [datasetsPath, uuids.specifyAListOfDatasetsYouWillBeProducingAUuid, uuids.listOfDatasetsQLUuid]|reply_path %}	
+{% set datasetListReply = replies[datasetListPath]|reply_items %}
+{% set datasetApproximateSizeReplyList = [] %}
+
+{% if datasetListReply|length > 0 %}
+	{% for itemUuid in datasetListReply%}
+		{% set datasetSizePath = [datasetListPath, itemUuid, uuids.whatIsTheApproximateSizeOfTheDatasetQUuid]|reply_path %}
+		{% set datasetSizeReply = replies[datasetSizePath]|reply_str_value %}
+		{% set datasetApproximateSizeReplyList = datasetApproximateSizeReplyList.append(datasetSizeReply) %}
+	{% endfor %}
+{% endif%}
+
+{# if any of the answers to re-used data or created data are greater than 1TB or between 0.5 and 1TB then need to flag #}
+{% if dataVolumeReply == uuids.totalDataVolumeIsSmallEnoughThatItWontBeAProblemAUuid %}
+
+	{% for size in datasetApproximateSizeReplyList %}
+		{% if (size == uuids.greaterThan1TbAUuid or size == uuids.between0_5And1TbAUuid) %}
+			<h6 class = box>
+				<span style="color: red;">
+				<p><b>Inconsistency warning</b> <br>
+				Chapter 1 question 14 you have said your project will use a small amount of data, but in chapter 3 you have listed one or more re-used datasets larger than 0.5 TB  </p>
+				</span>
+			</h6>
+		{% endif %}
+	{% endfor %}
+
+	{% for reusedSize in datasetUsedApproximateSizeList %}
+		{% if (reusedSize == uuids.between0_5And1Tb_1AUuid or reusedSize == uuids.greaterThan1Tb_1AUuid) %}
+			<h6 class = box>
+				<span style="color: red;">
+				<p><b>Inconsistency warning</b> <br>
+				Chapter 1 question 14 you have said your project will use a small amount of data, but in chapter 5 you have listed one or more created datasets larger than 0.5 TB  </p>
+				</span>
+			</h6>
+		{% endif %}
+	{% endfor %}
+{% endif %}
+
+{# if any of the answers to re-used data or created data are greater than 1TB then need to flag #}
+{% if dataVolumeReply == uuids.dataVolumeIs100GbBut1TbSoMightCauseAnIssueWithStorageOrCosts_1AUuid %}
+	{% for size in datasetApproximateSizeReplyList %}
+		{% if size == uuids.greaterThan1TbAUuid %}
+			<h6 class = box>
+				<span style="color: red;">
+				<p><b>Inconsistency warning</b> <br>
+				Chapter 1 question 14 you have said your project will use <1 TB of data, but in chapter 3 you have listed one or more re-used datasets larger than 1 TB </p>
+				</span>
+			</h6>
+		{% endif %}
+	{% endfor %}
+
+	{% for reusedSize in datasetUsedApproximateSizeList %}
+		{% if reusedSize == uuids.greaterThan1Tb_1AUuid %}
+			<h6 class = box>
+				<span style="color: red;">
+				<p><b>Inconsistency warning</b> <br>
+				Chapter 1 question 14 you have said your project will use <1 TB of data, but in chapter 5 you have listed one or more created datasets larger than 1 TB </p>
+				</span>
+			</h6>
+		{% endif %}
+	{% endfor %}
+{% endif %}
+
+
 {# ---- Summary details ---- #}
 
 {% set projectNamePath = [uuids.projectInformationCUuid, uuids.projectTitleQUuid]|reply_path %}
@@ -85,6 +272,7 @@
 DOIs issued for datasets archived at the EIDC can be used as a persistent citation reference and link to discover information about the dataset.  
 Archiving data at the EIDC (or agreed alternative) will help you meet NERC Data Policy, satisfy the requirements of science journals and UKCEH, 
 comply with legal data-sharing obligations under UK law and can ensure their reusability in the future for you and the scientific community as a whole.
+
 
 {# ---- Section ---- #}
 <div class="question">
@@ -2116,7 +2304,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 
 	{# working with the philosophy 'as open as possible' #}
 	{% set workingWithThePhilosophyAsOpenAsPossiblePath = [uuids.preservingAndSharingDataCUuid, uuids.willYouBeWorkingWithThePhilosophyAsOpenAsPossibleForYourDataQUuid]|reply_path %}
-	{% set workingWithThePhilosophyAsOpenAsPossibleReply = replies[workingWithThePhilosophyAsOpenAsPossiblePath]|reply_path %}
+	{% set workingWithThePhilosophyAsOpenAsPossibleReply = replies[workingWithThePhilosophyAsOpenAsPossiblePath]|reply_str_value %}
 
 	{# Funder requirement to deposit #}
 	{% set funderRequirementToDepositWithRepositoryPath = [uuids.preservingAndSharingDataCUuid, uuids.isThereAFunderRequirementThatAnyOfYourDataAreDepositedWithALongTermRepositoryQUuid]|reply_path %}
@@ -2560,8 +2748,40 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 						{% set repositorySearchPath = [repositoryPath, uuids.aDomainSpecificRepositoryAUuid, uuids.searchAndSelectARepositoryQUuid]|reply_path %}
 						{% set repositorySearchReply = replies[repositorySearchPath] %}
 
+						{% set whatTypeOfRepositoryIsThisPath = [repositoryPath, uuids.aDomainSpecificRepositoryAUuid, uuids.whatTypeOfRepositoryIsThisQUuid]|reply_path %}
+						{% set whatTypeOfRepositoryIsThisReply = replies[whatTypeOfRepositoryIsThisPath]|reply_str_value %}
+
+						{% set whyHaveYouChosenThisRepositoryPath = [repositoryPath, uuids.aDomainSpecificRepositoryAUuid, uuids.whyHaveYouChosenThisRepositoryQUuid]|reply_path %}
+						{% set whyHaveYouChosenThisRepositoryReply = replies[whyHaveYouChosenThisRepositoryPath]|reply_str_value %}
+
+						{% set whyHaveYouChosenThisRepositoryOtherPleaseSpecifyPath = [repositoryPath, uuids.aDomainSpecificRepositoryAUuid, uuids.whyHaveYouChosenThisRepositoryQUuid, uuids.other_1AUuid, uuids.pleaseSpecify_1QUuid]|reply_path %}
+						{% set whyHaveYouChosenThisRepositoryOtherPleaseSpecifyReply = replies[whyHaveYouChosenThisRepositoryOtherPleaseSpecifyPath]|reply_str_value %}
+						
 						{% set datasetLongTermPlan = 'Will be archived with ' %}
-							<strong>{{longTermText}}</strong> {{datasetLongTermPlan}} {{repositorySearchReply}}
+						{% if repositorySearchReply and whatTypeOfRepositoryIsThisReply and whyHaveYouChosenThisRepositoryReply and whyHaveYouChosenThisRepositoryOtherPleaseSpecifyReply %}
+							<strong>{{longTermText}}</strong> {{datasetLongTermPlan}} {{repositorySearchReply.value.value.value}}, {{km.entities.answers[whatTypeOfRepositoryIsThisReply].label|lower}} because {{whyHaveYouChosenThisRepositoryOtherPleaseSpecifyReply}}. 
+						{% elif repositorySearchReply and whatTypeOfRepositoryIsThisReply and whyHaveYouChosenThisRepositoryReply %}
+							<strong>{{longTermText}}</strong> {{datasetLongTermPlan}} {{repositorySearchReply.value.value.value}}, {{km.entities.answers[whatTypeOfRepositoryIsThisReply].label|lower}}, because {{km.entities.answers[whyHaveYouChosenThisRepositoryReply].label|lower}}. 
+						{% else %}
+							<strong>{{longTermText}}</strong> {{datasetLongTermPlan}} {{missingInformationText}}. 
+						{% endif %}
+
+						{% set willYouContactTheRepositoryBeforehandPath = [repositoryPath, uuids.aDomainSpecificRepositoryAUuid, uuids.willYouContactTheRepositoryBeforehandQUuid]|reply_path %}
+						{% set willYouContactTheRepositoryBeforehandReply = replies[willYouContactTheRepositoryBeforehandPath]|reply_str_value %}
+
+						{% if willYouContactTheRepositoryBeforehandReply %}
+							{% if willYouContactTheRepositoryBeforehandReply == uuids.noThisSubmissionIsRoutineBothForUsAndTheRepositoryAUuid %}
+								 We will not contact the repository beforehand as this is routine for both us and the repository.
+							{% elif willYouContactTheRepositoryBeforehandReply == uuids.yesWeHaveContactedTheRepositoryAUuid %}
+								We have already contacted the repository.
+							{% elif willYouContactTheRepositoryBeforehandReply == uuids.yesWeWillContactTheRepositoryAUuid %}
+								 We will contact the repository beforehand.
+							{% elif willYouContactTheRepositoryBeforehandReply == uuids.weHaveMadeOtherArrangements_5AUuid %}
+								 We have made other arrangements regarding contacting the repository.
+							{% endif %}
+
+						{% endif %}
+							
 
 					{# Special purpose repository #}	
 					{% elif repositoryReply == uuids.aSpecialPurposeRepositoryCreatedForTheProjectAUuid %}

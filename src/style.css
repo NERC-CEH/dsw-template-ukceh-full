@@ -16,14 +16,6 @@
   size : landscape;
 }
 
-table .landscape {
-  page: rotated;
-  transform-origin: top left;
-  transform: translateX(100vw) rotate(90deg);
-  width: 100vh;
-  height: 100vw;
-}
-
 h1, h2, h3, h4, h5, h6 {
   page-break-inside: avoid !important;
   page-break-after: avoid !important;
@@ -189,4 +181,13 @@ dl .contact-name {
 
 div#dmp-content {
   page-break-before: always;
+}
+
+
+.box {
+    background: ghostwhite; 
+		font-size: 20px; 
+		padding: 10px; 
+		border: 1px solid red; 
+		margin: 10px;
 }
