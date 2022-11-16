@@ -31,6 +31,29 @@
 </h6>
 {% endif %}
 
+{# Software packages #}
+{% set otherMeansSoftwarePath = [createOrCollectEnvironmentalDataPath, uuids.yes_14AUuid, uuids.willYouBeGeneratingASoftwarePackageAsPartOfYourProjectQUuid]|reply_path %}
+{% set otherMeansSoftwareReply = replies[otherMeansSoftwarePath]|reply_str_value %}
+
+{% if (otherMeansSoftwareReply == uuids.yes_32AUuid and softwareReply == uuids.iWillNotBeProducingAnySoftwarePackagesAsPartOfThisProjectAUuid) %}
+<h6 class = box>
+	<span style="color: red;">
+	<p><b>Issue preventing DMP submission</b> <br>
+	Chapter 3 question 1.b.3 you have said your project will create a software package(s)
+	but in Chapter 5 question 7 you said you are not producing any! </p>
+	</span>
+</h6>
+{% elif (otherMeansSoftwareReply == uuids.no_31AUuid and softwareReply == uuids.specifyAListOfSoftwarePackagesYouWillBeProducingAUuid) %}
+<h6 class = box>
+	<span style="color: red;">
+	<p><b>Inconsistency warning</b> <br>
+	Chapter 3 question 1.b.3  you have said your project will not create a software package(s)
+	but in Chapter 5 question 7 you said you are producing a software package! </p>
+	</span>
+</h6>
+{% endif %}
+
+
 {# Yes to reusing and/or collecting data (chapters 2 and 3) but no not applicable to Q's in Ch 5 #}
 {% set workingWithThePhilosophyAsOpenAsPossiblePath = [uuids.preservingAndSharingDataCUuid, uuids.willYouBeWorkingWithThePhilosophyAsOpenAsPossibleForYourDataQUuid]|reply_path %}
 {% set workingWithThePhilosophyAsOpenAsPossibleReply = replies[workingWithThePhilosophyAsOpenAsPossiblePath]|reply_str_value %}
@@ -2758,6 +2781,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 						{% set whyHaveYouChosenThisRepositoryOtherPleaseSpecifyReply = replies[whyHaveYouChosenThisRepositoryOtherPleaseSpecifyPath]|reply_str_value %}
 						
 						{% set datasetLongTermPlan = 'Will be archived with ' %}
+						
 						{% if repositorySearchReply and whatTypeOfRepositoryIsThisReply and whyHaveYouChosenThisRepositoryReply and whyHaveYouChosenThisRepositoryOtherPleaseSpecifyReply %}
 							<strong>{{longTermText}}</strong> {{datasetLongTermPlan}} {{repositorySearchReply.value.value.value}}, {{km.entities.answers[whatTypeOfRepositoryIsThisReply].label|lower}} because {{whyHaveYouChosenThisRepositoryOtherPleaseSpecifyReply}}. 
 						{% elif repositorySearchReply and whatTypeOfRepositoryIsThisReply and whyHaveYouChosenThisRepositoryReply %}
@@ -2815,11 +2839,18 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 
 				<p><strong> {{depositDateText}} </strong> {{depositDate}}</p>
 				<p><strong>{{longTermText}}</strong> {{datasetLongTermPlan}}</p>
-				<p><strong>Local storage location: </strong> {{localLocationReply}}</p>
-				{% if localStorageWhyReply == uuids.other_2_1AUuid %}
-                	<p><strong>Reason to store locally </strong> {{localStorageWhypleaseSpecifyReply}}</p>
+				{% if localLocationReply %}
+					<p><strong>Local storage location: </strong> {{localLocationReply}}</p>
 				{% else %}
+					<p><strong>Local storage location: </strong> {{missingInformationText}}</p>
+				{% endif %}
+
+				{% if localStorageWhyReply == (uuids.funderDoesNotAllowDatasetToBeDepositedAUuid or uuids.datasetContainsSensitiveInformationAUuid or uuids.datasetContainsBackgroundIprPreventingDepositAUuid or uuids.datasetContainsConfidentialInformationAUuid) %}
 					<p><strong>Reason to store locally </strong> {{km.entities.answers[localStorageWhyReply].label}}</p>
+				{% elif localStorageWhyReply == uuids.other_2_1AUuid %}
+                	<p><strong>Reason to store locally: </strong> {{localStorageWhypleaseSpecifyReply}}</p>
+				{% else %}
+					<p><strong>Reason to store locally: </strong> {{missingInformationText}} </p>
 				{% endif %}
 
 			{# Not kept in perpetuity and reasons #}	
@@ -2833,14 +2864,17 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				<p><strong> {{depositDateText}} </strong> {{depositDate}}</p>
 				<p><strong>Planned access embargo </strong> {{embargoText}}</p>
 				<p><strong>{{longTermText}}</strong> {{datasetLongTermPlan}}</p>
-				{% if notKeptWhyReply %}	
+				{% if notKeptWhyReply %}
 					{% if notKeptWhyReply == uuids.otherReasonS_3AUuid %}
 						{% set notKeptWhyPleaseSpecifyPath =  [notKeptWhyPath, uuids.otherReasonS_3AUuid, uuids.pleaseSpecify_5QUuid]|reply_path %}
 						{% set notKeptWhyPleaseSpecifyReply = replies[notKeptWhyPleaseSpecifyPath]|reply_str_value%}
 						<p><strong>Reason not kept </strong> {{notKeptWhyPleaseSpecifyReply}} </p>
 					{% elif notKeptWhyReply == (uuids.datasetIsOfNoLongTermValueAUuid) or (uuids.inadequateAndOrInsufficientFundsOrInfrastructureAUuid) or (uuids.itIsNotAFunderRequirementAUuid) or (theDataCanBeRegeneratedByAModelWithoutSignificantComputingBarriersAUuid) or (theCostOfRegeneratingTheDataDoesNotExceedTheCostOfCurationAUuid) %}
 						<p><strong>Reason not kept </strong> {{km.entities.answers[notKeptWhyReply].label}} </p>
+					{% else %}
+						<p><strong>Reason not kept </strong> <span style="color: red;">Reason not given 2</span>
 					{% endif %}
+
 				{% else %}
 					<p><strong>Reason not kept </strong> <span style="color: red;">Reason not given</span>
 				{% endif %}	
@@ -2848,7 +2882,9 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 
 			{% set whoInTheProjectIsResponsibleForThisDatasetPath = [datasetListPath, itemUuid, uuids.whoInTheProjectIsResponsibleForThisDatasetQUuid]|reply_path %}
 			{% set whoInTheProjectIsResponsibleForThisDatasetReply = replies[whoInTheProjectIsResponsibleForThisDatasetPath]|reply_str_value %}
-			<p><strong>Person Responsible for dataset: </strong> {{whoInTheProjectIsResponsibleForThisDatasetReply}} </p>
+			{% if whoInTheProjectIsResponsibleForThisDatasetReply %}
+				<p><strong>Person Responsible for dataset: </strong> {{whoInTheProjectIsResponsibleForThisDatasetReply}} </p>
+			{% endif %}
 		
 		<hr/>
 		{% endfor %}
