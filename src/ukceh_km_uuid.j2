@@ -1,4 +1,4 @@
-{# KM version - 0.0.15 #}
+{# KM version - 0.0.17 #}
 {%- set projectInformationCUuid = "1e85da40-bbfc-4180-903e-6c569ed2da38" -%}
 	{%- set projectNumberQUuid = "77431990-13cb-4f27-a90a-50cb2193b0a5" -%}
 	{%- set uniqueDmpIdentifierQUuid = "88cc2293-92c3-453a-a805-f535615f69ec" -%}
@@ -34,12 +34,17 @@
 		{%- set role_2QUuid = "52bd0ac3-b271-4b15-8faa-49af85417a75" -%}
 			{%- set externalCollaboratorAUuid = "1f39ac2e-2bc3-4516-8385-35dfba3bf050" -%}
 			{%- set subcontractorAUuid = "531a952c-79e1-4df8-ab66-960b6b98e183" -%}
+	{%- set isThisProjectLikelyToRequireMoreThanOneFullDataManagementPlanQUuid = "3977c1e1-b563-4056-99a4-b133e1c3daa2" -%}
+		{%- set noAllTheDataHandlingCanBeCoveredByOnePlanU200BAUuid = "8299d01c-2683-4c1b-9b15-f3fc82a8ad5f" -%}
+		{%- set yesItIsALargeProjectProgrammeWithDistinctWorkPackagesOrAreasOfWorkWithDistinctDataHandlingRequirementsAndOutputsAUuid = "70bb6a2d-490f-49db-bbf0-c7fee2176bb3" -%}
+		{%- set notSureYetAUuid = "e22a4248-da33-41a4-8f1e-18826f97ea21" -%}
 	{%- set willYouRequireSpecialistExpertiseInAdditionToWhatIsUsuallyAvailableQUuid = "83c0d09d-e74c-4c81-a52c-aaa2e18415ac" -%}
 		{%- set noWeHaveAllTheExpertiseWeNeedAUuid = "ccdadd45-8aa9-44ed-a669-1827c7813b0a" -%}
 		{%- set yesWeWillBeTrainingExistingStaffStudentsAUuid = "d4b4c6e3-e5c6-4938-a08a-e51cb7cdebeb" -%}
 			{%- set whatKindOfTrainingQUuid = "13dcbcd7-73d8-4480-8739-0a58702ced75" -%}
 		{%- set yesWeWillBeRecruitingNewPeopleWithAdditionalExpertiseAUuid = "596b251b-4e0e-429b-86cc-df32edeeefae" -%}
 			{%- set whatKindOfExpertiseQUuid = "a12944fa-aa71-4712-a586-394d1709c397" -%}
+		{%- set yesWeWillBeSubcontractingSomeTasksAUuid = "7fe082e2-37d9-4992-8953-2150afbe534e" -%}
 	{%- set willYouRequireHardwareOrSoftwareInAdditionToWhatIsUsuallyAvailableQUuid = "e42c6d66-d492-42f7-ab4c-7b862ee0427c" -%}
 		{%- set noAUuid = "ee260544-1dfa-4a8e-9879-397bde03cf74" -%}
 		{%- set yesAUuid = "8768b2f7-9b63-4069-9081-8451c83b32d8" -%}
@@ -79,6 +84,7 @@
 						{%- set whatConditionsQUuid = "dce3e924-717a-4b50-bdac-1b247e9ac18a" -%}
 				{%- set whichOrganisationSHoldTheIntellectualPropertyRightsIprToThisDataset_1QUuid = "81a7b452-dc25-485a-b83f-bb9527f74a0a" -%}
 				{%- set doYouKnowInWhatFormatTheDataAreAvailableQUuid = "7b8c75c0-8d5c-4fde-9898-ded8b91f7f1f" -%}
+					{%- set noNotYetAUuid = "746e28ae-c155-486e-93b0-010d79dfe331" -%}
 					{%- set yesAndICanDirectlyUseItAUuid = "2c2a9b84-b140-4e17-8026-56d5372064d0" -%}
 					{%- set yesButIWillNeedToConvertItToAnotherFormatBeforeUsingAUuid = "9de86d7b-9c60-47d6-8cb1-bfca13d6f619" -%}
 				{%- set isTheDatasetOrDatabaseVersionedQUuid = "10b6548c-21cd-44c8-a8de-47415e7b012e" -%}
@@ -387,7 +393,6 @@
 					{%- set doYouHaveAStandardProcedureInPlaceForFolderAndFileNamingQUuid = "d4fe0b55-4aee-4d05-88d4-a3f4cad2cfa9" -%}
 						{%- set no_48AUuid = "f449e055-8f13-495c-aea9-7440800f6a45" -%}
 						{%- set yes_49AUuid = "8b13234e-879b-4221-be12-4df24e6de00e" -%}
-							{%- set describeYourFileNamingProcedureQUuid = "9ff389f0-2236-48cf-880c-040ea1bb0d2f" -%}
 					{%- set willAllTheMetadataThatIsEmbeddedInTheFileNamesAlsoBeAvailableInSupportingDocumentsQUuid = "7dfd022e-6d6e-4923-a81a-ca1f11024b57" -%}
 						{%- set noFileNamesShouldBeConsideredAsStandAlonePartsOfTheMetadataAUuid = "df53b7a2-1b1e-4f5d-99df-b9a7a1da91e9" -%}
 						{%- set yesAllMetadataIsAlsoExplicitlyAvailableElsewhereAUuid = "2f695e7c-0661-4b43-ba55-1a82a2c706ef" -%}
@@ -536,6 +541,7 @@
 								{%- set haveYouContactedTheUkcehLicensingTeamQUuid = "c70ffb1e-b250-45ba-b84f-2945385a9294" -%}
 									{%- set no_57AUuid = "03407aef-e5ca-45b9-919f-6f320156db8c" -%}
 									{%- set yes_58AUuid = "56397df3-73b4-4522-be6d-b5f5beb86cae" -%}
+									{%- set toolWillNotBeUsedOutsideTheProjectNoLicenceRequiredAUuid = "639828b5-7bdb-414b-87ee-bcdb767fc96d" -%}
 			{%- set doesYourToolProvideProvenanceInformationEGAutomaticLoggingWhenTheScriptWorkflowModelIsRunQUuid = "28b10fd8-28a6-49b8-822d-f3d47780ab20" -%}
 				{%- set noWeWillNotStoreProvenanceInformationWhenRunningTheWorkflowAUuid = "25b6c0b3-b957-45d9-b657-7b1ccbbfbbb0" -%}
 				{%- set yesThisIsGeneratedAutomaticallyByTheToolAUuid = "1693bb64-b047-4464-ae45-c5e8aca12263" -%}
@@ -783,7 +789,7 @@
 							{%- set areThereRestrictionsOnWhereTheDataNeedToBeStoredQUuid = "754148c2-6019-4318-8d44-d73becc989f4" -%}
 								{%- set no_109AUuid = "6fd34203-6217-4c1b-a706-c5fa155ea706" -%}
 								{%- set yesTheyMustStayInTheSameCountryAUuid = "00bddac1-2375-4554-bb3c-27b261cc22e7" -%}
-								{%- set yesTheyMustStayInTheSameInstituteAUuid = "f6adfe7d-45f5-41a4-ba48-e43cc131c824" -%}
+									{%- set whatRestrictionsQUuid = "3ac4db63-5164-45a4-97f6-6aaf9214b574" -%}
 							{%- set couldPseudonymisationBeUsedToMakeTheDataMoreOpenlyAvailableQUuid = "a25b30f4-2d0f-4132-9b8e-0950f0b0ed66" -%}
 								{%- set no_110AUuid = "5edeab6e-81a9-4209-b063-8d6fca55a388" -%}
 								{%- set yes_104AUuid = "49f268a6-9566-4aa4-bec3-44fec2e64548" -%}

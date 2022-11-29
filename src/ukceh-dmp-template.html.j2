@@ -332,7 +332,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{% if projectProposalReply %}
 					More information on the proposal can be found <a href = {{projectProposalReply}}>here</a>.
 				{% else %}	
-					<span style="color: red;">{{missingInformationText}}</span></li>
+					{{missingInformationText}}
 				{% endif%}
 			</dd>
 
@@ -461,7 +461,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 
 						</li>
 					{% else %}
-						<span style="color: red;">{{missingInformationText}}</span></li>
+						{{missingInformationText}}</li>
 					{% endif %}
 				{% endfor %} 	
 				</ul>
@@ -497,8 +497,20 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 		</ul>
 	{% endif %}
 
-	{# Expertise #}
+	{# More than one DMP? #}
+	{% set projectLikelyToRequireMoreThanOneDMPPath = [uuids.projectInformationCUuid, uuids.isThisProjectLikelyToRequireMoreThanOneFullDataManagementPlanQUuid]|reply_path %}
+	{% set projectLikelyToRequireMoreThanOneDMPReply = replies[projectLikelyToRequireMoreThanOneDMPPath]|reply_str_value %}
+	{% if projectLikelyToRequireMoreThanOneDMPReply %}
+		{% if projectLikelyToRequireMoreThanOneDMPReply == uuids.noAllTheDataHandlingCanBeCoveredByOnePlanU200BAUuid %}
 
+		{% elif projectLikelyToRequireMoreThanOneDMPReply == uuids.yesItIsALargeProjectProgrammeWithDistinctWorkPackagesOrAreasOfWorkWithDistinctDataHandlingRequirementsAndOutputsAUuid %}
+			<p> This is a large project/programme with distinct work packages or areas of work with distinct data handling requirements and outputs. It will therefore require more than one full DMP. </p>
+		{% elif projectLikelyToRequireMoreThanOneDMPReply == uuids. notSureYetAUuid %}
+			<p> We are not yet sure if this project will require more than one full DMP. </p>
+		{% endif %}
+	{% endif %}
+
+	{# Expertise #}
 	{% set expertisePath = [uuids.projectInformationCUuid, uuids.willYouRequireSpecialistExpertiseInAdditionToWhatIsUsuallyAvailableQUuid]|reply_path %}
 	{% set expertiseReply = replies[expertisePath]|reply_str_value %}
 	
@@ -516,6 +528,8 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 		{% set whatKindOfExpertiseReply = replies[whatKindOfExpertisePath]|reply_str_value %}
 		Expertise required: {{whatKindOfExpertiseReply}}
 		</p>
+	{% elif expertiseReply == uuids.yesWeWillBeSubcontractingSomeTasksAUuid %}
+		<p>We will be subcontracting some tasks to get the specialist skills we need. </p>
 	{% endif %}	
 
 	{# Hardware #}
@@ -619,7 +633,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{% if datasetUsedDescriptionReply %}
 					{{datasetUsedDescriptionReply}}
 				{% else %}
-					<span style="color: red;">{{missingInformationText}}</span>
+					{{missingInformationText}}
 				{% endif %}
 				</p>
 
@@ -630,7 +644,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{% if datasetUsedDOIReply %}
 					{{datasetUsedDOIReply}}
 				{% else %}
-					<span style="color: red;">{{missingInformationText}}</span>
+					{{missingInformationText}}
 				{% endif %}
 				</p>
 
@@ -646,7 +660,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{% if datasetUsedAvailabilityList| length > 0 %}
 					{{datasetUsedAvailabilityList|join(", ")}}
 				{% else %}
-					<span style="color: red;">{{missingInformationText}}</span>
+					{{missingInformationText}}
 				{% endif %}
 				</p>
 
@@ -660,28 +674,33 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 						<p style="text-indent: 40px"><strong>What conditions</strong> {{whatConditionsReply}}</p>
 					{% endif %}
 				{% else %}
-					<p><strong>Conditions of use:</strong> <span style="color: red;">{{missingInformationText}}</span>
+					<p><strong>Conditions of use:</strong>{{missingInformationText}}
 				{% endif %}	
 
 				{% set datasetUsedIPRPath = [datasetUsedListPath, itemUuid, uuids.whichOrganisationSHoldTheIntellectualPropertyRightsIprToThisDataset_1QUuid]|reply_path %}	
 				{% set datasetUsedIPRReply = replies[datasetUsedIPRPath]|reply_str_value %}
 
 				<p><strong>Data owner/IPR:</strong>
-				{% if datasetUsedIPRReply%}
+				{% if datasetUsedIPRReply %}
 					{{datasetUsedIPRReply}}
 				{% else %}	
-					<span style="color: red;">{{missingInformationText}}</span>
+					{{missingInformationText}}
 				{% endif %}
 				</p>
 
 				{% set datasetUsedFormatPath = [datasetUsedListPath, itemUuid, uuids.doYouKnowInWhatFormatTheDataAreAvailableQUuid]|reply_path %}
 				{% set datasetUsedFormatReply = replies[datasetUsedFormatPath]|reply_str_value %}
-				{% if datasetUsedFormatReply == uuids.yesAndICanDirectlyUseItAUuid %}
+				{% if datasetUsedFormatReply == uuids.noNotYetAUuid %}
+					{% set formatText = "We do not yet know the format of this data." %}
+					<p>{{formatText}}</p>
+				{% elif datasetUsedFormatReply == uuids.yesAndICanDirectlyUseItAUuid %}
 					{% set formatText = "We know the format of this data, it is suitable for our work and we can use it directly." %}
+					<p>{{formatText}}</p>
 				{% elif datasetUsedFormatReply == uuids.yesButIWillNeedToConvertItToAnotherFormatBeforeUsingAUuid %}
 					{% set formatText = "We know the format of this data, it is suitable for our work but we need to convert it to another format before using." %}	
+					<p>{{formatText}}</p>
 				{% endif %}
-				<p>{{formatText}}</p>
+				
 
 				{# Dataset version text generation section #}
 				{% set datasetUsedVersionPath = [datasetUsedListPath, itemUuid, uuids.isTheDatasetOrDatabaseVersionedQUuid]|reply_path %}
@@ -690,6 +709,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{# {% set datasetUsedVersionList = [] %} #}
 				{% if datasetUsedVersionReply == uuids.no_4AUuid %}
 					{% set datasetVersionFinalText = "This dataset is not versioned. " %}
+					<p>{{datasetVersionFinalText}}</p>
 				{% elif datasetUsedVersionReply == uuids.yes_4AUuid %}
 					{% set datasetVersionText = "This dataset is versioned. " %}
 
@@ -709,19 +729,18 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 						{% set datasetUsedVersionChangeText = "if the dataset updates all analyses will be re-done with the newest version. " %}
 					{% endif %}	
 					{% set datasetVersionFinalText = datasetVersionText + datasetUsedVersionUsedText + datasetUsedVersionChangeText %}
-
+					<p>{{datasetVersionFinalText}}</p>
 				{% endif %}	
-				<p>{{datasetVersionFinalText}}</p>
 
 				{% set datasetUsedMakeAvailablePath = [datasetUsedListPath, itemUuid, uuids.howWillYouMakeSureTheSameDataWillBeAvailableForOthersToReproduceYourResultsQUuid]|reply_path %}
 				{% set datasetUsedMakeAvailableReply = replies[datasetUsedMakeAvailablePath]|reply_str_value %}
 				
 				{% if datasetUsedMakeAvailableReply == uuids.willNotBeAvailableAUuid %}
 					<p><strong>Availability of data version</strong>  <span style="color: red;"> {{km.entities.answers[datasetUsedMakeAvailableReply].label}}</span></p>
-				{% elif datasetUsedMakeAvailableReply is none %}
-					<p><strong>Availability of data version</strong> <span style="color: red;">{{missingInformationText}}</span></p>
-				{% else %}
+				{% elif datasetUsedMakeAvailableReply == (uuids.theDataAreAvailableFromAnOpenRepositoryAUuid or uuids.theProviderKeepsOldVersions_2AUuid or uuids.iWillKeepACopyAndMakeItAvailableWithMyResultsAUuid or uuids.itWillBeAvailableBothFromTheProviderAndTogetherWithMyDataAUuid or uuids.dataCannotBeMadeAvailableDueToLicenseRestrictionsAUuid) %}
 					<p><strong>Availability of data version</strong> {{km.entities.answers[datasetUsedMakeAvailableReply].label}}</p>
+				{% else %}
+					<p><strong>Availability of data version</strong> {{missingInformationText}}</p>
 				{% endif %}	
 
 				{% set datasetUsedApproximateSizePath = [datasetUsedListPath, itemUuid, uuids.whatIsTheApproximateSizeOfTheDataset_1QUuid]|reply_path %}
@@ -729,7 +748,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{% if datasetUsedApproximateSizeReply %}
 					<p><strong>Size/Quantity</strong> {{km.entities.answers[datasetUsedApproximateSizeReply].label}}</p>
 				{% else %}
-					<p><strong>Size/Quantity</strong> <span style="color: red;">{{missingInformationText}}</span></p>
+					<p><strong>Size/Quantity</strong> {{missingInformationText}}</p>
 				{% endif %}	
 			<hr/>	
 			{% endfor %}
@@ -837,7 +856,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{% if modelUsedAvailabilityList| length > 0 %}
 					{{modelUsedAvailabilityList|join(", ")}}
 				{% else %}
-					<span style="color: red;">{{missingInformationText}}</span>
+					{{missingInformationText}}
 				{% endif %}
 				</p>
 
@@ -1850,6 +1869,8 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 
 							{% if whatLicenceWillYouUseReply == uuids.openGovernmentLicenceOglAUuid %}
 								<p>We will be using an Open Government Licence (OGL)</p>
+							{% elif whatLicenceWillYouUseReply == uuids.toolWillNotBeUsedOutsideTheProjectNoLicenceRequiredAUuid %}	
+									<p>The tool will not be used outside the project and so no licence is required.</p>
 							{% elif whatLicenceWillYouUseReply == uuids.weAreUsingADifferentBeSpokeLicenceAUuid %}
 								{% set whatIsTheLicencePath = [whatLicenceWillYouUsePath, uuids.weAreUsingADifferentBeSpokeLicenceAUuid, uuids.whatIsTheLicenceQUuid]|reply_path %}
 								{% set whatIsTheLicenceReply = replies[whatIsTheLicencePath]|reply_str_value %}
@@ -2378,10 +2399,10 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{% set areThereRestrictionsOnWhereTheDataNeedToBeStoredReply = replies[areThereRestrictionsOnWhereTheDataNeedToBeStoredPath]|reply_str_value %}
 				{% if areThereRestrictionsOnWhereTheDataNeedToBeStoredReply == uuids.no_109AUuid %}
 					{% set areThereRestrictionsOnWhereTheDataNeedToBeStoredText = "There are no restrictions on where the data need to be stored." %} 
-				{% elif areThereRestrictionsOnWhereTheDataNeedToBeStoredReply == uuids.yesTheyMustStayInTheSameCountryAUuid %}
-					{% set areThereRestrictionsOnWhereTheDataNeedToBeStoredText = "The data must be stored in the same country." %} 
-				{% elif areThereRestrictionsOnWhereTheDataNeedToBeStoredReply == uuids.yesTheyMustStayInTheSameInstituteAUuid %}
-					{% set areThereRestrictionsOnWhereTheDataNeedToBeStoredText = "The data must be stored in the same institute." %} 
+				{% elif areThereRestrictionsOnWhereTheDataNeedToBeStoredReply == uuids.yesTheyMustStayInTheSameCountryAUuid %} {# wording of this answer has been changed to "Yes, there are specific restrictions" #}
+					{% set whatRestrictionsPath = [areThereRestrictionsOnWhereTheDataNeedToBeStoredPath, uuids.yesTheyMustStayInTheSameCountryAUuid, uuids.whatRestrictionsQUuid]|reply_path %}
+					{% set whatRestrictionsReply = replies[whatRestrictionsPath]|reply_str_value %}	
+					{% set areThereRestrictionsOnWhereTheDataNeedToBeStoredText = "There are restrictions on where the data need to be stored: " + whatRestrictionsReply %} 
 				{% endif %}
 				{{areThereRestrictionsOnWhereTheDataNeedToBeStoredText}}
 
@@ -2872,11 +2893,11 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 					{% elif notKeptWhyReply == (uuids.datasetIsOfNoLongTermValueAUuid) or (uuids.inadequateAndOrInsufficientFundsOrInfrastructureAUuid) or (uuids.itIsNotAFunderRequirementAUuid) or (theDataCanBeRegeneratedByAModelWithoutSignificantComputingBarriersAUuid) or (theCostOfRegeneratingTheDataDoesNotExceedTheCostOfCurationAUuid) %}
 						<p><strong>Reason not kept </strong> {{km.entities.answers[notKeptWhyReply].label}} </p>
 					{% else %}
-						<p><strong>Reason not kept </strong> <span style="color: red;">Reason not given 2</span>
+						<p><strong>Reason not kept </strong>Reason not given
 					{% endif %}
 
 				{% else %}
-					<p><strong>Reason not kept </strong> <span style="color: red;">Reason not given</span>
+					<p><strong>Reason not kept </strong>Reason not given
 				{% endif %}	
 			{% endif %}
 
