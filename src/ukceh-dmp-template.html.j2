@@ -164,7 +164,7 @@ Check would be: If answer in Ch5 says more data than Ch1 = inconsistent
 			<h6 class = box>
 				<span style="color: red;">
 				<p><b>Inconsistency warning</b> <br>
-				Chapter 1 question 14 you have said your project will use a small amount of data, but in chapter 3 you have listed one or more re-used datasets larger than 0.5 TB  </p>
+				Chapter 1 question 14 you have said your project will use a small amount of data, but in chapter 2 you have listed one or more re-used datasets larger than 0.5 TB  </p>
 				</span>
 			</h6>
 		{% endif %}
@@ -189,9 +189,10 @@ Check would be: If answer in Ch5 says more data than Ch1 = inconsistent
 			<h6 class = box>
 				<span style="color: red;">
 				<p><b>Inconsistency warning</b> <br>
-				Chapter 1 question 14 you have said your project will use <1 TB of data, but in chapter 3 you have listed one or more re-used datasets larger than 1 TB </p>
+				Chapter 1 question 14 you have said your project will use <1 TB of data, but in chapter 2 you have listed one or more re-used datasets larger than 1 TB </p>
 				</span>
 			</h6>
+			{# break #}
 		{% endif %}
 	{% endfor %}
 
@@ -200,7 +201,7 @@ Check would be: If answer in Ch5 says more data than Ch1 = inconsistent
 			<h6 class = box>
 				<span style="color: red;">
 				<p><b>Inconsistency warning</b> <br>
-				Chapter 1 question 14 you have said your project will use <1 TB of data, but in chapter 5 you have listed one or more created datasets larger than 1 TB </p>
+				Chapter 1 question 14 you have said your project will use <1 TB of data, but in chapter 2 you have listed one or more re-used datasets larger than 1 TB </p>
 				</span>
 			</h6>
 		{% endif %}
@@ -219,7 +220,7 @@ Check would be: If answer in Ch5 says more data than Ch1 = inconsistent
 {% set funderReply = replies[funderPath]|reply_items %}
 <h4>UKCEH Project</h4> 
 <dl>
-	<dt>Project name</dt> <dd>{{projectName}}</dd>	
+	<dt>Project name</dt> <dd>{{projectName}}</dd>
 	<dt>Project number</dt> <dd>{{projectNumber}}</dd>
 </dl>
 
@@ -227,8 +228,7 @@ Check would be: If answer in Ch5 says more data than Ch1 = inconsistent
 
 <h4>Document Details</h4>
 <dl>
-	<dt>Author</dt>
-		<dd><span class="contact-name">{{ ctx.createdBy.firstName }} {{ ctx.createdBy.lastName }}</span> ({{ macros.formatEmail(ctx.createdBy.email) }})</dd>
+
 	<dt>Creation Date</dt>	
 		<dd>{{ ctx.createdAt|datetime_format("%B %d, %Y") }}</dd>
 	<dt>Based on</dt>
@@ -265,7 +265,11 @@ Check would be: If answer in Ch5 says more data than Ch1 = inconsistent
 					{% endfor %}
 				{% endif %}
 			</ul>
-		</dd>					
+		</dd>	
+	<span style="color: grey;">
+	<dt>Created by</dt>
+	<dd><span style="color: grey;">{{ ctx.createdBy.firstName }} {{ ctx.createdBy.lastName }} ({{ macros.formatEmail(ctx.createdBy.email) }})</span></dd>
+	</span>		
 </dl>
 
 {# ---- Timeline text ---- #}
@@ -400,7 +404,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 
 		{% for itemUuid in contributorsReply %}
 			{% set contributorNamePath = [contributorsPath, itemUuid, uuids.nameQUuid] | reply_path %}
-			{% set contributorNameReply = replies[contributorNamePath] | reply_str_value  %}
+			{% set contributorNameReply = replies[contributorNamePath]  %}
 			{% set contributorAffiliationPath = [contributorsPath, itemUuid, uuids.affiliationQUuid] | reply_path %}
 			{% set contributorAffiliationReply = replies[contributorAffiliationPath] | reply_str_value %}
 			{% set contributorRolePath = [contributorsPath, itemUuid, uuids.roleQUuid] | reply_path %}
@@ -418,15 +422,17 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 			{# For each reply, loop through the roles and append the name of contributor to role list #}
 			{% for itemUuid in contributorRoleReply %}
 				{% if itemUuid == uuids.primaryContactChoiceUuid %}
-					{% set primaryContactList = primaryContactList.append(contributorNameReply.split("'")[3] +" ("+contributorAffiliationReply+")") %}
+					{% set primaryContactList = primaryContactList.append(contributorNameReply.value.value.value + " (" + (contributorAffiliationReply) + ")" ) %}
 				{% elif itemUuid == uuids.projectManagerChoiceUuid %}
-					{% set projectManagerList = projectManagerList.append(contributorNameReply.split("'")[3] +" ("+contributorAffiliationReply+")") %}
+					{% set projectManagerList = projectManagerList.append(contributorNameReply.value.value.value+ " (" + (contributorAffiliationReply) + ")" ) %}
 				{% elif itemUuid == uuids.dataManagerChoiceUuid %}	
-					{% set dataManagerList = dataManagerList.append(contributorNameReply.split("'")[3] +" ("+contributorAffiliationReply+")") %}
+					{% set dataManagerList = dataManagerList.append(contributorNameReply.value.value.value+ " (" + (contributorAffiliationReply) + ")" ) %}
 				{% elif itemUuid == uuids.qualityManagerChoiceUuid %}
-					{% set qualityManagerList = qualityManagerList.append(contributorNameReply.split("'")[3] +" ("+contributorAffiliationReply+")") %}
+					{% set qualityManagerList = qualityManagerList.append(contributorNameReply.value.value.value+ " (" + (contributorAffiliationReply) + ")" ) %}
 				{% elif itemUuid == uuids.researcherChoiceUuid %}
-					{% set researcherList = researcherList.append(contributorNameReply.split("'")[3] +" ("+contributorAffiliationReply+")") %}
+					{% set researcherList = researcherList.append(contributorNameReply.value.value.value+ " (" + (contributorAffiliationReply) + ")" ) %} 
+					{# split("'")[8] #}
+					{#[4] + " ("+contributorAffiliationReply+")") #}
 				{% endif %}
 			{% endfor %}
 		{% endfor %}
@@ -589,7 +595,6 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 	<h4>2.1 Existing datasets used in this project</h4>	
 	{% set datasetUsedPath = [uuids.reUsingDataCUuid, uuids.willTheProjectUseAnyPreExistingOrThirdPartyDataQUuid]|reply_path %}
 	{% set datasetUsedReply = replies[datasetUsedPath]|reply_str_value %}
-
 
 	{% if datasetUsedReply == uuids.no_3AUuid %}
 		{% set datasetIntroText = "No third party or existing datasets will used for this project."%}
@@ -2596,52 +2601,6 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 	
 	{% if datasetListReply|length > 0 %}
 		<p> <span style="color: rgb(46, 77, 127);"> A csv table of datasets listed here will be made available via email after submission.</span></p>
-
-		{# test table #}
-{#		
-		
-		<P style="page-break-before: always">
-		
-
-		{% set tableHeaders = ['Title', 'Description', 'License'] %}
-
-		<table>
-		<div class = "rotated">
-		<thead>
-		<tr>
-		{% for item in tableHeaders %}
-		<th class="c1">{{item}}</th>
-		{% endfor %}
-		</tr>
-		</thead>
-
-		{% for itemUuid in datasetListReply %}
-			{% set datasetTitlePath = [datasetListPath, itemUuid, uuids.datasetNameQUuid]|reply_path %}
-			{% set datasetTitleReply = replies[datasetTitlePath]|reply_str_value %}
-			
-			{% set datasetDescriptionPath = [datasetListPath, itemUuid, uuids.datasetDescriptionQUuid]|reply_path %}
-			{% set datasetDescriptionReply = replies[datasetDescriptionPath]|reply_str_value %}
-
-			<TR>
-			<TD class="c2">{{datasetTitleReply}}</TD>
-			<TD class="c2">{{datasetDescriptionReply}}</TD>
-			<TD class="c2">OGL etc </TD>
-			</TR>
-		{% endfor %}
-		</div>
-		</table>
-		<style>
-			table, th, td {
-				border: 1px solid black;
-				border-collapse: collapse;
-			}
-		</style>
-
-		
-		<P style="page-break-before: always">
-		
-#}
-		 {#end of test table #}
 
 		<ul>
 		{% for itemUuid in datasetListReply %}
