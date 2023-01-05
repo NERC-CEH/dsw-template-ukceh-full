@@ -106,6 +106,90 @@ If NO to (creating AND reusing data) but YES to processing/analysing --> warning
 {% endif %}
 
 
+{# Chapter 6 inconsistencies #}
+
+{% if ctx.phaseUuid == "e6b3786d-9246-4179-b78e-d99c8ca9435c" %}
+	{% set projectClosurePath = [uuids.projectClosureCUuid, uuids.canYouConfirmThisProjectHasFinishedQUuid]|reply_path %}
+
+	{# re-used data but not applicable for putting it anywhere #}
+	{% set havePreExistingDataOrModelsBeenDeletedOrMovedToArchivePath = [uuids.projectClosureCUuid, uuids.ifYourProjectUsedPreExistingDataOrModelsHaveTheseBeenDeletedOrMovedToAnArchiveSpaceQUuid]|reply_path %}
+	{% set havePreExistingDataOrModelsBeenDeletedOrMovedToArchiveReply = replies[havePreExistingDataOrModelsBeenDeletedOrMovedToArchivePath]|reply_str_value %}
+
+	{% if (havePreExistingDataOrModelsBeenDeletedOrMovedToArchiveReply == uuids.notApplicableWeDidntUseAnyPreExistingDataOrModelsAUuid) and (datasetUsedReply == uuids.yes_3AUuid) %}
+		<h6 class = box>
+			<span style="color: red;">
+			<p><b>Issue preventing DMP submission</b> <br>
+			You have said your project will re-use data (Chapter 2 Q1)
+			but in Chapter 6 you said not applicable when asked if pre-existing data or models have been moved to an archive! </p>
+			</span>
+		</h6>
+
+	{% elif ((havePreExistingDataOrModelsBeenDeletedOrMovedToArchiveReply == uuids.no_2_2AUuid) or (havePreExistingDataOrModelsBeenDeletedOrMovedToArchiveReply == uuids.yes_2_2AUuid)) and (datasetUsedReply == uuids.no_3AUuid)  %}
+		<h6 class = box>
+			<span style="color: red;">
+			<p><b>Inconsistency warning</b> <br>
+			Chapter 3 question 1 you have said your project will not re-use data
+			but in Chapter 6 you have said pre-existing data or models have/have not been moved to an archive </p>
+			</span>
+		</h6>
+	{% endif %}
+
+	{# collected or created data but no in ch6 #}
+	{% set hasProjectcollectedResearchDataOrToolsPath = [uuids.projectClosureCUuid, uuids.hasYourProjectCollectedOrCreatedAnyResearchDataOrDataRelatedToolsQUuid]|reply_path %}
+	{% set hasProjectcollectedResearchDataOrToolsReply = replies[hasProjectcollectedResearchDataOrToolsPath]|reply_str_value %}
+
+	{% if (hasProjectcollectedResearchDataOrToolsReply == uuids.no_3_1AUuid) and (createOrCollectEnvironmentalDataReply == uuids.yes_14AUuid) %}
+		<h6 class = box>
+			<span style="color: red;">
+			<p><b>Issue preventing DMP submission</b> <br>
+			Chapter 3 question 1 you have said your project will collect or create research data, models or other data-related tools 
+			but in Chapter 6 you said you are not producing any! </p>
+			</span>
+		</h6>
+
+	{% elif (hasProjectcollectedResearchDataOrToolsReply == uuids.yes_3_1AUuid) and (createOrCollectEnvironmentalDataReply == uuids.no_14AUuid) %}
+		<h6 class = box>
+			<span style="color: red;">
+			<p><b>Issue preventing DMP submission</b> <br>
+			Chapter 3 question 1 you have said your project will not collect or create research data, models or other data-related tools 
+			but in Chapter 6 you said you are producing one of these! </p>
+			</span>
+		</h6>
+	{% endif %}
+			
+
+{# models #}
+	{% set hasYourProjectCreatedAnyModelsPath = [uuids.projectClosureCUuid, uuids.hasYourProjectCreatedAnyModelsOfLongTermValueQUuid]|reply_path %}
+	{% set hasYourProjectCreatedAnyModelsReply = replies[hasYourProjectCreatedAnyModelsPath]|reply_str_value %}
+
+	{% if (hasYourProjectCreatedAnyModelsReply == uuids.no_6_1AUuid) and (modelsReply == uuids.specifyAListOfModelsYouWillBeProducingAUuid) %}
+		<h6 class = box>
+			<span style="color: red;">
+			<p><b>Issue preventing DMP submission</b> <br>
+			Chapter 5 question 6 you have said your project will produce models or other data-related tools 
+			but in Chapter 6 you said you are not producing any! </p>
+			</span>
+		</h6>
+		
+	{% elif (hasYourProjectCreatedAnyModelsReply == uuids.yes_6_1AUuid) and (modelsReply == uuids.iWillNotBeProducingModelsAsPartOfThisProjectAUuid) %}
+		<h6 class = box>
+			<span style="color: red;">
+			<p><b>Inconsistency warning</b> <br>
+			Chapter 5 question 6 you have said your project will not produce any models or other data-related tools 
+			but in Chapter 6 you said you are producing some! </p>
+			</span>
+		</h6>
+	
+	{% endif %}
+
+
+
+{% endif %}
+
+
+
+
+
 {# Get other scenarios from launch planner task
 Warning about inconsistency scenarios:
 Chapter 1 asks "What volume of data you will be working with?" (I will change this to "What volume of data will you be working with?") and give 3 choices.
