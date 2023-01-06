@@ -1,0 +1,366 @@
+{%- set km = ctx.knowledgeModel -%}
+{%- set repliesMap = ctx.questionnaireReplies -%}
+{%- set dc = ctx|to_context_obj -%}
+{%- import "src/excel_mapping_template.j2" as mapping with context -%}
+
+{%- set author = "" -%}
+{%- if dc.qtn.created_by %}
+    {%- set author = dc.qtn.created_by.first_name ~ " " ~ dc.qtn.created_by.last_name -%}
+{%- endif %}
+{%- set properties = {
+    "title": ctx.questionnaireName,
+    "subject": "Dataset table listing",
+    "author": author,
+    "category": "DMP",
+    "keywords": "FAIR Data,Community,FAIR Implementation Profile,FAIR Choices",
+    "created": dc.doc.created_at|datetime_format("%Y-%m-%d"),
+} -%}
+{%- set formats = {
+    "heading": { "bold": true },
+    "headingLeft": { "bold": true, "left": 2, "right": 2, "left_color": "black", "right_color": "black" },
+    "headingLeftTop": { "bold": true, "left": 2, "right": 2, "top": 2, "left_color": "black", "right_color": "black", "top_color": "black" },
+    "headingRBorder": { "bold": true, "right": 2, "right_color": "black" },
+    "headingBBorder": { "bold": true, "bottom": 2, "bottom_color": "black" },
+    "headingLBorder": { "bold": true, "left": 2, "left_color": "black" },
+    "headingLBBorder": { "bold": true, "left": 2, "left_color": "black", "bottom": 2, "bottom_color": "black" },
+    "headingRBBorder": { "bold": true, "right": 2, "right_color": "black", "bottom": 2, "bottom_color": "black" },
+    "content": { "font_color": "black" },
+    "contentTop": { "font_color": "black", "top": 2, "top_color": "black" },
+    "gridSingle": { "font_color": "black", "left": 2, "left_color": "black", "right": 2, "right_color": "black", "bottom": 1, "bottom_color": "black" },
+    "gridName": { "font_color": "black", "left": 2, "left_color": "black", "right": 1, "right_color": "black", "bottom": 1, "bottom_color": "black" },
+    "gridURI": { "font_color": "black", "left": 1, "left_color": "black", "right": 2, "right_color": "black", "bottom": 1, "bottom_color": "black" },
+    "headSingle": { "bold": true, "left": 2, "left_color": "black", "right": 2, "right_color": "black", "bottom": 2, "bottom_color": "black" },
+    "headName": { "bold": true, "left": 2, "left_color": "black", "right": 1, "right_color": "black", "bottom": 2, "bottom_color": "black" },
+    "headURI": { "bold": true, "left": 1, "left_color": "black", "right": 2, "right_color": "black", "bottom": 2, "bottom_color": "black" },
+    "centerHead": { "align": "center", "bold": true, "top": 2, "top_color": "black", "left": 2, "left_color": "black", "right": 2, "right_color": "black" , "bottom": 2, "bottom_color": "black" },
+    "bottomRow": { "top": 2, "top_color": "black" }
+} -%}
+
+{%- set sheetMetadata = {
+    "name": "Project Metadata",
+    "options": {
+        "column_pixels": [
+            {
+                "first_col": 0,
+                "last_col": 0,
+                "width": 120,
+            },
+        ],
+    },
+    "data": [
+        {
+            "type": "cell",
+            "subtype": "string",
+            "cell": "A1",
+            "value": "Project Name",
+            "format": "headingLeftTop",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "cell": "B1",
+            "value": mapping.metaDataDeclarations.projectName,
+            "format": "content",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "cell": "A2",
+            "value": "Project Number",
+            "format": "headingLeftTop",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "cell": "B2",
+            "value": mapping.metaDataDeclarations.projectNumber,
+            "format": "content",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "cell": "A3",
+            "value": "Project Start Date",
+            "format": "headingLeftTop",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "cell": "B3",
+            "value": mapping.metaDataDeclarations.projectStart,
+            "format": "content",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "cell": "A4",
+            "value": "Project End Date",
+            "format": "headingLeftTop",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "cell": "B4",
+            "value": mapping.metaDataDeclarations.projectEnd,
+            "format": "content",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "cell": "A5",
+            "value": "Funding",
+            "format": "headingLeftTop",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "cell": "B5",
+            "value": mapping.metaDataDeclarations.funding,
+            "format": "content",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "cell": "A6",
+            "value": "Primary Contact",
+            "format": "headingLeftTop",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "cell": "B6",
+            "value": mapping.metaDataDeclarations.primaryContact,
+            "format": "content",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "cell": "A7",
+            "value": "Data Manager",
+            "format": "headingLeftTop",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "cell": "B7",
+            "value": mapping.metaDataDeclarations.dataManager,
+            "format": "content",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "cell": "A8",
+            "value": "Current Phase",
+            "format": "headingLeftTop",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "cell": "B8",
+            "value": mapping.metaDataDeclarations.currentPhase,
+            "format": "content",
+        },                        
+    ],
+} -%}
+
+{%- set data = [
+    {
+    "type": "row",
+    "subtype": "string",
+    "cell": "A1",
+    "data":  ["Title","Description","ID","License","Size","IPR","Type of Data","Is data derived",
+                "Date generated","Long Term Preservation Plan","Deposit date (must be before grant end)",
+                "Embargo","Repository","Person responsible"
+                ],
+    "format": "centerHead",
+    }
+] -%}
+
+
+
+{%- for declaration in mapping.declarations -%}
+    {%- do data.extend([
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 0,
+            "row": 0 + loop.index,
+            "value": declaration.datasetTitleReply,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 1,
+            "row": 0 + loop.index,
+            "value": declaration.datasetDescriptionReply,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 2,
+            "row": 0 + loop.index,
+            "value": declaration.datasetIDReply,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 3,
+            "row": 0 + loop.index,
+            "value": declaration.datasetLicenceTypeReplySplit,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 4,
+            "row": 0 + loop.index,
+            "value": declaration.datasetSizeReply,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 5,
+            "row": 0 + loop.index,
+            "value": declaration.datasetOwnerReply,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 6,
+            "row": 0 + loop.index,
+            "value": declaration.EnvDataOrInfoProduct,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 7,
+            "row": 0 + loop.index,
+            "value": declaration.datasetExistingDataReply,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 8,
+            "row": 0 + loop.index,
+            "value": declaration.datasetDateGeneratedReply,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 9,
+            "row": 0 + loop.index,
+            "value": declaration.longTermPlanReply,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 10,
+            "row": 0 + loop.index,
+            "value": declaration.depositDateReply,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 11,
+            "row": 0 + loop.index,
+            "value": declaration.embargo,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 12,
+            "row": 0 + loop.index,
+            "value": declaration.repository,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 13,
+            "row": 0 + loop.index,
+            "value": declaration.whoInTheProjectIsResponsibleForThisDatasetReply,
+            "format": "gridName",
+        }
+    ]) -%}
+{%- endfor -%}
+{%- do data.append({
+    "type": "row",
+    "col": 0,
+    "row": 1 + mapping.declarations|length,
+    "data": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+    ],
+    "format": "bottomRow",
+}) -%}
+{%- set sheetData = {
+    "name": "Datasets",
+    "options": {
+        "column_pixels": [
+            {
+                "first_col": 0,
+                "last_col": 1,
+                "width": 250,
+            },
+            {
+                "first_col": 3,
+                "last_col": 3,
+                "width": 250,
+            },
+            {
+                "first_col": 4,
+                "last_col": 8,
+                "width": 150,
+            },
+            {
+                "first_col": 9,
+                "last_col": 9,
+                "width": 250,
+            },
+            {
+                "first_col": 10,
+                "last_col": 10,
+                "width": 250,
+            },
+            {
+                "first_col": 11,
+                "last_col": 13,
+                "width": 170,
+            }
+        ],
+    },
+    "data": data,
+} -%}
+{%- set excel = {
+    "properties": {
+        "document": properties,
+    },
+    "formats": formats,
+    "sheets": [
+        sheetMetadata,
+        sheetData,
+    ]
+} -%}
+{{ excel|tojson(2) }}

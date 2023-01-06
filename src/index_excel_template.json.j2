@@ -1,0 +1,10 @@
+
+{%- set km = ctx.knowledgeModel -%}
+{%- set replies = ctx.questionnaireReplies -%}
+{%- set report = ctx.report -%}
+{%- set levelDefinitions = ctx.levels -%}
+{%- set missingInformationText = "Information not supplied" %}
+{% import "src/ukceh_km_uuid.j2" as uuids with context %}
+
+{% include "src/excel_template.json.j2" with context %}
+

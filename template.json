@@ -78,6 +78,27 @@
                     }
                 }
             ]
+        },
+        {
+            "uuid": "4ae547e5-ce4f-4148-b027-f50e376a5710",
+            "name": "MS Excel",
+            "shortName": "excel",
+            "icon": "fas fa-file-excel",
+            "color": "#f15722",
+            "steps": [
+                {
+                    "name": "jinja",
+                    "options": {
+                        "template": "src/index_excel_template.json.j2",
+                        "content-type": "application/json",
+                        "extension": "json"
+                    }
+                },
+                {
+                    "name": "excel",
+                    "options": {}
+                }
+            ]
         }
     ],
     "_tdk": {
