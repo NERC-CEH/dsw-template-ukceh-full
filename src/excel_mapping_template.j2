@@ -104,8 +104,6 @@
 } -%}
 
 
-
-
 {# Dataset info #}
 {%- set declarations = [] -%}
 
@@ -187,9 +185,7 @@
  
                 {% else %}
                     {% set datasetLicenceTypeReplySplitText = missingInformationText %}
-                {% endif %}
-
-                
+                {% endif %}          
 
 
 {#
@@ -353,30 +349,43 @@
 
         {# Plan for local store + location #}
         {% elif datasetLongTermPlanReply == uuids.yesItWillBeKeptLocallyAUuid %}
-            
-
-            {% set localStorageWhyPath = [datasetLongTermPlanPath, uuids.yesItWillBeKeptLocallyAUuid, uuids.why_1QUuid]|reply_path %}
-            {% set localStorageWhyReply = replies[localStorageWhyPath]|reply_str_value %}
-
-            {% set localStorageWhypleaseSpecifyPath = [localStorageWhyPath, uuids.other_2_1AUuid, uuids.pleaseSpecify_2_1QUuid]|reply_path %}
-            {% set localStorageWhypleaseSpecifyReply = replies[localStorageWhypleaseSpecifyPath]|reply_str_value %}
-            
-            {% if localStorageWhyReply == uuids.other_2_1AUuid %}
-                {% set longTermPlanReplyText = km.entities.answers[datasetLongTermPlanReply].label|replace("Yes, it will be ","") + ": " + localStorageWhypleaseSpecifyReply %}
-            {% else %}
-                {% set longTermPlanReplyText = km.entities.answers[datasetLongTermPlanReply].label|replace("Yes, it will be ","") + ": " + km.entities.answers[localStorageWhyReply].label|lower %}
-            {% endif %}
 
             {% set depositDateReplyText = 'N/A' %}
             {% set embargoText = 'N/A' %}	
             
-            {% set localLocationPath = [datasetLongTermPlanPath, uuids.yesItWillBeKeptLocallyAUuid, uuids.pleaseProvideTheLocalLocationForThisDatasetQUuid]|reply_path %}
-            {% set localLocationReply = replies[localLocationPath]|reply_str_value %}
+            {% set localStorageWhyPath = [datasetLongTermPlanPath, uuids.yesItWillBeKeptLocallyAUuid, uuids.why_1QUuid]|reply_path %}
+            {% set localStorageWhyReply = replies[localStorageWhyPath]|reply_str_value %}
 
-            {% if localLocationReply %}
-                {% set repositoryText = localLocationReply %}
+            {% if localStorageWhyReply %}
+                
+                {% if localStorageWhyReply == uuids.other_2_1AUuid %}
+                    {% set localStorageWhypleaseSpecifyPath = [localStorageWhyPath, uuids.other_2_1AUuid, uuids.pleaseSpecify_2_1QUuid]|reply_path %}
+                    {% set localStorageWhypleaseSpecifyReply = replies[localStorageWhypleaseSpecifyPath]|reply_str_value %}
+                    
+                    {% if localStorageWhypleaseSpecifyReply %}
+                        {% set longTermPlanReplyText = km.entities.answers[datasetLongTermPlanReply].label|replace("Yes, it will be ","") + ": " + localStorageWhypleaseSpecifyReply %}
+                    {% else %}
+                        {% set longTermPlanReplyText = km.entities.answers[datasetLongTermPlanReply].label|replace("Yes, it will be ","") + ": " + "reason why not yet given" %}
+                    {% endif %}
+                    
+                {% else %}
+                    {% set longTermPlanReplyText = km.entities.answers[datasetLongTermPlanReply].label|replace("Yes, it will be ","") + ": " + km.entities.answers[localStorageWhyReply].label|lower %}
+                    
+                {% endif %}
+
+                {% set localLocationPath = [datasetLongTermPlanPath, uuids.yesItWillBeKeptLocallyAUuid, uuids.pleaseProvideTheLocalLocationForThisDatasetQUuid]|reply_path %}
+                {% set localLocationReply = replies[localLocationPath]|reply_str_value %}
+
+                {% if localLocationReply %}
+                    {% set repositoryText = localLocationReply %}
+                {% else %}
+                    {% set repositoryText = "local location not given" %}
+                {% endif %}
+
             {% else %}
-                {% set repositoryText = "local location not given" %}
+                {% set longTermPlanReplyText = "Kept locally: reason why not yet given" %}
+                {% set repositoryText = "local location not yet given" %}
+
             {% endif %}
 
         {# Not kept in perpetuity and reasons #}	
@@ -421,10 +430,7 @@
             {% set whoInTheProjectIsResponsibleForThisDatasetReplyText = missingInformationText %}
         {% endif %}
 
-        {# put answers together #}
-{#         "{{datasetTitleReplyText}}","{{datasetDescriptionReplyText}}","{{datasetIDReplyText}}","{{datasetLicenceTypeReplySplitText}}","{{datasetSizeReplyText}}","{{datasetOwnerReplyText}}","{{EnvDataOrInfoProductText}}","{{datasetExistingDataReplyText}}","{{datasetDateGeneratedReplyText}}","{{longTermPlanReplyText}}","{{depositDateReplyText}}","{{embargoText}}","{{repositoryText}}","{{whoInTheProjectIsResponsibleForThisDatasetReplyText}}"<br> #}
-
-
+        {# put answers together in dictionary for excel_template.json.j2 to pick up #}
         {%- do declarations.append({
             'datasetTitleReply': datasetTitleReplyText,
             'datasetDescriptionReply': datasetDescriptionReplyText,
