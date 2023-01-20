@@ -1,7 +1,7 @@
 {
     "templateId": "ukceh-full-dmp",
     "organizationId": "UKCEH",
-    "version": "0.0.13",
+    "version": "0.0.14",
     "name": "UKCEH FULL DMP",
     "description": "DMP to satisfy UKCEH requirements",
     "license": "Apache-2.0",
@@ -81,7 +81,7 @@
         },
         {
             "uuid": "4ae547e5-ce4f-4148-b027-f50e376a5710",
-            "name": "MS Excel",
+            "name": "MS Excel dataset listing",
             "shortName": "excel",
             "icon": "fas fa-file-excel",
             "color": "#f15722",
@@ -96,6 +96,27 @@
                 },
                 {
                     "name": "excel",
+                    "options": {}
+                }
+            ]
+        },
+        {
+            "uuid": "7d4df84d-abf8-4fd3-a57b-54cb5c811d83",
+            "name": "PDF Preview",
+            "shortName": "pdf-prev",
+            "icon": "fas fa-file",
+            "color": "#f15722",
+            "steps": [
+                {
+                    "name": "jinja",
+                    "options": {
+                        "template": "src/index_preview.html.j2",
+                        "content-type": "text/html",
+                        "extension": "html"
+                    }
+                },
+                {
+                    "name": "wkhtmltopdf",
                     "options": {}
                 }
             ]

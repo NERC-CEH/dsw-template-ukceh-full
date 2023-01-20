@@ -1,0 +1,284 @@
+{# DMP submission failure and inconsistency warning boxes #}
+
+{% set DMPSubmissionFailure = "no" %}
+{# Ch 3 yes collecting data, Ch 5 no not collecting data - need to do reverse #}
+{% set createOrCollectEnvironmentalDataPath = [uuids.creatingAndCollectingDataCUuid, uuids.willYourProjectCollectOrCreateResearchDataOrDataRelatedToolsQUuid]|reply_path %}
+{% set createOrCollectEnvironmentalDataReply = replies[createOrCollectEnvironmentalDataPath]|reply_str_value %}
+
+{% set datasetsPath = [uuids.preservingAndSharingDataCUuid, uuids.datasetsQUuid]|reply_path %}
+{% set datasetsReply = replies[datasetsPath]|reply_str_value %}
+
+{% set modelsPath = [uuids.preservingAndSharingDataCUuid, uuids.modelsQUuid]|reply_path %}
+{% set modelsReply = replies[modelsPath]|reply_str_value%}
+
+{% set softwarePath = [uuids.preservingAndSharingDataCUuid, uuids.softwarePackagesQUuid]|reply_path %}
+{% set softwareReply = replies[softwarePath]|reply_str_value%}
+
+{% if (createOrCollectEnvironmentalDataReply == uuids.yes_14AUuid) and (datasetsReply == uuids.iWillNotBeProducingAnyDatasetsAsPartOfThisProjectAUuid) and (modelsReply == uuids.iWillNotBeProducingModelsAsPartOfThisProjectAUuid ) and (softwareReply == uuids.iWillNotBeProducingAnySoftwarePackagesAsPartOfThisProjectAUuid) %}
+	<h6 class = box>
+		<span style="color: red;">
+		<p><b>Issue preventing DMP submission</b> <br>
+		Chapter 3 question 1 you have said your project will collect or create research data, models or other data-related tools 
+		but in Chapter 5 you said you are not producing any! </p>
+		</span>
+	</h6>
+	{% set DMPSubmissionFailure = "yes" %}
+{% elif(createOrCollectEnvironmentalDataReply == uuids.no_14AUuid) and ((datasetsReply == uuids.specifyAListOfDatasetsYouWillBeProducingAUuid) or (modelsReply == uuids.specifyAListOfModelsYouWillBeProducingAUuid ) or (softwareReply == uuids.specifyAListOfSoftwarePackagesYouWillBeProducingAUuid)) %}
+	<h6 class = box>
+		<span style="color: red;">
+		<p><b>Issue preventing DMP submission</b> <br>
+		Chapter 3 question 1 you have said your project will not collect or create research data, models or other data-related tools 
+		but in Chapter 5 you said you are producing some! </p>
+		</span>
+	</h6>
+	{% set DMPSubmissionFailure = "yes" %}
+{% endif %}
+
+{# Software packages #}
+{% set otherMeansSoftwarePath = [createOrCollectEnvironmentalDataPath, uuids.yes_14AUuid, uuids.willYouBeGeneratingASoftwarePackageAsPartOfYourProjectQUuid]|reply_path %}
+{% set otherMeansSoftwareReply = replies[otherMeansSoftwarePath]|reply_str_value %}
+
+{% if (otherMeansSoftwareReply == uuids.yes_32AUuid and softwareReply == uuids.iWillNotBeProducingAnySoftwarePackagesAsPartOfThisProjectAUuid) %}
+	<h6 class = box>
+		<span style="color: red;">
+		<p><b>Issue preventing DMP submission</b> <br>
+		Chapter 3 question 1.b.3 you have said your project will create a software package(s)
+		but in Chapter 5 question 7 you said you are not producing any! </p>
+		</span>
+	</h6>
+	{% set DMPSubmissionFailure = "yes" %}
+{% elif (otherMeansSoftwareReply == uuids.no_31AUuid and softwareReply == uuids.specifyAListOfSoftwarePackagesYouWillBeProducingAUuid) %}
+	<h6 class = box>
+		<span style="color: red;">
+		<p><b>Inconsistency warning</b> <br>
+		Chapter 3 question 1.b.3  you have said your project will not create a software package(s)
+		but in Chapter 5 question 7 you said you are producing a software package! </p>
+		</span>
+	</h6>
+{% endif %}
+
+
+{# Yes to reusing and/or collecting data (chapters 2 and 3) but no not applicable to Q's in Ch 5 #}
+{% set workingWithThePhilosophyAsOpenAsPossiblePath = [uuids.preservingAndSharingDataCUuid, uuids.willYouBeWorkingWithThePhilosophyAsOpenAsPossibleForYourDataQUuid]|reply_path %}
+{% set workingWithThePhilosophyAsOpenAsPossibleReply = replies[workingWithThePhilosophyAsOpenAsPossiblePath]|reply_str_value %}
+
+{% set funderRequirementToDepositWithRepositoryPath = [uuids.preservingAndSharingDataCUuid, uuids.isThereAFunderRequirementThatAnyOfYourDataAreDepositedWithALongTermRepositoryQUuid]|reply_path %}
+{% set funderRequirementToDepositWithRepositoryReply = replies[funderRequirementToDepositWithRepositoryPath]|reply_str_value %}
+
+{% set canAllOfYourDataBecomeCompletelyOpenImmediatelyPath = [uuids.preservingAndSharingDataCUuid, uuids.canAllOfYourDataBecomeCompletelyOpenImmediatelyQUuid]|reply_path %}
+{% set canAllOfYourDataBecomeCompletelyOpenImmediatelyReply = replies[canAllOfYourDataBecomeCompletelyOpenImmediatelyPath]|reply_str_value %}
+
+{% set willYourResearchDataBePeerReviewedThroughADataJournalPath = [uuids.preservingAndSharingDataCUuid, uuids.willYourResearchDataBePeerReviewedThroughADataJournalQUuid]|reply_path %}
+{% set willYourResearchDataBePeerReviewedThroughADataJournalReply = replies[willYourResearchDataBePeerReviewedThroughADataJournalPath]|reply_str_value %}
+
+{% if (createOrCollectEnvironmentalDataReply == uuids.yes_14AUuid) and ((workingWithThePhilosophyAsOpenAsPossibleReply == uuids.notApplicableNoDataBeingUsedAUuid) or (funderRequirementToDepositWithRepositoryReply == uuids.notApplicableNoDataBeingGeneratedAUuid) or (canAllOfYourDataBecomeCompletelyOpenImmediatelyReply == uuids.notApplicableNoDataBeingUsed_2AUuid) or (willYourResearchDataBePeerReviewedThroughADataJournalReply == uuids.notApplicableNoDataBeingUsed_1AUuid)) %}
+	<h6 class = box>
+		<span style="color: red;">
+		<p><b>Issue preventing DMP submission</b> <br>
+		Chapter 3 question 1 you have said your project will collect or create research data, models or other data-related tools 
+		but in Chapter 5 you said not applicable to a question about your data (one or more of Q's 1 - 4)! </p>
+		</span>
+	</h6>
+	{% set DMPSubmissionFailure = "yes" %}
+{% endif %}
+
+{#
+If YES to (creating OR reusing data) but NO to processing/analysing --> warning about inconsistency
+If NO to (creating AND reusing data) but YES to processing/analysing --> warning about inconsistency
+#}
+{% set datasetUsedPath = [uuids.reUsingDataCUuid, uuids.willTheProjectUseAnyPreExistingOrThirdPartyDataQUuid]|reply_path %}
+{% set datasetUsedReply = replies[datasetUsedPath]|reply_str_value %}
+
+{% set processOrAnalyseDataPath = [uuids.processingAndAnalysingDataCUuid, uuids.willYourProjectProcessOrAnalyseResearchDataQUuid]|reply_path %}
+{% set processOrAnalyseDataReply = replies[processOrAnalyseDataPath]|reply_str_value %}
+
+{% if ((createOrCollectEnvironmentalDataReply == uuids.yes_14AUuid) or (datasetUsedReply == uuids.yes_3AUuid)) and (processOrAnalyseDataReply == uuids.no_5_2AUuid) %}
+	<h6 class = box>
+		<span style="color: red;">
+		<p><b>Inconsistency warning</b> <br>
+		You have said your project will collect or create research (Chapter 3 Q1)  or re-use data (Chapter 2 Q1)
+		but in Chapter 4 you said you are not processing any data! </p>
+		</span>
+	</h6>
+{% elif ((createOrCollectEnvironmentalDataReply == uuids.no_14AUuid) and (datasetUsedReply == uuids.no_3AUuid)) and (processOrAnalyseDataReply == uuids.yes_5_2AUuid) %}
+	<h6 class = box>
+		<span style="color: red;">
+		<p><b>Inconsistency warning</b> <br>
+		Chapter 3 question 1 you have said your project will not collect, create research or re-use data
+		but in Chapter 4 you said you are processing data! </p>
+		</span>
+	</h6>
+{% endif %}
+
+
+{# Chapter 6 inconsistencies #}
+
+{% if ctx.phaseUuid == "e6b3786d-9246-4179-b78e-d99c8ca9435c" %}
+	{% set projectClosurePath = [uuids.projectClosureCUuid, uuids.canYouConfirmThisProjectHasFinishedQUuid]|reply_path %}
+
+	{# re-used data but not applicable for putting it anywhere #}
+	{% set havePreExistingDataOrModelsBeenDeletedOrMovedToArchivePath = [uuids.projectClosureCUuid, uuids.ifYourProjectUsedPreExistingDataOrModelsHaveTheseBeenDeletedOrMovedToAnArchiveSpaceQUuid]|reply_path %}
+	{% set havePreExistingDataOrModelsBeenDeletedOrMovedToArchiveReply = replies[havePreExistingDataOrModelsBeenDeletedOrMovedToArchivePath]|reply_str_value %}
+
+	{% if (havePreExistingDataOrModelsBeenDeletedOrMovedToArchiveReply == uuids.notApplicableWeDidntUseAnyPreExistingDataOrModelsAUuid) and (datasetUsedReply == uuids.yes_3AUuid) %}
+		<h6 class = box>
+			<span style="color: red;">
+			<p><b>Issue preventing DMP submission</b> <br>
+			You have said your project will re-use data (Chapter 2 Q1)
+			but in Chapter 6 you said not applicable when asked if pre-existing data or models have been moved to an archive! </p>
+			</span>
+		</h6>
+		{% set DMPSubmissionFailure = "yes" %}
+
+	{% elif ((havePreExistingDataOrModelsBeenDeletedOrMovedToArchiveReply == uuids.no_2_2AUuid) or (havePreExistingDataOrModelsBeenDeletedOrMovedToArchiveReply == uuids.yes_2_2AUuid)) and (datasetUsedReply == uuids.no_3AUuid)  %}
+		<h6 class = box>
+			<span style="color: red;">
+			<p><b>Inconsistency warning</b> <br>
+			Chapter 2 question 1 you have said your project will not re-use data
+			but in Chapter 6 you have said pre-existing data or models have/have not been moved to an archive </p>
+			</span>
+		</h6>
+	{% endif %}
+
+	{# collected or created data but no in ch6 #}
+	{% set hasProjectcollectedResearchDataOrToolsPath = [uuids.projectClosureCUuid, uuids.hasYourProjectCollectedOrCreatedAnyResearchDataOrDataRelatedToolsQUuid]|reply_path %}
+	{% set hasProjectcollectedResearchDataOrToolsReply = replies[hasProjectcollectedResearchDataOrToolsPath]|reply_str_value %}
+
+	{% if (hasProjectcollectedResearchDataOrToolsReply == uuids.no_3_1AUuid) and (createOrCollectEnvironmentalDataReply == uuids.yes_14AUuid) %}
+		<h6 class = box>
+			<span style="color: red;">
+			<p><b>Issue preventing DMP submission</b> <br>
+			Chapter 3 question 1 you have said your project will collect or create research data, models or other data-related tools 
+			but in Chapter 6 question 3 you said you are not producing any! </p>
+			</span>
+		</h6>
+		{% set DMPSubmissionFailure = "yes" %}
+
+	{% elif (hasProjectcollectedResearchDataOrToolsReply == uuids.yes_3_1AUuid) and (createOrCollectEnvironmentalDataReply == uuids.no_14AUuid) %}
+		<h6 class = box>
+			<span style="color: red;">
+			<p><b>Inconsistency warning</b> <br>
+			Chapter 3 question 1 you have said your project will not collect or create research data, models or other data-related tools 
+			but in Chapter 6 question 3 you said you are producing one of these! </p>
+			</span>
+		</h6>
+	{% endif %}
+			
+
+{# models #}
+	{% set hasYourProjectCreatedAnyModelsPath = [uuids.projectClosureCUuid, uuids.hasYourProjectCreatedAnyModelsOfLongTermValueQUuid]|reply_path %}
+	{% set hasYourProjectCreatedAnyModelsReply = replies[hasYourProjectCreatedAnyModelsPath]|reply_str_value %}
+
+	{% if (hasYourProjectCreatedAnyModelsReply == uuids.no_6_1AUuid) and (modelsReply == uuids.specifyAListOfModelsYouWillBeProducingAUuid) %}
+		<h6 class = box>
+			<span style="color: red;">
+			<p><b>Issue preventing DMP submission</b> <br>
+			Chapter 5 question 6 you have said your project will produce models or other data-related tools 
+			but in Chapter 6 question 4 you said you are not producing any! </p>
+			</span>
+		</h6>
+		{% set DMPSubmissionFailure = "yes" %}
+		
+	{% elif (hasYourProjectCreatedAnyModelsReply == uuids.yes_6_1AUuid) and (modelsReply == uuids.iWillNotBeProducingModelsAsPartOfThisProjectAUuid) %}
+		<h6 class = box>
+			<span style="color: red;">
+			<p><b>Inconsistency warning</b> <br>
+			Chapter 5 question 6 you have said your project will not produce any models or other data-related tools 
+			but in Chapter 6 question 4 you said you are producing some! </p>
+			</span>
+		</h6>
+	
+	{% endif %}
+
+{% endif %}
+
+
+{# Datasets size #}
+{% set dataVolumePath = [uuids.projectInformationCUuid, uuids.whatVolumeOfDataYouWillBeWorkingWithQUuid]|reply_path %}
+{% set dataVolumeReply = replies[dataVolumePath]|reply_str_value %}
+
+
+{# datasets re-used #}
+{% set datasetUsedPath = [uuids.reUsingDataCUuid, uuids.willTheProjectUseAnyPreExistingOrThirdPartyDataQUuid]|reply_path %}
+{% set datasetUsedReply = replies[datasetUsedPath]|reply_str_value %}
+{% set datasetUsedListPath = [datasetUsedPath, uuids.yes_3AUuid, uuids.whatExistingDataResourcesWillYouUseQLUuid]|reply_path %}
+{% set datasetUsedListReply = replies[datasetUsedListPath]|reply_items %}
+{% set datasetUsedApproximateSizeList = [] %}
+
+{% if datasetUsedListReply|length > 0 %}
+	{% for itemUuid in datasetUsedListReply%}
+		{% set datasetUsedApproximateSizePath = [datasetUsedListPath, itemUuid, uuids.whatIsTheApproximateSizeOfTheDataset_1QUuid]|reply_path %}
+		{% set datasetUsedApproximateSizeReply = replies[datasetUsedApproximateSizePath]|reply_str_value %}
+		{% set datasetUsedApproximateSizeList = datasetUsedApproximateSizeList.append(datasetUsedApproximateSizeReply) %}
+	{% endfor %}
+{% endif %}
+
+{# datasets created #}
+{% set datasetsPath = [uuids.preservingAndSharingDataCUuid, uuids.datasetsQUuid]|reply_path %}
+{% set datasetListPath = [datasetsPath, uuids.specifyAListOfDatasetsYouWillBeProducingAUuid, uuids.listOfDatasetsQLUuid]|reply_path %}	
+{% set datasetListReply = replies[datasetListPath]|reply_items %}
+{% set datasetApproximateSizeReplyList = [] %}
+
+{% if datasetListReply|length > 0 %}
+	{% for itemUuid in datasetListReply%}
+		{% set datasetSizePath = [datasetListPath, itemUuid, uuids.whatIsTheApproximateSizeOfTheDatasetQUuid]|reply_path %}
+		{% set datasetSizeReply = replies[datasetSizePath]|reply_str_value %}
+		{% set datasetApproximateSizeReplyList = datasetApproximateSizeReplyList.append(datasetSizeReply) %}
+	{% endfor %}
+{% endif%}
+
+{# if any of the answers to re-used data or created data are greater than 1TB or between 0.5 and 1TB then need to flag #}
+{% if dataVolumeReply == uuids.totalDataVolumeIsSmallEnoughThatItWontBeAProblemAUuid %}
+
+	{% for size in datasetApproximateSizeReplyList %}
+		{% if (size == uuids.greaterThan1TbAUuid or size == uuids.between0_5And1TbAUuid) %}
+			<h6 class = box>
+				<span style="color: red;">
+				<p><b>Inconsistency warning</b> <br>
+				Chapter 1 question 15 you have said your project will use a small amount of data,  but in chapter 5 you have listed one or more created datasets larger than 0.5 TB </p>
+				</span>
+			</h6>
+		{% endif %}
+	{% endfor %}
+
+	{% for reusedSize in datasetUsedApproximateSizeList %}
+		{% if (reusedSize == uuids.between0_5And1Tb_1AUuid or reusedSize == uuids.greaterThan1Tb_1AUuid) %}
+			<h6 class = box>
+				<span style="color: red;">
+				<p><b>Inconsistency warning</b> <br>
+				Chapter 1 question 15 you have said your project will use a small amount of data, but in chapter 2 you have listed one or more re-used datasets larger than 0.5 TB </p>
+				</span>
+			</h6>
+		{% endif %}
+	{% endfor %}
+{% endif %}
+
+{# if any of the answers to re-used data or created data are greater than 1TB then need to flag #}
+{% if dataVolumeReply == uuids.dataVolumeIs100GbBut1TbSoMightCauseAnIssueWithStorageOrCosts_1AUuid %}
+	{% for size in datasetApproximateSizeReplyList %}
+		{% if size == uuids.greaterThan1TbAUuid %}
+			<h6 class = box>
+				<span style="color: red;">
+				<p><b>Inconsistency warning</b> <br>
+				Chapter 1 question 15 you have said your project will use <1 TB of data, but in chapter 5 you have listed one or more created datasets larger than 1 TB </p>
+				</span>
+			</h6>
+			{# break #}
+		{% endif %}
+	{% endfor %}
+
+	{% for reusedSize in datasetUsedApproximateSizeList %}
+		{% if reusedSize == uuids.greaterThan1Tb_1AUuid %}
+			<h6 class = box>
+				<span style="color: red;">
+				<p><b>Inconsistency warning</b> <br>
+				Chapter 1 question 15 you have said your project will use <1 TB of data, but in chapter 2 you have listed one or more re-used datasets larger than 1 TB </p>
+				</span>
+			</h6>
+		{% endif %}
+	{% endfor %}
+{% endif %}
+
+{%- set declarations = {
+	'check': DMPSubmissionFailure
+} -%}

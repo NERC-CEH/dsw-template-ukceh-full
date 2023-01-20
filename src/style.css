@@ -77,7 +77,7 @@ section {
 header {
   padding-top: 40px;
   width: 100vw;
-  height: 250px;
+  height: 195px;
   page-break-after: avoid;
   position: relative;
   /* border-bottom: 1px solid black; */
@@ -190,4 +190,29 @@ div#dmp-content {
 		padding: 10px; 
 		border: 1px solid red; 
 		margin: 10px;
+}
+
+.box-action {
+  background: ghostwhite; 
+  font-size: 18px; 
+  padding: 10px; 
+  border: 1px solid red; 
+  margin: 10px;
+}
+
+.box-ready {
+  background: ghostwhite; 
+  font-size: 16px; 
+  padding: 10px; 
+  border: 1px solid green; 
+  margin: 10px;
+}
+
+.preview-header {
+  padding-top: 40px;
+  width: 100vw;
+  height: 300px;
+  page-break-after: avoid;
+  position: relative;
+  /* border-bottom: 1px solid black; */
 }

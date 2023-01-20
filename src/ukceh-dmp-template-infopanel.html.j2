@@ -1,0 +1,25 @@
+{% set totalIndications = report.totalReport.indications %}
+{% import "src/submission_checks.html.j2" as submissionChecks with context %}
+
+{% for indication in totalIndications %}
+    {% if indication.indicationType == "PhasesAnsweredIndication" %}
+        {% if indication.unansweredQuestions == 0 and submissionChecks.declarations.check == "no" %}
+            <h6 class = box-ready>
+            <span style="color: green; font-weight: normal;">
+            <p><b><i class="fas fa-check"></i> DMP ready to submit. Please now do the following:</b></p>
+            <ol>
+                <li><strong>Generate a new document</strong> from the Documents tab using the<strong> UKCEH DMP for submission</strong> template</li>
+                <li><strong>Submit</strong> this document by clicking on the vertical dots by the document and clicking &nbsp;<strong>Submit</strong></li>
+            </ol>
+            <p>More detailed guidance <a href="https://cehacuk.sharepoint.com/sites/research-data-management/SitePages/Getting-started-with-the-FAIR-Data-Stewardship-Wizard.aspx#2.-complete-and-submit-an-outline-data-management-plan" target="_blank">here</a>&nbsp;&nbsp;(right click on link to open in a new browser tab)</p>
+            </span>
+            </h6>
+        {% else %}
+            <h6 class = box-action>
+            <span style="color: red; font-weight: normal;">
+            <p><i class="fas fa-times-circle"></i> <strong>DMP not ready to submit</strong> - please make sure all compulsory questions (marked in red) have been answered and/or address submission failure warnings below</p>
+            </span>
+            </h6>
+        {% endif %}
+    {% endif%}
+{% endfor %}

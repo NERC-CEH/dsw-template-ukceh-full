@@ -112,7 +112,20 @@
 {% if datasetsReply == uuids.iWillNotBeProducingAnyDatasetsAsPartOfThisProjectAUuid %}
     
     {%- do declarations.append({
-    'datasetTitleReply': "No data will be created by this project."
+    'datasetTitleReply': "No data will be created by this project.",
+    'datasetDescriptionReply': "",
+    'datasetIDReply': "",
+    'datasetLicenceTypeReplySplit': "",
+    'datasetSizeReply': "",
+    'datasetOwnerReply': "",
+    'EnvDataOrInfoProduct': "",
+    'datasetExistingDataReply': "",
+    'datasetDateGeneratedReply': "",
+    'longTermPlanReply': "",
+    'depositDateReply': "",
+    'embargo': "",
+    'repository': "",
+    'whoInTheProjectIsResponsibleForThisDatasetReply': ""
     }) -%}
 {% endif %}
 
@@ -121,10 +134,6 @@
 
 {% if datasetListReply|length > 0 %}
 
-    {#Headings  need to code better#}
-    {# 
-    "Title","Description","ID","License","Size","IPR","Type of Data","Is data derived","Date generated","Long Term Preservation Plan","Deposit date (must be before grant end)","Embargo","Repository","Person responsible"<br>
-    #}
     {% for itemUuid in datasetListReply %}
         {# Title #}
         {% set datasetTitlePath = [datasetListPath, itemUuid, uuids.datasetNameQUuid]|reply_path %}
@@ -261,6 +270,7 @@
             {% set datasetOwnerReplyText = missingInformationText %}
         {% endif %}
 
+        {# Environmental or Info product #}
         {% set doYouConsiderThisToBeEnvironmentalDataOrAnInformationProductPath = [datasetListPath, itemUuid, uuids.doYouConsiderThisToBeEnvironmentalDataOrAnInformationProductQUuid]|reply_path %}
         {% set doYouConsiderThisToBeEnvironmentalDataOrAnInformationProductReply = replies[doYouConsiderThisToBeEnvironmentalDataOrAnInformationProductPath]|reply_str_value %}
         {% if doYouConsiderThisToBeEnvironmentalDataOrAnInformationProductReply %}
@@ -291,130 +301,137 @@
         {% set datasetLongTermPlanPath = [datasetListPath, itemUuid, uuids.areThereLongTermPreservationPlansInPlaceForThisDatasetQUuid]|reply_path %}
         {% set datasetLongTermPlanReply = replies[datasetLongTermPlanPath]|reply_str_value %}
 
-
-        {% if datasetLongTermPlanReply == uuids.yesItWillBeSentToARepositoryAUuid %}
-            {% set longTermPlanReplyText = km.entities.answers[datasetLongTermPlanReply].label|replace("Yes, it will be ","") %}
-            
-            {# Deposit date #}
-            {% set depositDatePath = [datasetLongTermPlanPath, uuids.yesItWillBeSentToARepositoryAUuid, uuids.whatIsThePlannedDepositDateQUuid]|reply_path %}
-            {% set depositDateReply = replies[depositDatePath]|reply_str_value %}
-            {% if depositDateReply %}
-                {% set depositDateReplyText = depositDateReply %}
-            {% else %}
-                {% set depositDateReplyText = missingInformationText %}
-            {% endif %}
-            
-            {# Embargo #}
-            {% set depositEmbargoPath = [datasetLongTermPlanPath, uuids.yesItWillBeSentToARepositoryAUuid, uuids.willThereBeAnAccessEmbargoPeriodQUuid]|reply_path %}
-            {% set depositEmbargoReply = replies[depositEmbargoPath]|reply_str_value %}
-            {% if depositEmbargoReply == uuids.yes_1AUuid %}
-                {% set depositEmbargoDatePath = [depositEmbargoPath, uuids.yes_1AUuid, uuids.plannedAccessEmbargoReleaseDateQUuid]|reply_path %}
-                {% set depositEmbargoDateReply = replies[depositEmbargoDatePath]|reply_str_value %}
-                {% set embargoText = "Embargo period ending on " + depositEmbargoDateReply %}
-            {% elif depositEmbargoReply == uuids.no_1AUuid %}
-                {% set embargoText = "No embargo period - data will be released immediately after deposit" %}
-            {% else %}
-                {% set embargoText = missingInformationText %}
-            {% endif %}
-
-            {% set repositoryPath = [datasetLongTermPlanPath, uuids.yesItWillBeSentToARepositoryAUuid, uuids.whatRepositoryWillThisDataBeStoredInQUuid]|reply_path %}
-            {% set repositoryReply = replies[repositoryPath]|reply_str_value %}
-            {% if repositoryReply %}
-                {# Long term plan + repository answer#}
-                {#A domain specific repository answer was replaced with "Another repository"#}
-                {% if repositoryReply == uuids.aDomainSpecificRepositoryAUuid %}
-                    {% set repositorySearchPath = [repositoryPath, uuids.aDomainSpecificRepositoryAUuid, uuids.searchAndSelectARepositoryQUuid]|reply_path %}
-                    {% set repositorySearchReply = replies[repositorySearchPath] %}
-                    {% if repositorySearchReply %}
-                        {% set repositoryText = repositorySearchReply.value.value.value %}
-                    {% else %}
-                        {% set repositoryText = missingInformationText %}
-                    {% endif %}
-
-                {# Special purpose repository #}	
-                {% elif repositoryReply == uuids.aSpecialPurposeRepositoryCreatedForTheProjectAUuid %}
-                    {% set specialRepositoryNamePath = [repositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProjectAUuid, uuids.giveTheNameOfTheRepositoryWhenItIsKnownQUuid]|reply_path %}
-                    {% set specialRepositoryNameReply = replies[specialRepositoryNamePath]|reply_str_value %}
-                    {% set specialRepositoryUrlPath = [repositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProjectAUuid, uuids.giveTheUrlToTheRepositoryWhenItIsKnownQUuid]|reply_path %}
-                    {% set specialRepositoryUrlReply = replies[specialRepositoryUrlPath]|reply_str_value %}
-                    {% set repositoryText = km.entities.answers[repositoryReply].label + ": " + specialRepositoryNameReply + " found at " + specialRepositoryUrlReply %}
-                    
-                {# One of the NERC data centre options #}	
-                {% else %}
-                    {% set repositoryText = km.entities.answers[repositoryReply].label %}
-                {% endif %}
-            {% else %}
-                {% set repositoryText = missingInformationText %}
-            {% endif %}
-
-        {# Plan for local store + location #}
-        {% elif datasetLongTermPlanReply == uuids.yesItWillBeKeptLocallyAUuid %}
-
-            {% set depositDateReplyText = 'N/A' %}
-            {% set embargoText = 'N/A' %}	
-            
-            {% set localStorageWhyPath = [datasetLongTermPlanPath, uuids.yesItWillBeKeptLocallyAUuid, uuids.why_1QUuid]|reply_path %}
-            {% set localStorageWhyReply = replies[localStorageWhyPath]|reply_str_value %}
-
-            {% if localStorageWhyReply %}
+        {% if datasetLongTermPlanReply %}
+            {% if datasetLongTermPlanReply == uuids.yesItWillBeSentToARepositoryAUuid %}
+                {% set longTermPlanReplyText = km.entities.answers[datasetLongTermPlanReply].label|replace("Yes, it will be ","") %}
                 
-                {% if localStorageWhyReply == uuids.other_2_1AUuid %}
-                    {% set localStorageWhypleaseSpecifyPath = [localStorageWhyPath, uuids.other_2_1AUuid, uuids.pleaseSpecify_2_1QUuid]|reply_path %}
-                    {% set localStorageWhypleaseSpecifyReply = replies[localStorageWhypleaseSpecifyPath]|reply_str_value %}
-                    
-                    {% if localStorageWhypleaseSpecifyReply %}
-                        {% set longTermPlanReplyText = km.entities.answers[datasetLongTermPlanReply].label|replace("Yes, it will be ","") + ": " + localStorageWhypleaseSpecifyReply %}
-                    {% else %}
-                        {% set longTermPlanReplyText = km.entities.answers[datasetLongTermPlanReply].label|replace("Yes, it will be ","") + ": " + "reason why not yet given" %}
-                    {% endif %}
-                    
+                {# Deposit date #}
+                {% set depositDatePath = [datasetLongTermPlanPath, uuids.yesItWillBeSentToARepositoryAUuid, uuids.whatIsThePlannedDepositDateQUuid]|reply_path %}
+                {% set depositDateReply = replies[depositDatePath]|reply_str_value %}
+                {% if depositDateReply %}
+                    {% set depositDateReplyText = depositDateReply %}
                 {% else %}
-                    {% set longTermPlanReplyText = km.entities.answers[datasetLongTermPlanReply].label|replace("Yes, it will be ","") + ": " + km.entities.answers[localStorageWhyReply].label|lower %}
-                    
+                    {% set depositDateReplyText = missingInformationText %}
+                {% endif %}
+                
+                {# Embargo #}
+                {% set depositEmbargoPath = [datasetLongTermPlanPath, uuids.yesItWillBeSentToARepositoryAUuid, uuids.willThereBeAnAccessEmbargoPeriodQUuid]|reply_path %}
+                {% set depositEmbargoReply = replies[depositEmbargoPath]|reply_str_value %}
+                {% if depositEmbargoReply == uuids.yes_1AUuid %}
+                    {% set depositEmbargoDatePath = [depositEmbargoPath, uuids.yes_1AUuid, uuids.plannedAccessEmbargoReleaseDateQUuid]|reply_path %}
+                    {% set depositEmbargoDateReply = replies[depositEmbargoDatePath]|reply_str_value %}
+                    {% set embargoText = "Embargo period ending on " + depositEmbargoDateReply %}
+                {% elif depositEmbargoReply == uuids.no_1AUuid %}
+                    {% set embargoText = "No embargo period - data will be released immediately after deposit" %}
+                {% else %}
+                    {% set embargoText = missingInformationText %}
                 {% endif %}
 
-                {% set localLocationPath = [datasetLongTermPlanPath, uuids.yesItWillBeKeptLocallyAUuid, uuids.pleaseProvideTheLocalLocationForThisDatasetQUuid]|reply_path %}
-                {% set localLocationReply = replies[localLocationPath]|reply_str_value %}
+                {% set repositoryPath = [datasetLongTermPlanPath, uuids.yesItWillBeSentToARepositoryAUuid, uuids.whatRepositoryWillThisDataBeStoredInQUuid]|reply_path %}
+                {% set repositoryReply = replies[repositoryPath]|reply_str_value %}
+                {% if repositoryReply %}
+                    {# Long term plan + repository answer#}
+                    {#A domain specific repository answer was replaced with "Another repository"#}
+                    {% if repositoryReply == uuids.aDomainSpecificRepositoryAUuid %}
+                        {% set repositorySearchPath = [repositoryPath, uuids.aDomainSpecificRepositoryAUuid, uuids.searchAndSelectARepositoryQUuid]|reply_path %}
+                        {% set repositorySearchReply = replies[repositorySearchPath] %}
+                        {% if repositorySearchReply %}
+                            {% set repositoryText = repositorySearchReply.value.value.value %}
+                        {% else %}
+                            {% set repositoryText = missingInformationText %}
+                        {% endif %}
 
-                {% if localLocationReply %}
-                    {% set repositoryText = localLocationReply %}
+                    {# Special purpose repository #}	
+                    {% elif repositoryReply == uuids.aSpecialPurposeRepositoryCreatedForTheProjectAUuid %}
+                        {% set specialRepositoryNamePath = [repositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProjectAUuid, uuids.giveTheNameOfTheRepositoryWhenItIsKnownQUuid]|reply_path %}
+                        {% set specialRepositoryNameReply = replies[specialRepositoryNamePath]|reply_str_value %}
+                        {% set specialRepositoryUrlPath = [repositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProjectAUuid, uuids.giveTheUrlToTheRepositoryWhenItIsKnownQUuid]|reply_path %}
+                        {% set specialRepositoryUrlReply = replies[specialRepositoryUrlPath]|reply_str_value %}
+                        {% set repositoryText = km.entities.answers[repositoryReply].label + ": " + specialRepositoryNameReply + " found at " + specialRepositoryUrlReply %}
+                        
+                    {# One of the NERC data centre options #}	
+                    {% else %}
+                        {% set repositoryText = km.entities.answers[repositoryReply].label %}
+                    {% endif %}
                 {% else %}
-                    {% set repositoryText = "local location not given" %}
+                    {% set repositoryText = missingInformationText %}
+                {% endif %}
+
+            {# Plan for local store + location #}
+            {% elif datasetLongTermPlanReply == uuids.yesItWillBeKeptLocallyAUuid %}
+
+                {% set depositDateReplyText = 'N/A' %}
+                {% set embargoText = 'N/A' %}	
+                
+                {% set localStorageWhyPath = [datasetLongTermPlanPath, uuids.yesItWillBeKeptLocallyAUuid, uuids.why_1QUuid]|reply_path %}
+                {% set localStorageWhyReply = replies[localStorageWhyPath]|reply_str_value %}
+
+                {% if localStorageWhyReply %}
+                    
+                    {% if localStorageWhyReply == uuids.other_2_1AUuid %}
+                        {% set localStorageWhypleaseSpecifyPath = [localStorageWhyPath, uuids.other_2_1AUuid, uuids.pleaseSpecify_2_1QUuid]|reply_path %}
+                        {% set localStorageWhypleaseSpecifyReply = replies[localStorageWhypleaseSpecifyPath]|reply_str_value %}
+                        
+                        {% if localStorageWhypleaseSpecifyReply %}
+                            {% set longTermPlanReplyText = km.entities.answers[datasetLongTermPlanReply].label|replace("Yes, it will be ","") + ": " + localStorageWhypleaseSpecifyReply %}
+                        {% else %}
+                            {% set longTermPlanReplyText = km.entities.answers[datasetLongTermPlanReply].label|replace("Yes, it will be ","") + ": " + "reason why not yet given" %}
+                        {% endif %}
+                        
+                    {% else %}
+                        {% set longTermPlanReplyText = km.entities.answers[datasetLongTermPlanReply].label|replace("Yes, it will be ","") + ": " + km.entities.answers[localStorageWhyReply].label|lower %}
+                        
+                    {% endif %}
+
+                    {% set localLocationPath = [datasetLongTermPlanPath, uuids.yesItWillBeKeptLocallyAUuid, uuids.pleaseProvideTheLocalLocationForThisDatasetQUuid]|reply_path %}
+                    {% set localLocationReply = replies[localLocationPath]|reply_str_value %}
+
+                    {% if localLocationReply %}
+                        {% set repositoryText = localLocationReply %}
+                    {% else %}
+                        {% set repositoryText = "local location not given" %}
+                    {% endif %}
+
+                {% else %}
+                    {% set longTermPlanReplyText = "Kept locally: reason why not yet given" %}
+                    {% set repositoryText = "local location not yet given" %}
+
+                {% endif %}
+
+            {# Not kept in perpetuity and reasons #}	
+            {% elif datasetLongTermPlanReply == uuids.noItWillNotBeKeptItInPerpetuityAUuid %}
+                {% set depositDateReplyText = "N/A" %}
+                {% set embargoText = "N/A" %}
+                {% set repositoryText = "N/A" %}	
+                {% set notKeptWhyPath = [datasetLongTermPlanPath, uuids.noItWillNotBeKeptItInPerpetuityAUuid, uuids.why_4QUuid]|reply_path %}
+                {% set notKeptWhyReply = replies[notKeptWhyPath]|reply_str_value %}
+
+                {% set longTermPlanReplyText = km.entities.answers[datasetLongTermPlanReply].label|replace("No, ","") + ": " + "reason why not given"  %}
+
+                {% if notKeptWhyReply %}
+                    {% if notKeptWhyReply == uuids.otherReasonS_3AUuid %}
+                        {% set notKeptWhyPleaseSpecifyPath =  [notKeptWhyPath, uuids.otherReasonS_3AUuid, uuids.pleaseSpecify_5QUuid]|reply_path %}
+                        {% set notKeptWhyPleaseSpecifyReply = replies[notKeptWhyPleaseSpecifyPath]|reply_str_value %}
+
+                        {% set longTermPlanReplyText = km.entities.answers[datasetLongTermPlanReply].label|replace("No, ","") + ": " + notKeptWhyPleaseSpecifyReply %}
+                        
+
+                    {% elif notKeptWhyReply == (uuids.datasetIsOfNoLongTermValueAUuid) or (uuids.inadequateAndOrInsufficientFundsOrInfrastructureAUuid) or (uuids.itIsNotAFunderRequirementAUuid) or (theDataCanBeRegeneratedByAModelWithoutSignificantComputingBarriersAUuid) or (theCostOfRegeneratingTheDataDoesNotExceedTheCostOfCurationAUuid) %}
+                        {% set longTermPlanReplyText = km.entities.answers[datasetLongTermPlanReply].label|replace("No, ","") + ": " + km.entities.answers[notKeptWhyReply].label %}
+
+                    {% else %}
+                        {% set longTermPlanReplyText = km.entities.answers[datasetLongTermPlanReply].label|replace("No, ","") + ": " + missingInformationText  %}
+                    {% endif %}
                 {% endif %}
 
             {% else %}
-                {% set longTermPlanReplyText = "Kept locally: reason why not yet given" %}
-                {% set repositoryText = "local location not yet given" %}
+                {% set longTermPlanReplyText = missingInformationText %}
+                {% set depositDateReplyText = missingInformationText %}
+                {% set embargoText = missingInformationText %}
+                {% set repositoryText = missingInformationText %}
 
             {% endif %}
-
-        {# Not kept in perpetuity and reasons #}	
-        {% elif datasetLongTermPlanReply == uuids.noItWillNotBeKeptItInPerpetuityAUuid %}
-            {% set depositDateReplyText = "N/A" %}
-            {% set embargoText = "N/A" %}
-            {% set repositoryText = "N/A" %}	
-            {% set notKeptWhyPath = [datasetLongTermPlanPath, uuids.noItWillNotBeKeptItInPerpetuityAUuid, uuids.why_4QUuid]|reply_path %}
-            {% set notKeptWhyReply = replies[notKeptWhyPath]|reply_str_value %}
-
-            {% set longTermPlanReplyText = km.entities.answers[datasetLongTermPlanReply].label|replace("No, ","") + ": " + "reason why not given"  %}
-
-            {% if notKeptWhyReply %}
-                {% if notKeptWhyReply == uuids.otherReasonS_3AUuid %}
-                    {% set notKeptWhyPleaseSpecifyPath =  [notKeptWhyPath, uuids.otherReasonS_3AUuid, uuids.pleaseSpecify_5QUuid]|reply_path %}
-                    {% set notKeptWhyPleaseSpecifyReply = replies[notKeptWhyPleaseSpecifyPath]|reply_str_value %}
-
-                    {% set longTermPlanReplyText = km.entities.answers[datasetLongTermPlanReply].label|replace("No, ","") + ": " + notKeptWhyPleaseSpecifyReply %}
-                    
-
-                {% elif notKeptWhyReply == (uuids.datasetIsOfNoLongTermValueAUuid) or (uuids.inadequateAndOrInsufficientFundsOrInfrastructureAUuid) or (uuids.itIsNotAFunderRequirementAUuid) or (theDataCanBeRegeneratedByAModelWithoutSignificantComputingBarriersAUuid) or (theCostOfRegeneratingTheDataDoesNotExceedTheCostOfCurationAUuid) %}
-                    {% set longTermPlanReplyText = km.entities.answers[datasetLongTermPlanReply].label|replace("No, ","") + ": " + km.entities.answers[notKeptWhyReply].label %}
-
-                {% else %}
-                    {% set longTermPlanReplyText = km.entities.answers[datasetLongTermPlanReply].label|replace("No, ","") + ": " + missingInformationText  %}
-                {% endif %}
-            {% endif %}
-
-        {% else %}
+            
             {% set longTermPlanReplyText = missingInformationText %}
             {% set depositDateReplyText = missingInformationText %}
             {% set embargoText = missingInformationText %}
@@ -453,7 +470,20 @@
 
 {% else %}
     {%- do declarations.append({
-    'datasetTitleReply': "No datasets listed!"
+    'datasetTitleReply': "No datasets listed!",
+    'datasetDescriptionReply': "",
+    'datasetIDReply': "",
+    'datasetLicenceTypeReplySplit': "",
+    'datasetSizeReply': "",
+    'datasetOwnerReply': "",
+    'EnvDataOrInfoProduct': "",
+    'datasetExistingDataReply': "",
+    'datasetDateGeneratedReply': "",
+    'longTermPlanReply': "",
+    'depositDateReply': "",
+    'embargo': "",
+    'repository': "",
+    'whoInTheProjectIsResponsibleForThisDatasetReply': ""
     }) -%}
 {% endif %}
 
