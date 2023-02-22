@@ -2150,17 +2150,12 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 
 	{% endif %}
 
-
-
 	{# FAIR statement #}
 
 	{% if (createOrCollectEnvironmentalDataReply == uuids.yes_14AUuid) %}
 		<p>We will be working with the goal of making our data as FAIR as possible.</p>
 	{% else %}
 	{% endif %}
-
-
-
 
 	{# Funder requirement to deposit #}
 	{% set funderRequirementToDepositWithRepositoryPath = [uuids.preservingAndSharingDataCUuid, uuids.isThereAFunderRequirementThatAnyOfYourDataAreDepositedWithALongTermRepositoryQUuid]|reply_path %}
@@ -2439,50 +2434,54 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 					{% set datasetLicenceTypePath = [datasetLicencePath, itemLicenceUuid, uuids.licence_1QUuid]|reply_path %}
 					{% set datasetLicenceTypeReply = replies[datasetLicenceTypePath]|reply_str_value %}
 
-					<p><strong>Licence: </strong>{{ km.entities.answers[datasetLicenceTypeReply].label }}</p>
+					{% if datasetLicenceTypeReply %}
+						<p><strong>Licence: </strong>{{ km.entities.answers[datasetLicenceTypeReply].label }}</p>
 
+						{% if datasetLicenceTypeReply == uuids.theDatasetWillBeAvailableUnderSomeRestrictionsAUuid %}
+							{% set datasetLicenceSomeRestrictionsPath = [datasetLicenceTypePath, uuids.theDatasetWillBeAvailableUnderSomeRestrictionsAUuid]|reply_path %}
 
-					{% if datasetLicenceTypeReply == uuids.theDatasetWillBeAvailableUnderSomeRestrictionsAUuid %}
-						{% set datasetLicenceSomeRestrictionsPath = [datasetLicenceTypePath, uuids.theDatasetWillBeAvailableUnderSomeRestrictionsAUuid]|reply_path %}
+							{% set whatLicenceConditionsPath = [datasetLicenceSomeRestrictionsPath, uuids.whatConditions_1QUuid]|reply_path %}
+							{% set whatLicenceConditionsReply = replies[whatLicenceConditionsPath]|reply_str_value %}
+							{% if whatLicenceConditionsReply %}
+								{{whatLicenceConditionsReply}}
+							{% else %}
+								Licence conditions not given.
+							{% endif %}
 
-						{% set whatLicenceConditionsPath = [datasetLicenceSomeRestrictionsPath, uuids.whatConditions_1QUuid]|reply_path %}
-						{% set whatLicenceConditionsReply = replies[whatLicenceConditionsPath]|reply_str_value %}
-						{% if whatLicenceConditionsReply %}
-							{{whatLicenceConditionsReply}}
-						{% else %}
-							Licence conditions not given.
+							{% set linkToTheLicenceTextPath = [datasetLicenceSomeRestrictionsPath, uuids.linkToTheLicenceText_1QUuid]|reply_path %}
+							{% set linkToTheLicenceTextReply = replies[linkToTheLicenceTextPath]|reply_str_value %}
+							{% if linkToTheLicenceTextReply %}
+								{{linkToTheLicenceTextReply}}
+							{% else %}
+								Link to the licence text not given.
+							{% endif %}
+
+							{% set howWillReUsersBeAbleToGetAccessPath = [datasetLicenceSomeRestrictionsPath, uuids.howWillReUsersBeAbleToGetAccess_1QUuid]|reply_path %}
+							{% set howWillReUsersBeAbleToGetAccessReply = replies[howWillReUsersBeAbleToGetAccessPath]|reply_str_value %}
+							{% if howWillReUsersBeAbleToGetAccessReply %}
+								<p>Users will get access to the data: {{ km.entities.answers[howWillReUsersBeAbleToGetAccessReply].label }}</p>
+							{% else %}
+								Details of how users will get access not given.
+							{% endif %}
+
+							{% if howWillReUsersBeAbleToGetAccessReply == uuids.throughAnotherProcess_1AUuid %}
+								{% set whatProcessPath = [howWillReUsersBeAbleToGetAccessPath, uuids.throughAnotherProcess_1AUuid, uuids.whatProcess_1QUuid]|reply_path %}
+								{% set whatProcessReply = replies[whatProcessPath]|reply_str_value %}
+								{{whatProcessReply}}
+
+							{% endif %}
+
+							{% set willTheConditionsBePublishedAsPartOfTheMetadataPath = [datasetLicenceSomeRestrictionsPath, uuids.willTheConditionsBePublishedAsPartOfTheMetadata_1QUuid]|reply_path %}
+							{% set datasetLicenceSomeRestrictionsReply = replies[willTheConditionsBePublishedAsPartOfTheMetadataPath]|reply_str_value %}
+							{% if datasetLicenceSomeRestrictionsReply == uuids.no_145AUuid %}
+								<p>The licence conditions will not be published as part of the metadata.</p>
+							{% elif datasetLicenceSomeRestrictionsReply == uuids.yes_135AUuid %}
+								<p>The licence conditions will be published as part of the metadata.</p>
+							{% endif %}
 						{% endif %}
 
-						{% set linkToTheLicenceTextPath = [datasetLicenceSomeRestrictionsPath, uuids.linkToTheLicenceText_1QUuid]|reply_path %}
-						{% set linkToTheLicenceTextReply = replies[linkToTheLicenceTextPath]|reply_str_value %}
-						{% if linkToTheLicenceTextReply %}
-							{{linkToTheLicenceTextReply}}
-						{% else %}
-							Link to the licence text not given.
-						{% endif %}
-
-						{% set howWillReUsersBeAbleToGetAccessPath = [datasetLicenceSomeRestrictionsPath, uuids.howWillReUsersBeAbleToGetAccess_1QUuid]|reply_path %}
-						{% set howWillReUsersBeAbleToGetAccessReply = replies[howWillReUsersBeAbleToGetAccessPath]|reply_str_value %}
-						{% if howWillReUsersBeAbleToGetAccessReply %}
-							<p>Users will get access to the data: {{ km.entities.answers[howWillReUsersBeAbleToGetAccessReply].label }}</p>
-						{% else %}
-							Details of how users will get access not given.
-						{% endif %}
-
-						{% if howWillReUsersBeAbleToGetAccessReply == uuids.throughAnotherProcess_1AUuid %}
-							{% set whatProcessPath = [howWillReUsersBeAbleToGetAccessPath, uuids.throughAnotherProcess_1AUuid, uuids.whatProcess_1QUuid]|reply_path %}
-							{% set whatProcessReply = replies[whatProcessPath]|reply_str_value %}
-							{{whatProcessReply}}
-
-						{% endif %}
-
-						{% set willTheConditionsBePublishedAsPartOfTheMetadataPath = [datasetLicenceSomeRestrictionsPath, uuids.willTheConditionsBePublishedAsPartOfTheMetadata_1QUuid]|reply_path %}
-						{% set datasetLicenceSomeRestrictionsReply = replies[willTheConditionsBePublishedAsPartOfTheMetadataPath]|reply_str_value %}
-						{% if datasetLicenceSomeRestrictionsReply == uuids.no_145AUuid %}
-							<p>The licence conditions will not be published as part of the metadata.</p>
-						{% elif datasetLicenceSomeRestrictionsReply == uuids.yes_135AUuid %}
-							<p>The licence conditions will be published as part of the metadata.</p>
-						{% endif %}
+					{% else %}
+						<p><strong>Licence: </strong> Licence information not given or not yet known </p>
 					{% endif %}
 
 					{% set startingDatePath = [datasetLicencePath, itemLicenceUuid, uuids.startingDate_1QUuid]|reply_path %}
@@ -2493,6 +2492,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 
 				{% endfor %}
 				</ul>
+
 			{% endif %}
 			
 			{% set datasetSizePath = [datasetListPath, itemUuid, uuids.whatIsTheApproximateSizeOfTheDatasetQUuid]|reply_path %}
