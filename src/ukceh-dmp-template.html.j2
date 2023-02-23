@@ -2718,40 +2718,45 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 						{% set modelLicenceTypePath = [modelLicencePath, itemLicenceUuid, uuids.licenceQUuid]|reply_path %}
 						{% set modelLicenceTypeReply = replies[modelLicenceTypePath]|reply_str_value %}
 
-						<p><strong>Licence: </strong>{{ km.entities.answers[modelLicenceTypeReply].label }}</p>
+						{% if modelLicenceTypeReply %}
+							<p><strong>Licence: </strong>{{ km.entities.answers[modelLicenceTypeReply].label }}</p>
 
-						{% if modelLicenceTypeReply == uuids.theyWillBeAvailableUnderSomeRestrictionsAUuid %}
-							{% set modelLicenceSomeRestrictionsPath = [modelLicenceTypePath, uuids.theyWillBeAvailableUnderSomeRestrictionsAUuid]|reply_path %}
+							{% if modelLicenceTypeReply == uuids.theyWillBeAvailableUnderSomeRestrictionsAUuid %}
+								{% set modelLicenceSomeRestrictionsPath = [modelLicenceTypePath, uuids.theyWillBeAvailableUnderSomeRestrictionsAUuid]|reply_path %}
 
-							{% set whatModelLicenceConditionsPath = [modelLicenceSomeRestrictionsPath, uuids.whatConditions_2QUuid]|reply_path %}
-							{% set whatModelLicenceConditionsReply = replies[whatModelLicenceConditionsPath]|reply_str_value %}
-							<p>Conditions for access to the model: {{whatModelLicenceConditionsReply}}</p>
+								{% set whatModelLicenceConditionsPath = [modelLicenceSomeRestrictionsPath, uuids.whatConditions_2QUuid]|reply_path %}
+								{% set whatModelLicenceConditionsReply = replies[whatModelLicenceConditionsPath]|reply_str_value %}
+								<p>Conditions for access to the model: {{whatModelLicenceConditionsReply}}</p>
 
-							{% set linkToTheModelLicenceTextPath = [modelLicenceSomeRestrictionsPath, uuids.linkToTheLicenceTextQUuid]|reply_path %}
-							{% set linkToTheModelLicenceTextReply = replies[linkToTheModelLicenceTextPath]|reply_str_value %}
-							<p>Link to licence text: {{linkToTheModelLicenceTextReply}}</p>
+								{% set linkToTheModelLicenceTextPath = [modelLicenceSomeRestrictionsPath, uuids.linkToTheLicenceTextQUuid]|reply_path %}
+								{% set linkToTheModelLicenceTextReply = replies[linkToTheModelLicenceTextPath]|reply_str_value %}
+								<p>Link to licence text: {{linkToTheModelLicenceTextReply}}</p>
 
-							{% set howWillReUsersBeAbleToGetAccessToModelPath = [modelLicenceSomeRestrictionsPath, uuids.howWillReUsersBeAbleToGetAccessQUuid]|reply_path %}
-							{% set howWillReUsersBeAbleToGetAccessToModelReply = replies[howWillReUsersBeAbleToGetAccessToModelPath]|reply_str_value %}
+								{% set howWillReUsersBeAbleToGetAccessToModelPath = [modelLicenceSomeRestrictionsPath, uuids.howWillReUsersBeAbleToGetAccessQUuid]|reply_path %}
+								{% set howWillReUsersBeAbleToGetAccessToModelReply = replies[howWillReUsersBeAbleToGetAccessToModelPath]|reply_str_value %}
 
-							{% if howWillReUsersBeAbleToGetAccessToModelReply != uuids.throughAnotherProcessAUuid %}
-							<p>Users will get access to the model: {{ km.entities.answers[howWillReUsersBeAbleToGetAccessToModelReply].label }}</p>
+								{% if howWillReUsersBeAbleToGetAccessToModelReply != uuids.throughAnotherProcessAUuid %}
+								<p>Users will get access to the model: {{ km.entities.answers[howWillReUsersBeAbleToGetAccessToModelReply].label }}</p>
 
-							{% elif howWillReUsersBeAbleToGetAccessToModelReply == uuids.throughAnotherProcessAUuid %}
-								{% set whatProcessToAccessModelPath = [howWillReUsersBeAbleToGetAccessToModelPath, uuids.throughAnotherProcessAUuid, uuids.whatProcessQUuid]|reply_path %}
-								{% set whatProcessToAccessModelReply = replies[whatProcessToAccessModelPath]|reply_str_value %}
-								<p>Method by which users will get access to the model: {{whatProcessToAccessModelReply}}</p>
+								{% elif howWillReUsersBeAbleToGetAccessToModelReply == uuids.throughAnotherProcessAUuid %}
+									{% set whatProcessToAccessModelPath = [howWillReUsersBeAbleToGetAccessToModelPath, uuids.throughAnotherProcessAUuid, uuids.whatProcessQUuid]|reply_path %}
+									{% set whatProcessToAccessModelReply = replies[whatProcessToAccessModelPath]|reply_str_value %}
+									<p>Method by which users will get access to the model: {{whatProcessToAccessModelReply}}</p>
 
+								{% endif %}
+
+								{% set willTheModelLicenceConditionsBePublishedAsPartOfTheMetadataPath = [modelLicenceSomeRestrictionsPath, uuids.willTheConditionsBePublishedAsPartOfTheMetadataQUuid]|reply_path %}
+								{% set modelLicenceSomeRestrictionsReply = replies[willTheModelLicenceConditionsBePublishedAsPartOfTheMetadataPath]|reply_str_value %}
+								
+								{% if modelLicenceSomeRestrictionsReply == uuids.no_128AUuid %}
+									<p>The licence conditions will not be published as part of the metadata.</p>
+								{% elif modelLicenceSomeRestrictionsReply == uuids.yes_120AUuid %}
+									<p>The licence conditions will be published as part of the metadata.</p>
+								{% endif %}
 							{% endif %}
 
-							{% set willTheModelLicenceConditionsBePublishedAsPartOfTheMetadataPath = [modelLicenceSomeRestrictionsPath, uuids.willTheConditionsBePublishedAsPartOfTheMetadataQUuid]|reply_path %}
-							{% set modelLicenceSomeRestrictionsReply = replies[willTheModelLicenceConditionsBePublishedAsPartOfTheMetadataPath]|reply_str_value %}
-							
-							{% if modelLicenceSomeRestrictionsReply == uuids.no_128AUuid %}
-								<p>The licence conditions will not be published as part of the metadata.</p>
-							{% elif modelLicenceSomeRestrictionsReply == uuids.yes_120AUuid %}
-								<p>The licence conditions will be published as part of the metadata.</p>
-							{% endif %}
+						{% else %}
+							<p><strong>Licence: </strong> Licence information not given or not yet known </p>
 						{% endif %}
 
 						{% set startingDateModelPath = [modelLicencePath, itemLicenceUuid, uuids.startingDateQUuid]|reply_path %}
@@ -2775,7 +2780,11 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{# Data Owner / IPR - needs km update currently empty #}
 				{% set modelsOwnerPath = [modelsListPath, modelItemUuid, uuids.whichOrganisationSHoldTheIntellectualPropertyRightsIprToThisModelQUuid]|reply_path %}
 				{% set modelsOwnerReply = replies[modelsOwnerPath]|reply_str_value %}
-				<p><strong>Model Owner/IPR</strong> {{modelsOwnerReply}}</p>
+				{% if modelsOwnerReply %}
+					<p><strong>Model Owner/IPR</strong> {{modelsOwnerReply}}</p>
+				{% else %}
+					<p><strong>Model Owner/IPR</strong> Information not given</p>
+				{% endif %}
 
 				{# Is the model derived from existing model(s)#}
 				{% set modelsDerivedFromExistingModelsPath = [modelsListPath, modelItemUuid, uuids.isTheModelDerivedFromExistingModelSQUuid]|reply_path %}
@@ -2790,7 +2799,12 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{# Estimated date generated #}
 				{% set modelsDateGeneratedPath = [modelsListPath, modelItemUuid, uuids.whatIsTheEstimatedDateForWhenTheModelWillBeCreatedQUuid]|reply_path %}
 				{% set modelsDateGeneratedReply = replies[modelsDateGeneratedPath]|reply_str_value %}
-				<p><strong>Estimated date model generated</strong>{{modelsDateGeneratedReply}} </p>
+				
+				{% if modelsDateGeneratedReply %}
+					<p><strong>Estimated date model generated</strong>{{modelsDateGeneratedReply}} </p>
+				{% else %}
+					<p><strong>Estimated date model generated</strong>Information not given</p>
+				{% endif %}
 						
 								
 				{# Versioning of model  #}
