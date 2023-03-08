@@ -177,7 +177,6 @@
 ] -%}
 
 
-
 {%- for declaration in mapping.declarations -%}
     {%- do data.extend([
         {
@@ -353,6 +352,202 @@
     },
     "data": data,
 } -%}
+
+
+{%- set models = [
+    {
+    "type": "row",
+    "subtype": "string",
+    "cell": "A1",
+    "data":  ["Title","Description","ID","License","Size","IPR","Is model derived",
+                "Date created","Available in GitHub?","Long Term Preservation Plan",
+                "Deposit date (must be before grant end)","Embargo","Repository","Person responsible"
+                ],
+    "format": "centerHead",
+    }
+] -%}
+
+
+
+{%- for declaration in mapping.declarations_models -%}
+    {%- do models.extend([
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 0,
+            "row": 0 + loop.index,
+            "value": declaration.modelTitleReply,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 1,
+            "row": 0 + loop.index,
+            "value": declaration.modelDescriptionReply,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 2,
+            "row": 0 + loop.index,
+            "value": declaration.modelIDReply,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 3,
+            "row": 0 + loop.index,
+            "value": declaration.modelLicenceTypeReplySplit,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 4,
+            "row": 0 + loop.index,
+            "value": declaration.modelSizeReply,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 5,
+            "row": 0 + loop.index,
+            "value": declaration.modelOwnerReply,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 6,
+            "row": 0 + loop.index,
+            "value": declaration.modelDerived,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 7,
+            "row": 0 + loop.index,
+            "value": declaration.modelDateCreated,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 8,
+            "row": 0 + loop.index,
+            "value": declaration.modelGithubReply,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 9,
+            "row": 0 + loop.index,
+            "value": declaration.modelLongTermPlanReply,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 10,
+            "row": 0 + loop.index,
+            "value": declaration.modelDepositDateReply,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 11,
+            "row": 0 + loop.index,
+            "value": declaration.modelEmbargo,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 12,
+            "row": 0 + loop.index,
+            "value": declaration.modelRepository,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 13,
+            "row": 0 + loop.index,
+            "value": declaration.whoInTheProjectIsResponsibleForThisModelReply,
+            "format": "gridName",
+        }
+    ]) -%}
+{%- endfor -%}
+{%- do models.append({
+    "type": "row",
+    "col": 0,
+    "row": 1 + mapping.declarations_models|length,
+    "data": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+    ],
+    "format": "bottomRow",
+}) -%}
+
+{%- set sheetModels = {
+    "name": "Models",
+    "options": {
+        "column_pixels": [
+            {
+                "first_col": 0,
+                "last_col": 1,
+                "width": 250,
+            },
+            {
+                "first_col": 3,
+                "last_col": 3,
+                "width": 250,
+            },
+            {
+                "first_col": 4,
+                "last_col": 8,
+                "width": 150,
+            },
+            {
+                "first_col": 9,
+                "last_col": 9,
+                "width": 250,
+            },
+            {
+                "first_col": 10,
+                "last_col": 10,
+                "width": 250,
+            },
+            {
+                "first_col": 11,
+                "last_col": 13,
+                "width": 170,
+            }
+        ],
+    },
+    "data": models,
+} -%}
+
+
+
 {%- set excel = {
     "properties": {
         "document": properties,
@@ -361,6 +556,7 @@
     "sheets": [
         sheetMetadata,
         sheetData,
+        sheetModels
     ]
 } -%}
 {{ excel|tojson(2) }}
