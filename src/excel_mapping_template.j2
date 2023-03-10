@@ -172,10 +172,12 @@
                 {% set datasetLicenceTypePath = [datasetLicencePath, datasetLicenceListReply[0], uuids.licence_1QUuid]|reply_path %}
                 {% set datasetLicenceTypeReply = replies[datasetLicenceTypePath]|reply_str_value %}
 
-                {% set datasetLicenceTypeReplySplit = km.entities.answers[datasetLicenceTypeReply].label|replace("The dataset will be ","") %} 
-                {% set datasetLicenceTypeReplySplitText = km.entities.answers[datasetLicenceTypeReply].label|replace("The dataset will be ","") %} 
-                                
                 {% if datasetLicenceTypeReply %}
+
+                    {% set datasetLicenceTypeReplySplit = km.entities.answers[datasetLicenceTypeReply].label|replace("The dataset will be ","") %} 
+                    {% set datasetLicenceTypeReplySplitText = km.entities.answers[datasetLicenceTypeReply].label|replace("The dataset will be ","") %} 
+                                
+                
                     {% if datasetLicenceTypeReply == uuids.theDatasetWillBeAvailableUnderSomeRestrictionsAUuid %}
                         
                         {% set datasetLicenceTypeReplySplitText = km.entities.answers[datasetLicenceTypeReply].label|replace("The dataset will be ","") %} 
@@ -195,7 +197,6 @@
                 {% else %}
                     {% set datasetLicenceTypeReplySplitText = missingInformationText %}
                 {% endif %}          
-
 
 {#
             {% for itemLicenceUuid in datasetLicenceListReply %}
@@ -432,11 +433,12 @@
 
             {% endif %}
             
+            {# WHY IS THIS BLOCK HERE?? it just writes over the above info... just delete?
             {% set longTermPlanReplyText = missingInformationText %}
             {% set depositDateReplyText = missingInformationText %}
             {% set embargoText = missingInformationText %}
             {% set repositoryText = missingInformationText %}
-
+#}
         {% endif %}
 
         {% set whoInTheProjectIsResponsibleForThisDatasetPath = [datasetListPath, itemUuid, uuids.whoInTheProjectIsResponsibleForThisDatasetQUuid]|reply_path %}
@@ -488,6 +490,334 @@
 {% endif %}
 
 
+
+
+
+{# Models info #}
+{%- set declarations_models = [] -%}
+
+{% set modelsPath = [uuids.preservingAndSharingDataCUuid, uuids.modelsQUuid]|reply_path %}
+{% set modelsReply = replies[modelsPath]|reply_str_value %}
+{% if modelsReply == uuids.iWillNotBeProducingModelsAsPartOfThisProjectAUuid %}
+    {#if no models then set all the answers to empty #}
+    {%- do declarations_models.append({
+    'modelTitleReply': "No models will be created by this project.",
+    'modelDescriptionReply': "",
+    'modelIDReply': "",
+    'modelLicenceTypeReplySplit': "",
+    'modelSizeReply': "",
+    'modelOwnerReply': "",
+    'modelDerived': "",
+    'modelDateCreated': "",
+    'modelGithubReply': "",
+    'modelLongTermPlanReply': "",
+    'modelDepositDateReply': "",
+    'modelEmbargo': "",
+    'modelRepository': "",
+    'whoInTheProjectIsResponsibleForThisModelReply': ""
+    }) -%}
+{% endif %}
+
+{% set modelListPath = [modelsPath, uuids.specifyAListOfModelsYouWillBeProducingAUuid, uuids.modelListQLUuid]|reply_path %}	
+{% set modelListReply = replies[modelListPath]|reply_items %}
+
+{% if modelListReply|length > 0 %}
+
+    {% for itemUuid in modelListReply %}
+            {# Title #}
+            {% set modelTitlePath = [modelListPath, itemUuid, uuids.modelNameQUuid]|reply_path %}
+            {% set modelTitleReply = replies[modelTitlePath]|reply_str_value %}
+            {% if modelTitleReply %}
+                {% set modelTitleReplyText = modelTitleReply %}
+            {% else %}
+                {% set modelTitleReplyText = missingInformationText %}
+            {% endif %}
+            
+            {# Description #}
+            {% set modelDescriptionPath = [modelListPath, itemUuid, uuids.modelDescriptionQUuid]|reply_path %}
+            {% set modelDescriptionReply = replies[modelDescriptionPath]|reply_str_value %}
+            {% if modelDescriptionReply %}
+                {% set modelDescriptionReplyText = modelDescriptionReply %}
+            {% else %}
+                {% set modelDescriptionReplyText = missingInformationText %}
+            {% endif %}
+
+            {# ID #}
+            {% set modelIDPath = [modelListPath, itemUuid, uuids.modelIdentifierIfAnyQLUuid]|reply_path %}
+            {% set modelIDReply = replies[modelIDPath]|reply_str_value %}
+            {% if modelIDReply %}
+                {% set modelIDReplyText = modelIDReply %}
+            {% else %}
+                {% set modelIDReplyText = "Not yet known or not given" %}
+            {% endif %}
+
+            {# Licence #}
+            {% set modelLicencePath = [modelListPath, itemUuid, uuids.whatLicenceSWillTheModelBeAvailableUnderQLUuid]|reply_path %}
+            {% set modelLicenceListReply = replies[modelLicencePath]|reply_items %}
+            
+            {% if modelLicenceListReply|length > 0 %} {# this currently only prints the first licence in the list, if more than one licence is added they won't show in the table - I did this because its difficult to set a variable in a for loop then access that variable outdide the loop #}
+                {# {% for itemLicenceUuid in modelLicenceListReply %} #}
+                    {# Licence type #}
+                    {% set modelLicenceTypePath = [modelLicencePath, modelLicenceListReply[0], uuids.licenceQUuid]|reply_path %}
+                    {% set modelLicenceTypeReply = replies[modelLicenceTypePath]|reply_str_value %}
+
+                    {% if modelLicenceTypeReply %}
+                        {% set modelLicenceTypeReplySplit = km.entities.answers[modelLicenceTypeReply].label|replace("The model will be ","") %} 
+                        {% set modelLicenceTypeReplySplitText = km.entities.answers[modelLicenceTypeReply].label|replace("The model will be ","") %} 
+
+                        {% if modelLicenceTypeReply == uuids.theyWillBeAvailableUnderSomeRestrictionsAUuid %}
+                            
+                            {% set modelLicenceTypeReplySplitText = km.entities.answers[modelLicenceTypeReply].label|replace("The model will be ","") %} 
+                            {% set modelLicenceConditionsPath = [modelLicenceTypePath, uuids.theyWillBeAvailableUnderSomeRestrictionsAUuid, uuids.whatConditions_2QUuid]|reply_path %}
+                            {% set modelLicenceConditionsReply = replies[modelLicenceConditionsPath]|reply_str_value %}
+
+                            {% if modelLicenceConditionsReply %}
+                                {% set modelLicenceTypeReplySplitText = modelLicenceTypeReplySplit + ": " + modelLicenceConditionsReply %}
+                            {% else %}
+                                {% set modelLicenceTypeReplySplitText = modelLicenceTypeReplySplit + ": " + missingInformationText %}
+                            {% endif %}
+
+                        {% else %}
+                            {% set modelLicenceTypeReplySplitText = km.entities.answers[modelLicenceTypeReply].label|replace("The model will be ","") %}
+                        {% endif %}
+    
+                    {% else %}
+                        {% set modelLicenceTypeReplySplitText = missingInformationText %}
+                    {% endif %}
+            
+            {% else %}
+                {% set modelLicenceTypeReplySplitText = missingInformationText %}
+            {% endif %}
+
+            {# Size #}
+            {% set modelSizePath = [modelListPath, itemUuid, uuids.whatIsTheApproximateSizeOfThisModelAndAssociatedMaterialQUuid]|reply_path %}
+            {% set modelSizeReply = replies[modelSizePath]|reply_str_value %}
+            {% if modelSizeReply %}
+                {% set modelSizeReplyText = km.entities.answers[modelSizeReply].label %}
+            {% else %}
+                {% set modelSizeReplyText = missingInformationText %}
+            {% endif %}
+
+            {# IPR #}
+            {% set modelOwnerPath = [modelListPath, itemUuid, uuids.whichOrganisationSHoldTheIntellectualPropertyRightsIprToThisModelQUuid]|reply_path %}
+            {% set modelOwnerReply = replies[modelOwnerPath]|reply_str_value %}
+            {% if modelOwnerReply %}
+                {% set modelOwnerReplyText = modelOwnerReply %}
+            {% else %}
+                {% set modelOwnerReplyText = missingInformationText %}
+            {% endif %}
+
+            {# Is model derived ?#}
+            {% set modelExistingDataPath = [modelListPath, itemUuid, uuids.isTheModelDerivedFromExistingModelSQUuid]|reply_path %}
+            {% set modelExistingDataReply = replies[modelExistingDataPath]|reply_str_value %}
+            {% if modelExistingDataReply %}
+                {% set modelExistingDataReplyText = km.entities.answers[modelExistingDataReply].label %}
+            {% else %}
+                {% set modelExistingDataReplyText = missingInformationText %}
+            {% endif %}
+
+            {# Date created #}
+            {% set modelDateCreatedPath = [modelListPath, itemUuid, uuids.whatIsTheEstimatedDateForWhenTheModelWillBeCreatedQUuid]|reply_path %}
+            {% set modelDateCreatedReply = replies[modelDateCreatedPath]|reply_str_value %}
+            {% if modelDateCreatedReply %}
+                {% set modelDateCreatedReplyText = modelDateCreatedReply %}
+            {% else %}
+                {% set modelDateCreatedReplyText = missingInformationText %}
+            {% endif %}
+
+            {# Available in GitHub #}
+            {% set modelGitHubPath = [modelListPath, itemUuid, uuids.willYouDepositYourModelInGitHubOrOtherVersionedCodeRepositoryQUuid]|reply_path %}
+            {% set modelGitHubReply = replies[modelGitHubPath]|reply_str_value %}
+
+            {% if modelGitHubReply == uuids.yes_132AUuid %}
+
+                {# Code repository URL #}
+                {% set repositoryURLPath = [modelGitHubPath, uuids.yes_132AUuid, uuids.pleaseProvideTheCompleteUrlToTheCodeRepositoryWhenItIsKnownQUuid]|reply_path %}
+                {% set repositoryURLReply = replies[repositoryURLPath]|reply_str_value %}
+                {% if repositoryURLReply %}
+                    {% set GitHubReplyText =  "Yes, " + repositoryURLReply %}
+                {% else %}
+                    {% set GitHubReplyText = "Yes, but repository URL not yet known" %}
+                {% endif %}
+
+            {% else %}
+                {% set GitHubReplyText = "No" %}
+            {% endif %}
+
+            {# Long-term preservation plans (including deposit and access embargo date) #}
+            {% set modelLongTermPlanPath = [modelListPath, itemUuid, uuids.areThereLongTermPreservationPlansInPlaceForThisModelQUuid]|reply_path %}
+            {% set modelLongTermPlanReply = replies[modelLongTermPlanPath]|reply_str_value %}
+
+            {# long-term repository #}
+            {% if modelLongTermPlanReply == uuids.yesItWillBeSentToARepository_2AUuid %}
+                {% set modellongTermPlanReplyText = km.entities.answers[modelLongTermPlanReply].label|replace("Yes, it will be ","") %}
+                
+                {# Deposit date #}
+                {% set modeldepositDatePath = [modelLongTermPlanPath, uuids.yesItWillBeSentToARepository_2AUuid, uuids.whatIsThePlannedDepositDate_1QUuid]|reply_path %}
+                {% set modeldepositDateReply = replies[dmodelepositDatePath]|reply_str_value %}
+                {% if modeldepositDateReply %}
+                    {% set modeldepositDateReplyText = modeldepositDateReply %}
+                {% else %}
+                    {% set modeldepositDateReplyText = missingInformationText %}
+                {% endif %}
+                
+                {# Embargo #}
+                {% set modeldepositEmbargoPath = [modelLongTermPlanPath, uuids.yesItWillBeSentToARepository_2AUuid, uuids.willThereBeAnAccessEmbargoPeriod_1QUuid]|reply_path %}
+                {% set modeldepositEmbargoReply = replies[modeldepositEmbargoPath]|reply_str_value %}
+                {% if modeldepositEmbargoReply == uuids.yes_4_3AUuid %}
+                    {% set modeldepositEmbargoDatePath = [modeldepositEmbargoPath, uuids.yes_4_3AUuid, uuids.plannedAccessEmbargoReleaseDate_1QUuid]|reply_path %}
+                    {% set modeldepositEmbargoDateReply = replies[modeldepositEmbargoDatePath]|reply_str_value %}
+                    {% set modelembargoText = "Embargo period ending on " + modeldepositEmbargoDateReply %}
+                {% elif modeldepositEmbargoReply == uuids.no_4_3AUuid %}
+                    {% set modelembargoText = "No embargo period - data will be released immediately after deposit" %}
+                {% else %}
+                    {% set modelembargoText = missingInformationText %}
+                {% endif %}
+
+                {# what repository #}
+                {% set modelrepositoryPath = [modelLongTermPlanPath, uuids.yesItWillBeSentToARepository_2AUuid, uuids.whatRepositoryWillTheModelBeStoredInQUuid]|reply_path %}
+                {% set modelrepositoryReply = replies[modelrepositoryPath]|reply_str_value %}
+                {% if modelrepositoryReply %}
+                    {# Long term plan + repository answer#}
+                    {#A domain specific repository answer was replaced with "Another repository"#}
+                    {% if modelrepositoryReply == uuids.aDomainSpecificRepository_2AUuid %}
+                        {% set modelrepositorySearchPath = [modelrepositoryPath, uuids.aDomainSpecificRepository_2AUuid, uuids.searchAndSelectARepository_2QUuid]|reply_path %}
+                        {% set modelrepositorySearchReply = replies[modelrepositorySearchPath] %}
+                        {% if modelrepositorySearchReply %}
+                            {% set modelrepositoryText = modelrepositorySearchReply.value.value.value %}
+                        {% else %}
+                            {% set modelrepositoryText = missingInformationText %}
+                        {% endif %}
+
+                    {# Special purpose repository #}	
+                    {% elif modelrepositoryReply == uuids.aSpecialPurposeRepositoryCreatedForTheProject_2AUuid %}
+                        {% set modelspecialRepositoryNamePath = [modelrepositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProject_2AUuid, uuids.giveTheNameOfTheRepositoryWhenItIsKnown_2QUuid]|reply_path %}
+                        {% set modelspecialRepositoryNameReply = replies[modelspecialRepositoryNamePath]|reply_str_value %}
+                        {% set modelspecialRepositoryUrlPath = [modelrepositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProject_2AUuid, uuids.giveTheUrlToTheRepositoryWhenItIsKnown_2QUuid]|reply_path %}
+                        {% set modelspecialRepositoryUrlReply = replies[modelspecialRepositoryUrlPath]|reply_str_value %}
+                        {% set modelrepositoryText = km.entities.answers[modelrepositoryReply].label + ": " + modelspecialRepositoryNameReply + " found at " + modelspecialRepositoryUrlReply %}
+                        
+                    {# One of the NERC data centre options #}	
+                    {% else %}
+                        {% set modelrepositoryText = km.entities.answers[modelrepositoryReply].label %}
+                    {% endif %}
+                {% else %}
+                    {% set modelrepositoryText = missingInformationText %}
+                {% endif %}
+
+            {# Plan for local store + location #}
+            {% elif modelLongTermPlanReply == uuids.yesItWillBeKeptLocally_2AUuid %}
+                
+                {% set modellocalStorageWhyPath = [modelLongTermPlanPath, uuids.yesItWillBeKeptLocally_2AUuid, uuids.why_2_1QUuid]|reply_path %}
+                {% set modellocalStorageWhyReply = replies[modellocalStorageWhyPath]|reply_str_value %}
+
+                {% set modellocalStorageWhypleaseSpecifyPath = [modellocalStorageWhyPath, uuids.other_4_1AUuid, uuids.pleaseSpecify_4_1QUuid]|reply_path %}
+                {% set modellocalStorageWhypleaseSpecifyReply = replies[modellocalStorageWhypleaseSpecifyPath]|reply_str_value %}
+                
+                {% if modellocalStorageWhyReply == uuids.other_4_1AUuid %}
+                    {% set modellongTermPlanReplyText = km.entities.answers[modelLongTermPlanReply].label|replace("Yes, it will be ","") + ": " + modellocalStorageWhypleaseSpecifyReply %}
+                {% else %}
+                    {% set modellongTermPlanReplyText = km.entities.answers[modelLongTermPlanReply].label|replace("Yes, it will be ","") + ": " + km.entities.answers[modellocalStorageWhyReply].label|lower %}
+                {% endif %}
+
+                {% set modeldepositDateReplyText = 'N/A' %}
+                {% set modelembargoText = 'N/A' %}	
+                
+                {% set modellocalLocationPath = [modelLongTermPlanPath, uuids.yesItWillBeKeptLocally_2AUuid, uuids.pleaseProvideTheLocalLocationForThisModelQUuid]|reply_path %}
+                {% set modellocalLocationReply = replies[modellocalLocationPath]|reply_str_value %}
+
+                {% if modellocalLocationReply %}
+                    {% set modelrepositoryText = modellocalLocationReply %}
+                {% else %}
+                    {% set modelrepositoryText = "local location not given" %}
+                {% endif %}
+
+            {# Not kept in perpetuity and reasons #}	
+            {% elif modelLongTermPlanReply == uuids.noItWillNotBeKeptInPerpetuityAUuid %}
+                {% set modeldepositDateReplyText = "N/A" %}
+                {% set modelembargoText = "N/A" %}
+                {% set modelrepositoryText = "N/A" %}	
+                {% set notKeptWhy2Path = [modelLongTermPlanPath, uuids.noItWillNotBeKeptInPerpetuityAUuid, uuids.why_6QUuid]|reply_path %}
+                {% set notKeptWhy2Reply = replies[notKeptWhy2Path]|reply_str_value %}
+
+                {% set modellongTermPlanReplyText = km.entities.answers[modelLongTermPlanReply].label|replace("No, ","") + ": " + "reason why not given"  %}
+
+                {% if notKeptWhy2Reply %}
+                    {% if notKeptWhy2Reply == uuids.otherReasonS_5AUuid %}
+                        {% set notKeptWhy2PleaseSpecifyPath =  [notKeptWhy2Path, uuids.otherReasonS_5AUuid, uuids.pleaseSpecify_9QUuid]|reply_path %}
+                        {% set notKeptWhy2PleaseSpecifyReply = replies[notKeptWhy2PleaseSpecifyPath]|reply_str_value %}
+
+                        {% set modellongTermPlanReplyText = km.entities.answers[modelLongTermPlanReply].label|replace("No, ","") + ": " + notKeptWhy2PleaseSpecifyReply %}
+                        
+
+                    {% elif notKeptWhy2Reply == (uuids.modelIsOfNoLongTermValueAUuid) or (uuids.inadequateAndOrInsufficientFundsOrInfrastructure_2AUuid) or (uuids.itIsNotAFunderRequirement_2AUuid) or (uuids.theCostOfRegeneratingTheModelDoesNotExceedTheCostOfCurationAUuid) %}
+                        {% set modellongTermPlanReplyText = km.entities.answers[modelLongTermPlanReply].label|replace("No, ","") + ": " + km.entities.answers[notKeptWhy2Reply].label %}
+
+                    {% else %}
+                        {% set modellongTermPlanReplyText = km.entities.answers[modelLongTermPlanReply].label|replace("No, ","") + ": " + missingInformationText  %}
+                    {% endif %}
+                {% endif %}
+
+            {% else %}
+                {% set modellongTermPlanReplyText = missingInformationText %}
+                {% set modeldepositDateReplyText = missingInformationText %}
+                {% set modelembargoText = missingInformationText %}
+                {% set modelrepositoryText = missingInformationText %}
+
+            {% endif %}
+
+            {% set whoInTheProjectIsResponsibleForThisModelPath = [modelListPath, itemUuid, uuids.whoInTheProjectIsResponsibleForThisModelQUuid]|reply_path %}
+            {% set whoInTheProjectIsResponsibleForThisModelReply = replies[whoInTheProjectIsResponsibleForThisModelPath]|reply_str_value %}
+            {% if whoInTheProjectIsResponsibleForThisModelReply %}
+                {% set whoInTheProjectIsResponsibleForThisModelReplyText = whoInTheProjectIsResponsibleForThisModelReply %}
+            {% else %}
+                {% set whoInTheProjectIsResponsibleForThisModelReplyText = missingInformationText %}
+            {% endif %}
+
+            {# put answers together #}
+
+            {%- do declarations_models.append({
+            'modelTitleReply': modelTitleReplyText,
+            'modelDescriptionReply': modelDescriptionReplyText,
+            'modelIDReply': modelIDReplyText,
+            'modelLicenceTypeReplySplit': modelLicenceTypeReplySplitText,
+            'modelSizeReply': modelSizeReplyText,
+            'modelOwnerReply': modelOwnerReplyText,
+            'modelDerived': modelExistingDataReplyText,
+            'modelDateCreated': modelDateCreatedReplyText,
+            'modelGithubReply': GitHubReplyText,
+            'modelLongTermPlanReply': modellongTermPlanReplyText,
+            'modelDepositDateReply': modeldepositDateReplyText,
+            'modelEmbargo': modelembargoText,
+            'modelRepository': modelrepositoryText,
+            'whoInTheProjectIsResponsibleForThisModelReply': whoInTheProjectIsResponsibleForThisModelReplyText
+            }) -%}
+        
+        {% endfor %}
+
+{% else %}
+    {%- do declarations_models.append({
+    'modelTitleReply': "No models will be created by this project.",
+    'modelDescriptionReply': "",
+    'modelIDReply': "",
+    'modelLicenceTypeReplySplit': "",
+    'modelSizeReply': "",
+    'modelOwnerReply': "",
+    'modelDerived': "",
+    'modelDateCreated': "",
+    'modelGithubReply': "",
+    'modelLongTermPlanReply': "",
+    'modelDepositDateReply': "",
+    'modelEmbargo': "",
+    'modelRepository': "",
+    'whoInTheProjectIsResponsibleForThisModelReply': ""
+    }) -%}
+{% endif %}
+
+
+
+
+        
 
 
 
