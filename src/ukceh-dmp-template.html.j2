@@ -2428,7 +2428,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 			{% set datasetLicenceListReply = replies[datasetLicencePath]|reply_items %}
 
 			{% if datasetLicenceListReply|length > 0 %}
-				<ul>
+				{#<ul>#}
 				{% for itemLicenceUuid in datasetLicenceListReply %}
 
 					{% set datasetLicenceTypePath = [datasetLicencePath, itemLicenceUuid, uuids.licence_1QUuid]|reply_path %}
@@ -2491,7 +2491,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 					{% endif %}
 
 				{% endfor %}
-				</ul>
+				{#</ul>#}
 
 			{% endif %}
 			
