@@ -799,13 +799,13 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 					{% set whatInstrumentListReply = replies[whatInstrumentListPath]|reply_items %}
 					<p> We will be using the following instruments or facilities:
 					{% if whatInstrumentListReply|length > 0 %}
-						<ul>
+						{#<ul>#}
 						{% for itemUuid in whatInstrumentListReply %}
 							{% set whatInstrumentPath = [whatInstrumentListPath, itemUuid, uuids.instrumentFacilityNameQUuid]|reply_path %}
 							{% set whatInstrumentReply = replies[whatInstrumentPath]|reply_str_value %}
 							<li> {{whatInstrumentReply}}</li>
 						{% endfor %}
-						</ul>
+						{#</ul>#}
 					{% endif %}	
 				
 				
@@ -2404,7 +2404,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 	{% if datasetListReply|length > 0 %}
 		<p> <span style="color: rgb(46, 77, 127);"> A spreadsheet containing a table of the datasets listed here will be made available via email after submission.</span></p>
 
-		<ul>
+		{#<ul>#}
 		{% for itemUuid in datasetListReply %}
 
 			{% set datasetTitlePath = [datasetListPath, itemUuid, uuids.datasetNameQUuid]|reply_path %}
@@ -2691,9 +2691,6 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 					{% set willSpecificSoftwareBeRequiredToUseTheDataWhatSoftwarePath = [willSpecificSoftwareBeRequiredToUseTheDataPath, uuids.yes_115AUuid, uuids.whatSoftwareIsNeededToUseTheDataQLUuid]|reply_path %}
 					{% set willSpecificSoftwareBeRequiredToUseTheDataWhatSoftwareReply = replies[willSpecificSoftwareBeRequiredToUseTheDataWhatSoftwarePath]|reply_items %}
 					
-					<p>blah blah blah{{willSpecificSoftwareBeRequiredToUseTheDataWhatSoftwareReply}}</p>
-
-
 					{% if willSpecificSoftwareBeRequiredToUseTheDataWhatSoftwareReply|length > 0 %}
 
 					
@@ -2780,7 +2777,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 		
 		<hr/>
 		{% endfor %}
-		</ul>
+		{#</ul>#}
 	{% endif %}
 
 	<h4>5.2 Models this project plans to create</h4>
@@ -2795,7 +2792,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 		{% set modelsListReply = replies[modelsListPath]|reply_items %}
 		
 		{% if modelsListReply|length > 0 %}
-			<ul>
+			{#<ul>#}
 			{% for modelItemUuid in modelsListReply %}
 
 				{# Model name #}
@@ -3018,7 +3015,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				<hr/>
 			{% endfor %}
 		{% endif %}	
-		</ul>
+		{#</ul>#}
 	{% endif %}	
 
 	<h4>5.3 Software packages this project plans to create</h4>
