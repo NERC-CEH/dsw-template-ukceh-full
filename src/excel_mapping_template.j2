@@ -114,6 +114,7 @@
     {%- do declarations.append({
     'datasetTitleReply': "No data will be created by this project.",
     'datasetDescriptionReply': "",
+    'datasetFormat': "",
     'datasetIDReply': "",
     'datasetLicenceTypeReplySplit': "",
     'datasetSizeReply': "",
@@ -151,6 +152,15 @@
             {% set datasetDescriptionReplyText = datasetDescriptionReply %}
         {% else %}
             {% set datasetDescriptionReplyText = missingInformationText %}
+        {% endif %}
+
+        {# Format #}
+        {% set datasetFormatPath = [datasetListPath, itemUuid, uuids.datasetFormatQUuid]|reply_path %}
+        {% set datasetFormatReply = replies[datasetFormatPath]|reply_str_value %}
+        {% if datasetFormatReply %}
+            {% set datasetFormatReplySplit = datasetFormatReply.split(": '")[-1][:-2] %}
+        {% else %}
+            {% set datasetFormatReplySplit = missingInformationText %}
         {% endif %}
 
         {# ID #}
@@ -453,6 +463,7 @@
         {%- do declarations.append({
             'datasetTitleReply': datasetTitleReplyText,
             'datasetDescriptionReply': datasetDescriptionReplyText,
+            'datasetFormat': datasetFormatReplySplit,
             'datasetIDReply': datasetIDReplyText,
             'datasetLicenceTypeReplySplit': datasetLicenceTypeReplySplitText,
             'datasetSizeReply': datasetSizeReplyText,
@@ -474,6 +485,7 @@
     {%- do declarations.append({
     'datasetTitleReply': "No datasets listed!",
     'datasetDescriptionReply': "",
+    'datasetFormat': "",
     'datasetIDReply': "",
     'datasetLicenceTypeReplySplit': "",
     'datasetSizeReply': "",

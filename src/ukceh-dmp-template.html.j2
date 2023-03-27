@@ -281,11 +281,11 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 			{% set otherPartnersRolePath = [otherPartnersPath, itemUuid, uuids.role_2QUuid]|reply_path %}
 				{% set otherPartnersRoleReply = replies[otherPartnersRolePath]|reply_str_value %}
 
-			{% if otherPartnersRole %}
+			{% if otherPartnersRoleReply %}
 				{% if otherPartnersRoleReply == uuids.externalCollaboratorAUuid %}
-					<h4>External Collaborators:</h4> <li>{{otherPartnersNameReply}} ({{otherPartnersAffiliationReply}})</li>
+					<dt>External Collaborators</dt> <dd><ul style = "list-style-type:none;"><li>{{otherPartnersAffiliationReply}}</li></ul></dd>
 				{% elif otherPartnersRoleReply == uuids.subcontractorAUuid %}
-					<h4>Subcontractors:</h4><li>{{otherPartnersNameReply}} ({{otherPartnersAffiliationReply}})</li>
+					<dt>Subcontractors</dt><dd><ul style = "list-style-type:none;"><li>{{otherPartnersAffiliationReply}}</li></ul></dd>
 				{% endif %}
 			{% endif %}
 			
@@ -2415,20 +2415,29 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 			{% set datasetDescriptionReply = replies[datasetDescriptionPath]|reply_str_value %}
 			<p><strong>Brief description, including format </strong>{{datasetDescriptionReply}}</p>
 
+			{% set datasetFormatPath = [datasetListPath, itemUuid, uuids.datasetFormatQUuid]|reply_path %}
+			{% set datasetFormatReply = replies[datasetFormatPath]|reply_str_value %}
+			{% set datasetFormatReplyObj = replies[datasetFormatPath] %}
+            {% set datasetFormatReplySplit = datasetFormatReply.split(": '")[-1][:-2] %}
+			<p><strong>Format </strong>{{ datasetFormatReplySplit }}</p>
+			{#
+			<p><strong>Format </strong>{{datasetFormatReply.value.value.value}}</p>
+			#}
+
 			{# ID #}
 			{% set datasetIDPath = [datasetListPath, itemUuid, uuids.datasetIdentifierIfAnyQUuid]|reply_path %}
 			{% set datasetIDReply = replies[datasetIDPath]|reply_str_value %}
 			{% if datasetIDReply %}
-				{{datasetIDReply}}
+				<p><strong>ID </strong>{{datasetIDReply}}
 			{% else %}
-				Dataset identifier not yet known or not given.
+				<p><strong>ID </strong>Dataset identifier not yet known or not given.
 			{% endif %}
 
 			{% set datasetLicencePath = [datasetListPath, itemUuid, uuids.whatLicenceSWillTheDatasetBeSharedUnderQLUuid]|reply_path %}
 			{% set datasetLicenceListReply = replies[datasetLicencePath]|reply_items %}
 
 			{% if datasetLicenceListReply|length > 0 %}
-				<ul>
+				
 				{% for itemLicenceUuid in datasetLicenceListReply %}
 
 					{% set datasetLicenceTypePath = [datasetLicencePath, itemLicenceUuid, uuids.licence_1QUuid]|reply_path %}
@@ -2436,6 +2445,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 
 					{% if datasetLicenceTypeReply %}
 						<p><strong>Licence: </strong>{{ km.entities.answers[datasetLicenceTypeReply].label }}</p>
+						<ul>
 
 						{% if datasetLicenceTypeReply == uuids.theDatasetWillBeAvailableUnderSomeRestrictionsAUuid %}
 							{% set datasetLicenceSomeRestrictionsPath = [datasetLicenceTypePath, uuids.theDatasetWillBeAvailableUnderSomeRestrictionsAUuid]|reply_path %}
@@ -2479,6 +2489,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 								<p>The licence conditions will be published as part of the metadata.</p>
 							{% endif %}
 						{% endif %}
+						</ul>
 
 					{% else %}
 						<p><strong>Licence: </strong> Licence information not given or not yet known </p>
@@ -2487,11 +2498,13 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 					{% set startingDatePath = [datasetLicencePath, itemLicenceUuid, uuids.startingDate_1QUuid]|reply_path %}
 					{% set startingDateReply = replies[startingDatePath]|reply_str_value %}
 					{% if startingDateReply %}
+						<ul>
 						<p>Starting date: {{startingDateReply}}</p>
+						</ul>
 					{% endif %}
 
 				{% endfor %}
-				</ul>
+				
 
 			{% endif %}
 			
@@ -2651,8 +2664,12 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{# Who will the data be shared with? #}
 				{% set whoWillTheDataBeSharedWithOnceTransferredToTheRepositoryPath = [datasetLongTermPlanPath, uuids.yesItWillBeSentToARepositoryAUuid, uuids.whoWillTheDataBeSharedWithOnceTransferredToTheRepositoryQUuid]|reply_path %}
 				{% set whoWillTheDataBeSharedWithOnceTransferredToTheRepositoryReply = replies[whoWillTheDataBeSharedWithOnceTransferredToTheRepositoryPath]|reply_str_value %}
-				<p> Access to the data, once transferred to the repository, will be {{km.entities.answers[whoWillTheDataBeSharedWithOnceTransferredToTheRepositoryReply].label|lower}}. 
+				{% if whoWillTheDataBeSharedWithOnceTransferredToTheRepositoryReply %}
+					<p> Access to the data, once transferred to the repository, will be {{km.entities.answers[whoWillTheDataBeSharedWithOnceTransferredToTheRepositoryReply].label|lower}}. 
+				{% else %}
+					<p> Information regarding who the data will be shared with once transferred to the repository has not been given.
 
+				{% endif %}
 				{# accessing the answers from doAnyOfTheFollowingApplyToThisDatasetQUuid doesn't currently work, commenting out this block until I can work out why - MN
 				{% if whoWillTheDataBeSharedWithOnceTransferredToTheRepositoryReply == uuids.restrictedAccessWillBeRestrictedDueToTheNatureOfTheDataAUuid %}
 					{% set repositoryRestrictedAccessDueToNatureOfDataPath = [whoWillTheDataBeSharedWithOnceTransferredToTheRepositoryPath, uuids.restrictedAccessWillBeRestrictedDueToTheNatureOfTheDataAUuid, uuids.doAnyOfTheFollowingApplyToThisDatasetQUuid]|reply_path %}
@@ -2686,29 +2703,48 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{% set willSpecificSoftwareBeRequiredToUseTheDataPath = [datasetLongTermPlanPath, uuids.yesItWillBeSentToARepositoryAUuid, uuids.willSpecificSoftwareBeRequiredToUseTheDataQUuid]|reply_path %}
 				{% set willSpecificSoftwareBeRequiredToUseTheDataReply = replies[willSpecificSoftwareBeRequiredToUseTheDataPath]|reply_str_value %}
 				{% if willSpecificSoftwareBeRequiredToUseTheDataReply == uuids.no_125AUuid %}
-					{% set willSpecificSoftwareBeRequiredToUseTheDataText = "Specific software will not be required to use the data." %}
+					<p><strong>Software needed:</strong> Specific software will not be required to use the data.</p>
 				{% elif willSpecificSoftwareBeRequiredToUseTheDataReply == uuids.yes_116AUuid %}
-					{% set willSpecificSoftwareBeRequiredToUseTheDataWhatSoftwarePath = [willSpecificSoftwareBeRequiredToUseTheDataPath, uuids.yes_115AUuid, uuids.whatSoftwareIsNeededToUseTheDataQLUuid]|reply_path %}
+					<p><strong>Software needed:</strong> Specific software will be required to use the data:
+
+					{% set willSpecificSoftwareBeRequiredToUseTheDataWhatSoftwarePath = [willSpecificSoftwareBeRequiredToUseTheDataPath, uuids.yes_116AUuid, uuids.whatSoftwareIsNeededToUseTheDataQLUuid]|reply_path %}
 					{% set willSpecificSoftwareBeRequiredToUseTheDataWhatSoftwareReply = replies[willSpecificSoftwareBeRequiredToUseTheDataWhatSoftwarePath]|reply_items %}
-					
+													
 					{% if willSpecificSoftwareBeRequiredToUseTheDataWhatSoftwareReply|length > 0 %}
+						<ul>
 
-					
-						{% for itemUuid in datasetListReply %}
-						<p>{{willSpecificSoftwareBeRequiredToUseTheDataWhatSoftwareReply}}</p>
+						{% for itemWhatSoftwareUuid in willSpecificSoftwareBeRequiredToUseTheDataWhatSoftwareReply %}
+
+							{% set whatSoftwareNeededToUseTheDataPath = [willSpecificSoftwareBeRequiredToUseTheDataWhatSoftwarePath, itemWhatSoftwareUuid, uuids.name_3QUuid]|reply_path %}
+							{% set whatSoftwareNeededToUseTheDataReply = replies[whatSoftwareNeededToUseTheDataPath]|reply_str_value %}
+
+							{% set pidUrlForSoftwareNeededToUseTheDataPath = [willSpecificSoftwareBeRequiredToUseTheDataWhatSoftwarePath, itemWhatSoftwareUuid, uuids.pidForTheSoftwareOrUrlWhereTheSoftwareCanBeFoundQUuid]|reply_path %}
+							{% set pidUrlForSoftwareNeededToUseTheDataReply = replies[pidUrlForSoftwareNeededToUseTheDataPath]|reply_str_value %}	
+
+							{% if whatSoftwareNeededToUseTheDataReply %}
+								{{whatSoftwareNeededToUseTheDataReply}}
+							{% else %}
+								Name of Software needed to use the data not given.
+							{% endif %}
+							{% if pidUrlForSoftwareNeededToUseTheDataReply %}
+								{{pidUrlForSoftwareNeededToUseTheDataReply}}
+							{% else %}
+								PID for the software, or URL where the software can be found, not given.
+							{% endif %}
+							</br>
 						{% endfor %}
-
+						</ul>
+					{% else %}
+						Information on which software has not been given or is not yet known.
 
 					{% endif %}
+					</p>
 
-
-
-					{% set willSpecificSoftwareBeRequiredToUseTheDataText = "Specific software will be required to use the data." %}
 
 				{% else %}
-					{% set willSpecificSoftwareBeRequiredToUseTheDataText = "Information on whether specific software will be required to use the data not given." %}
+					<p><strong>Software needed:</strong> Information on whether specific software will be required to use the data not given.</p>
 				{% endif %}
-				 <p><strong>Software needed:</strong> {{willSpecificSoftwareBeRequiredToUseTheDataText}}  </p>
+				 
 				
 
 				

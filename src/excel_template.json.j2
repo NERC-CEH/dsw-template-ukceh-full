@@ -168,7 +168,7 @@
     "type": "row",
     "subtype": "string",
     "cell": "A1",
-    "data":  ["Title","Description","ID","License","Size","IPR","Type of Data","Is data derived",
+    "data":  ["Title","Description", "Format", "ID","License","Size","IPR","Type of Data","Is data derived",
                 "Date generated","Long Term Preservation Plan","Deposit date (must be before grant end)",
                 "Embargo","Repository","Person responsible"
                 ],
@@ -200,7 +200,7 @@
             "subtype": "string",
             "col": 2,
             "row": 0 + loop.index,
-            "value": declaration.datasetIDReply,
+            "value": declaration.datasetFormat,
             "format": "gridName",
         },
         {
@@ -208,7 +208,7 @@
             "subtype": "string",
             "col": 3,
             "row": 0 + loop.index,
-            "value": declaration.datasetLicenceTypeReplySplit,
+            "value": declaration.datasetIDReply,
             "format": "gridName",
         },
         {
@@ -216,7 +216,7 @@
             "subtype": "string",
             "col": 4,
             "row": 0 + loop.index,
-            "value": declaration.datasetSizeReply,
+            "value": declaration.datasetLicenceTypeReplySplit,
             "format": "gridName",
         },
         {
@@ -224,7 +224,7 @@
             "subtype": "string",
             "col": 5,
             "row": 0 + loop.index,
-            "value": declaration.datasetOwnerReply,
+            "value": declaration.datasetSizeReply,
             "format": "gridName",
         },
         {
@@ -232,7 +232,7 @@
             "subtype": "string",
             "col": 6,
             "row": 0 + loop.index,
-            "value": declaration.EnvDataOrInfoProduct,
+            "value": declaration.datasetOwnerReply,
             "format": "gridName",
         },
         {
@@ -240,7 +240,7 @@
             "subtype": "string",
             "col": 7,
             "row": 0 + loop.index,
-            "value": declaration.datasetExistingDataReply,
+            "value": declaration.EnvDataOrInfoProduct,
             "format": "gridName",
         },
         {
@@ -248,7 +248,7 @@
             "subtype": "string",
             "col": 8,
             "row": 0 + loop.index,
-            "value": declaration.datasetDateGeneratedReply,
+            "value": declaration.datasetExistingDataReply,
             "format": "gridName",
         },
         {
@@ -256,7 +256,7 @@
             "subtype": "string",
             "col": 9,
             "row": 0 + loop.index,
-            "value": declaration.longTermPlanReply,
+            "value": declaration.datasetDateGeneratedReply,
             "format": "gridName",
         },
         {
@@ -264,7 +264,7 @@
             "subtype": "string",
             "col": 10,
             "row": 0 + loop.index,
-            "value": declaration.depositDateReply,
+            "value": declaration.longTermPlanReply,
             "format": "gridName",
         },
         {
@@ -272,7 +272,7 @@
             "subtype": "string",
             "col": 11,
             "row": 0 + loop.index,
-            "value": declaration.embargo,
+            "value": declaration.depositDateReply,
             "format": "gridName",
         },
         {
@@ -280,13 +280,21 @@
             "subtype": "string",
             "col": 12,
             "row": 0 + loop.index,
-            "value": declaration.repository,
+            "value": declaration.embargo,
             "format": "gridName",
         },
         {
             "type": "cell",
             "subtype": "string",
             "col": 13,
+            "row": 0 + loop.index,
+            "value": declaration.repository,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 14,
             "row": 0 + loop.index,
             "value": declaration.whoInTheProjectIsResponsibleForThisDatasetReply,
             "format": "gridName",
@@ -298,6 +306,8 @@
     "col": 0,
     "row": 1 + mapping.declarations|length,
     "data": [
+        "",
+        "",
         "",
         "",
         "",
@@ -324,28 +334,23 @@
                 "width": 250,
             },
             {
-                "first_col": 3,
-                "last_col": 3,
+                "first_col": 4,
+                "last_col": 4,
                 "width": 250,
             },
             {
-                "first_col": 4,
-                "last_col": 8,
+                "first_col": 5,
+                "last_col": 9,
                 "width": 150,
             },
             {
-                "first_col": 9,
-                "last_col": 9,
-                "width": 250,
-            },
-            {
                 "first_col": 10,
-                "last_col": 10,
+                "last_col": 11,
                 "width": 250,
             },
             {
-                "first_col": 11,
-                "last_col": 13,
+                "first_col": 12,
+                "last_col": 14,
                 "width": 170,
             }
         ],
