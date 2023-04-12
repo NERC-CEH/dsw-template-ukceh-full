@@ -1,7 +1,7 @@
 {
     "templateId": "ukceh-full-dmp",
     "organizationId": "ukceh",
-    "version": "0.0.22",
+    "version": "0.0.23",
     "name": "UKCEH FULL DMP",
     "description": "DMP to satisfy UKCEH requirements",
     "license": "Apache-2.0",
@@ -74,7 +74,8 @@
                     "name": "pandoc",
                     "options": {
                         "from": "html",
-                        "to": "docx"
+                        "to": "docx",
+                        "args": "--filter=pandoc-docx-pagebreakpy --reference-doc=src/reference.docx"
                     }
                 }
             ]
@@ -102,7 +103,7 @@
         },
         {
             "uuid": "7d4df84d-abf8-4fd3-a57b-54cb5c811d83",
-            "name": "PDF Preview",
+            "name": "PDF for preview use only",
             "shortName": "pdf-prev",
             "icon": "fas fa-file",
             "color": "#f15722",

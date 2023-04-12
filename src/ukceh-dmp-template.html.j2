@@ -354,7 +354,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 	{% set dataVolumeReply = replies[dataVolumePath]|reply_str_value %}
 
 	{% if dataVolumeReply == uuids.totalDataVolumeIs1TbAUuid %}
-		The total volume of this project will collect is >1Tb. 
+		The total volume of data this project will collect is >1Tb. 
 
 		{% set storageLimitationsOfDataVolumePath = [dataVolumePath, uuids.totalDataVolumeIs1TbAUuid, uuids.haveYouConsideredTheStorageLimitationsOfWorkingWithThisVolumeOfDataQUuid]|reply_path %}
 		{% set storageLimitationsOfDataVolumeReply = replies[storageLimitationsOfDataVolumePath]|reply_str_value %}
@@ -678,28 +678,36 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{% if modelUsedVersionReply == uuids.no_11AUuid %}
 					{% set modelVersionFinalText = "This model is not versioned. " %}
 				{% elif modelUsedVersionReply == uuids.yes_11AUuid %}
-					{% set modelVersionText = "This model is versioned. " %}
+					{% set modelVersionText = "This model is versioned, " %}
 
 					{% set modelUsedVersionUsedPath = [modelUsedVersionPath, uuids.yes_11AUuid, uuids.whichVersionWillYouUse_2QUuid]|reply_path %}
 					{% set modelUsedVersionUsedReply = replies[modelUsedVersionUsedPath]|reply_str_value %}
-					{% set modelUsedVersionUsedText = "We are using the following version: " + modelUsedVersionUsedReply + " and " %}
+
+					{% if modelUsedVersionUsedReply %}
+						{% set modelUsedVersionUsedText = "we are using the following version: '" + modelUsedVersionUsedReply + "', and " %}
+					{% else %}
+						{% set modelUsedVersionUsedText = "but we have not provided the version number, and " %}
+					{% endif %}
 
 					{% set modelUsedVersionChangePath = [modelUsedVersionPath, uuids.yes_11AUuid, uuids.willYouChangeVersionIfItUpdates_2QUuid]|reply_path %}
 					{% set modelUsedVersionChangeReply = replies[modelUsedVersionChangePath]|reply_str_value %}
-				
-					{% if modelUsedVersionChangeReply == uuids.willStayWithTheOldVersion_2AUuid %}
-						{% set modelUsedVersionChangeText = "we will not change version if the model updates." %} 
-					{% elif modelUsedVersionChangeReply == uuids.newAnalysesWillBeDoneWithTheNewVersionAUuid %}
-						{% set modelUsedVersionChangeText = "if the model updates we will do new analyses with the newest version." %}
-					{% elif modelUsedVersionChangeReply == uuids.allAnalysesWillBeRedoneWithTheNewVersionAUuid %}
-						{% set modelUsedVersionChangeText = "if the model updates all analyses will be re-done with the newest version." %} 
-					{% endif %}	
+
+					{% if modelUsedVersionChangeReply %}
+						{% if modelUsedVersionChangeReply == uuids.willStayWithTheOldVersion_2AUuid %}
+							{% set modelUsedVersionChangeText = "we will not change version if the model updates." %} 
+						{% elif modelUsedVersionChangeReply == uuids.newAnalysesWillBeDoneWithTheNewVersionAUuid %}
+							{% set modelUsedVersionChangeText = "if the model updates we will do new analyses with the newest version." %}
+						{% elif modelUsedVersionChangeReply == uuids.allAnalysesWillBeRedoneWithTheNewVersionAUuid %}
+							{% set modelUsedVersionChangeText = "if the model updates all analyses will be re-done with the newest version." %} 
+						{% endif %}	
+					{% else %}
+						{% set modelUsedVersionChangeText = "we have not stated what we will do if the model version updates." %} 
+					{% endif %}
 
 					{% set modelVersionFinalText = modelVersionText + modelUsedVersionUsedText + modelUsedVersionChangeText %}
 					
 				{% endif %}	
 				<p>{{modelVersionFinalText}}</p>
-				
 
 				{# Do you expect to make changes? #}
 				{% set modelUsedChangesPath = [modelsUsedListPath, itemUuid, uuids.doYouExpectToMakeChangesToTheSuppliedModelQUuid]|reply_path %}
@@ -1292,15 +1300,15 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 			{% if fileSystemToStoreDataReply == uuids.no_47AUuid %}
 				We are not using a file system with files and folders to store data.
 			{% elif  fileSystemToStoreDataReply == uuids.yes_48AUuid %}
-				We are using a file system with files and folders to store data.
+				We are using a file system with files and folders to store data,
 				
 				{% set standardNamingProcedurePath = [fileSystemToStoreDataPath, uuids.yes_48AUuid, uuids.doYouHaveAStandardProcedureInPlaceForFolderAndFileNamingQUuid]|reply_path %}
 				{% set standardNamingProcedureReply = replies[standardNamingProcedurePath]|reply_str_value %} 
 
 				{% if standardNamingProcedureReply == uuids.yes_49AUuid %}
-					{% set fileNamingProcedurePath = [standardNamingProcedurePath, uuids.yes_49AUuid, uuids.describeYourFileNamingProcedureQUuid]|reply_path %}
-					{% set fileNamingProcedureReply = replies[fileNamingProcedurePath]|reply_str_value %}
-					Our standard file naming procedure: {{fileNamingProcedureReply}}. 
+					with a standard procedure for file and folder names.
+				{% else %}
+					but with no standard procedure for file and folder names.
 				{% endif %}
 
 				{% set metadataEmbeddedPath = [fileSystemToStoreDataPath, uuids.yes_48AUuid, uuids.willAllTheMetadataThatIsEmbeddedInTheFileNamesAlsoBeAvailableInSupportingDocumentsQUuid]|reply_path %}
@@ -1321,30 +1329,29 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 			{% if relationalDatabaseToStoreDataReply == uuids.no_49AUuid %}
 				<p>We will not be using a relational database to store data.</p>
 			{% elif relationalDatabaseToStoreDataReply == uuids.yes_50AUuid %}
-				<p>We will be using a relational database to store data.
+				<p>We will be using a relational database to store data,
 				{% set handlingChangesInDataPath = [relationalDatabaseToStoreDataPath, uuids.yes_50AUuid, uuids.howWillYouHandleChangesInTheDataQUuid ]|reply_path %}
 				{% set handlingChangesInDataReply = replies[handlingChangesInDataPath]|reply_str_value %}
 
 				{# Relational databases #}
 				{% if handlingChangesInDataReply %}
-					{% set handlingChangesInData = km.entities.answers[handlingChangesInDataReply].label|capitalize %}
+					{% set handlingChangesInData = km.entities.answers[handlingChangesInDataReply].label|lower %}
 					{{handlingChangesInData}}.</p>
+				{% else %}
+					but have not given information on how we will handle changes in the data.</p>
 				{% endif %} 
 			{% endif %}
 
 			{# Other storage systems #}
 			{% set anotherStorageSystemPath = [processOrAnalyseDataPath, uuids.yes_5_2AUuid, uuids.areYouUsingAnotherStorageSystemQUuid]|reply_path %}
 			{% set anotherStorageSystemReply = replies[anotherStorageSystemPath]|reply_str_value %}
+
 			{% set storageSystemPath = [anotherStorageSystemPath, uuids.yes_51AUuid, uuids.pleaseSpecifyWhichStorageSystemYouWillUseQUuid]|reply_path %}
 			{% set storageSystemReply = replies[storageSystemPath]|reply_str_value %}
 			
-			{% set storageSystem = '' %}
-
 			{% if storageSystemReply %}
-				{% set storageSystem = storageSystemReply %}
+				Other storage systems we will use: {{storageSystemReply}}
 			{% endif %}
-
-			{{storageSystem}}
 
 			{# Shared working space #}
 			<h5>Shared workspace</h5>
@@ -1354,7 +1361,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 			{% if sharedWorkingSpaceForDataReply == uuids.yes_52AUuid %}
 				
 				{# Specialists #}
-				{% set workspaceRunBySepecialistsPath = [sharedWorkingSpaceForDataPath, uuids.yes_52AUuid, uuids.willThisWorkSpaceBeRunBySpecialistsQUuid]|reply_path %}
+				{% set workspaceRunBySpecialistsPath = [sharedWorkingSpaceForDataPath, uuids.yes_52AUuid, uuids.willThisWorkSpaceBeRunBySpecialistsQUuid]|reply_path %}
 				{% set workspaceRunBySpecialistsReply = replies[workspaceRunBySpecialistsPath]|reply_str_value %}
 
 				{% if workspaceRunBySpecialistsReply == uuids.yes_53AUuid %}
@@ -1444,6 +1451,10 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 
 
 				{# storage needs change over time howDoesTheStorageNeedChangeOverTimeQUuid #}
+				{% set howDoesTheStorageNeedChangeOverTimePath = [managingDataInWorkspacePath, uuids.howDoesTheStorageNeedChangeOverTimeQUuid]|reply_path %}
+				{% set howDoesTheStorageNeedChangeOverTimeReply = replies[howDoesTheStorageNeedChangeOverTimePath]|reply_str_value %}
+				{{km.entities.answers[howDoesTheStorageNeedChangeOverTimeReply].label}}
+
 
 
 
