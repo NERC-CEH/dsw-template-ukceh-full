@@ -111,6 +111,43 @@ If NO to (creating AND reusing data) but YES to processing/analysing --> warning
 {% endif %}
 
 
+
+{# Third party Models #}
+{% set otherMeansModellingPath = [createOrCollectEnvironmentalDataPath, uuids.yes_14AUuid, uuids.willYouBeGeneratingNewDatasetsByOtherMeansSuchAsModellingQUuid]|reply_path %}
+{% set otherMeansModellingReply = replies[otherMeansModellingPath]|reply_str_value %}
+
+{% set whichModelsForNewDatasetsPath = [otherMeansModellingPath, uuids.yes_30AUuid, uuids.whichModelSWillBeUsedToGenerateNewDatasetsQUuid]|reply_path %}
+{% set whichModelsForNewDatasetsReply = replies[whichModelsForNewDatasetsPath]|reply_items %}
+
+
+{% if whichModelsForNewDatasetsReply %}
+	{# if any of whichModelsForNewDatasetsReply are Pre-existing, documented model(s) #}
+	{% set ns = namespace(found=false) %}
+
+	{% for itemUuid in whichModelsForNewDatasetsReply %}
+		{% if km.entities.choices[itemUuid].label == "Pre-existing, documented model(s)" %}
+			{% set ns.found = true %}
+		{% endif %}
+	{% endfor %}
+
+	{% set modelsUsedPath = [uuids.reUsingDataCUuid, uuids.willTheProjectUseAnyPreExistingOrThirdPartyModelsQUuid]|reply_path %}
+	{% set modelsUsedReply = replies[modelsUsedPath]|reply_str_value %}
+
+	{% if (ns.found == true) and (modelsUsedReply == uuids.no_10AUuid) %}
+		<h6 class = box>
+			<span style="color: red;">
+			<p><b>Inconsistency warning</b> <br>
+			Chapter 2 question 2 you have said your project will not use any pre-existing or 'third-party' models
+			but in Chapter 3 you said you are generating new datasets from pre-existing, documented model(s) </p>
+			</span>
+		</h6>
+
+	{% endif %}
+{% endif %}
+
+
+
+
 {# Chapter 6 inconsistencies #}
 
 {% if ctx.phaseUuid == "e6b3786d-9246-4179-b78e-d99c8ca9435c" %}
