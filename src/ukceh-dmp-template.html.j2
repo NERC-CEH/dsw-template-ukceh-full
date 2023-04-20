@@ -1547,8 +1547,6 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 
 				{% set accessControlPath = [manageWorkspaceAccessPath, uuids.exploreHintsAndTipsForBestPracticeAUuid, uuids.howWillAccessControlBeArrangedQUuid]|reply_path %}
 				{% set accessControlReply = replies[accessControlPath]|reply_str_value %}
-				{% set dataCopiedByRemoteUsersPath = [manageWorkspaceAccessPath, uuids.exploreHintsAndTipsForBestPracticeAUuid, uuids.willDataBeCopiedInAndOutOfTheWorkspaceStorageByRemoteUsersQUuid]|reply_path %}
-				{% set dataCopiedByRemoreUsersReply = replies[dataCopiedByRemoteUsersPath]|reply_str_value %}
 
 				{% if accessControlReply == uuids.noSpecialProvisionsAreNeededAUuid %}
 					{% set accessControl = 'No special access provisions will be required for the project workspace' %}
@@ -1571,23 +1569,34 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 					{% set accessControl = 'The project workspace will be connected to a single sign-on system to control who has access to it.' %}
 				{% endif %}
 
+				{% set willTheWorkSpaceStorageNeedToBeRemoteMountedPath = [manageWorkspaceAccessPath, uuids.exploreHintsAndTipsForBestPracticeAUuid, uuids.willTheWorkSpaceStorageNeedToBeRemoteMountedQUuid]|reply_path %}
+				{% set willTheWorkSpaceStorageNeedToBeRemoteMountedReply = replies[willTheWorkSpaceStorageNeedToBeRemoteMountedPath]|reply_str_value %}
+				{% if willTheWorkSpaceStorageNeedToBeRemoteMountedReply == uuids.no_54AUuid%}
+					{% set willTheWorkSpaceStorageNeedToBeRemoteMountedText = "The work space storage will not need to be remote mounted." %}
+				{% elif willTheWorkSpaceStorageNeedToBeRemoteMountedReply == uuids.noDataWillBeCopiedIfItNeedsToBeProcessedElsewhereAUuid%}
+					{% set willTheWorkSpaceStorageNeedToBeRemoteMountedText = "The work space storage will not need to be remote mounted, data will be copied if it needs to be processed elsewhere." %}
+				{% elif willTheWorkSpaceStorageNeedToBeRemoteMountedReply == uuids.noAllDataProcessingWillBeDoneInTheSameEnvironmentVirtualResearchEnvironmentAUuid%}
+					{% set willTheWorkSpaceStorageNeedToBeRemoteMountedText = "The work space storage will not need to be remote mounted, all data processing will be done in the same environment (virtual research environment)." %}
+				{% elif willTheWorkSpaceStorageNeedToBeRemoteMountedReply == uuids.yesForOccasionalExplorationAUuid%}
+					{% set willTheWorkSpaceStorageNeedToBeRemoteMountedText = "The work space storage will need to be remote mounted, for occasional exploration." %}
+				{% elif willTheWorkSpaceStorageNeedToBeRemoteMountedReply == uuids.yesForActualComputationsRequiringHighPerformanceAUuid%}
+					{% set willTheWorkSpaceStorageNeedToBeRemoteMountedText = "The work space storage will need to be remote mounted, for computations requiring high performance." %}
+				{% endif %}
+
+				{% set dataCopiedByRemoteUsersPath = [manageWorkspaceAccessPath, uuids.exploreHintsAndTipsForBestPracticeAUuid, uuids.willDataBeCopiedInAndOutOfTheWorkspaceStorageByRemoteUsersQUuid]|reply_path %}
+				{% set dataCopiedByRemoteUsersReply = replies[dataCopiedByRemoteUsersPath]|reply_str_value %}
 				{% if dataCopiedByRemoteUsersReply == uuids.noThisShouldNotBeAllowedAUuid %}
 					{% set dataCopiedByRemoteUsers = 'Users accessing the workspace remotely will not be allowed to copy data in and out of it.' %}
-				{% elif dataCopiedByRemoreUsersReply == uuids.noAllDataProcessingWillBeDoneInTheSameEnvironmentVirtualResearchEnvironment_2AUuid %}
+				{% elif dataCopiedByRemoteUsersReply == uuids.noAllDataProcessingWillBeDoneInTheSameEnvironmentVirtualResearchEnvironment_2AUuid %}
 					{% set dataCopiedByRemoteUsers = 'Users accessing the workspace remotely will not be allowed to copy data in and out of it - all data processing will be done in the same virtual environment.' %}
-				{% elif dataCopiedByRemoreUsersReply == uuids.yesOccasionallyAUuid %}
+				{% elif dataCopiedByRemoteUsersReply == uuids.yesOccasionallyAUuid %}
 					{% set dataCopiedByRemoteUsers = 'Users accessing the workspace remotely will occassionally be allowed to copy data in and out of it.' %}
-				{% elif dataCopiedByRemoreUsersReply == uuids.yesForActualComputationsRequiringHighPerformance_2AUuid %}
+				{% elif dataCopiedByRemoteUsersReply == uuids.yesForActualComputationsRequiringHighPerformance_2AUuid %}
 					{% set dataCopiedByRemoteUsers = 'Users accessing the workspace remotely will be allowed to copy data in and out for computations requiring high performance.' %}
 				{% endif %}
 
-				{% if accessControl %}
-					{{workspaceAccessControl}} {{accessControl}} {{dataCopiedByRemoteUsers}}
-				{% elif workspaceAccessControl %}
-					{{workspaceAccessControl}} {{accessControl}} {{dataCopiedByRemoteUsers}}
-				{% elif dataCopiedByRemoteUsers%}
-					{{workspaceAccessControl}} {{accessControl}} {{dataCopiedByRemoteUsers}}
-				{% endif %}
+				{{workspaceAccessControl}} {{accessControl}} {{willTheWorkSpaceStorageNeedToBeRemoteMountedText}} {{dataCopiedByRemoteUsers}}
+
 
 					
 			{% elif sharedWorkingSpaceForDataReply == uuids.no_55AUuid %}
