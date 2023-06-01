@@ -109,6 +109,10 @@
 
 {% set datasetsPath = [uuids.preservingAndSharingDataCUuid, uuids.datasetsQUuid]|reply_path %}
 {% set datasetsReply = replies[datasetsPath]|reply_str_value %}
+
+{% set datasetListPath = [datasetsPath, uuids.specifyAListOfDatasetsYouWillBeProducingAUuid, uuids.listOfDatasetsQLUuid]|reply_path %}	
+{% set datasetListReply = replies[datasetListPath]|reply_items %}
+
 {% if datasetsReply == uuids.iWillNotBeProducingAnyDatasetsAsPartOfThisProjectAUuid %}
     
     {%- do declarations.append({
@@ -128,12 +132,9 @@
     'repository': "",
     'whoInTheProjectIsResponsibleForThisDatasetReply': ""
     }) -%}
-{% endif %}
 
-{% set datasetListPath = [datasetsPath, uuids.specifyAListOfDatasetsYouWillBeProducingAUuid, uuids.listOfDatasetsQLUuid]|reply_path %}	
-{% set datasetListReply = replies[datasetListPath]|reply_items %}
-
-{% if datasetListReply|length > 0 %}
+{# they say yes we're creating datasets and list at least 1 #}
+{% elif (datasetsReply == uuids.specifyAListOfDatasetsYouWillBeProducingAUuid) and (datasetListReply|length > 0) %}
 
     {% for itemUuid in datasetListReply %}
         {# Title #}
@@ -208,7 +209,7 @@
                     {% set datasetLicenceTypeReplySplitText = missingInformationText %}
                 {% endif %}          
 
-{#
+    {#
             {% for itemLicenceUuid in datasetLicenceListReply %}
 
                 Licence type
@@ -256,7 +257,7 @@
                 {% set startingDatePath = [datasetLicencePath, itemLicenceUuid, uuids.startingDate_1QUuid]|reply_path %}
                 {% set startingDateReply = replies[startingDatePath]|reply_str_value %}
                 {{startingDateReply}}
-#} 
+    #} 
            {# {% endfor %} #}
 
         {% else %}
@@ -481,7 +482,8 @@
 
     {% endfor %}
 
-{% else %}
+{# they say yes we're creating datasets but then don't list any #}
+{% elif (datasetsReply == uuids.specifyAListOfDatasetsYouWillBeProducingAUuid) and (datasetListReply|length == 0) %} 
     {%- do declarations.append({
     'datasetTitleReply': "No datasets listed!",
     'datasetDescriptionReply': "",
@@ -510,6 +512,10 @@
 
 {% set modelsPath = [uuids.preservingAndSharingDataCUuid, uuids.modelsQUuid]|reply_path %}
 {% set modelsReply = replies[modelsPath]|reply_str_value %}
+
+{% set modelListPath = [modelsPath, uuids.specifyAListOfModelsYouWillBeProducingAUuid, uuids.modelListQLUuid]|reply_path %}	
+{% set modelListReply = replies[modelListPath]|reply_items %}
+
 {% if modelsReply == uuids.iWillNotBeProducingModelsAsPartOfThisProjectAUuid %}
     {#if no models then set all the answers to empty #}
     {%- do declarations_models.append({
@@ -528,12 +534,9 @@
     'modelRepository': "",
     'whoInTheProjectIsResponsibleForThisModelReply': ""
     }) -%}
-{% endif %}
 
-{% set modelListPath = [modelsPath, uuids.specifyAListOfModelsYouWillBeProducingAUuid, uuids.modelListQLUuid]|reply_path %}	
-{% set modelListReply = replies[modelListPath]|reply_items %}
-
-{% if modelListReply|length > 0 %}
+{# they say yes we're creating models and list at least 1 #}
+{% elif (modelsReply == uuids.specifyAListOfModelsYouWillBeProducingAUuid) and modelListReply|length > 0 %}
 
     {% for itemUuid in modelListReply %}
             {# Title #}
@@ -807,9 +810,9 @@
         
         {% endfor %}
 
-{% else %}
+{% elif (modelsReply == uuids.specifyAListOfModelsYouWillBeProducingAUuid) and modelListReply|length == 0 %}
     {%- do declarations_models.append({
-    'modelTitleReply': "No models will be created by this project.",
+    'modelTitleReply': "No models listed!",
     'modelDescriptionReply': "",
     'modelIDReply': "",
     'modelLicenceTypeReplySplit': "",
