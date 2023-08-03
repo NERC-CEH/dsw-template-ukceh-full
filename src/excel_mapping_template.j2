@@ -443,13 +443,13 @@
                 {% set repositoryText = missingInformationText %}
 
             {% endif %}
-            
-            {# WHY IS THIS BLOCK HERE?? it just writes over the above info... just delete?
+
+        {% else %}    
             {% set longTermPlanReplyText = missingInformationText %}
             {% set depositDateReplyText = missingInformationText %}
             {% set embargoText = missingInformationText %}
             {% set repositoryText = missingInformationText %}
-#}
+
         {% endif %}
 
         {% set whoInTheProjectIsResponsibleForThisDatasetPath = [datasetListPath, itemUuid, uuids.whoInTheProjectIsResponsibleForThisDatasetQUuid]|reply_path %}

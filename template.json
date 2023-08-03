@@ -1,7 +1,7 @@
 {
     "templateId": "ukceh-full-dmp",
     "organizationId": "ukceh",
-    "version": "0.0.23",
+    "version": "0.0.24",
     "name": "UKCEH FULL DMP",
     "description": "DMP to satisfy UKCEH requirements",
     "license": "Apache-2.0",
@@ -119,6 +119,29 @@
                 {
                     "name": "wkhtmltopdf",
                     "options": {}
+                }
+            ]
+        },
+        {
+            "uuid": "05d0c249-3ce2-4066-b699-ac8b92fc2e33",
+            "name": "WeasyPrint PDF testing ",
+            "shortName": "weasy pdf",
+            "icon": "fas fa-file",
+            "color": "#f15722",
+            "steps": [
+                {
+                    "name": "jinja",
+                    "options": {
+                        "template": "src/index_preview.html.j2",
+                        "content-type": "text/html",
+                        "extension": "html"
+                    }
+                },
+                {
+                    "name": "weasyprint",
+                    "options":{
+                        "pdf.custom_metadata":"True"
+                    }
                 }
             ]
         }

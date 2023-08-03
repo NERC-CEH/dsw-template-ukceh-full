@@ -4,7 +4,7 @@
 
 /* Layout and global styles */
 
-@page {
+@page portrait {
   size: 21.0cm 29.7cm;
   size : portrait;
   margin: 2cm;
@@ -12,9 +12,18 @@
   widows:2;
 }
 
+.portrait {
+  size : portrait;
+}
+
 @page rotated { 
   size : landscape;
 }
+
+.horizontal {
+  page: rotated;
+}
+
 
 h1, h2, h3, h4, h5, h6 {
   page-break-inside: avoid !important;
@@ -40,6 +49,10 @@ h4 {
 
 h5 {
   font-size: 12pt
+}
+
+h6 {
+  font-size: 9pt
 }
 
 html, body {
@@ -215,4 +228,9 @@ div#dmp-content {
   page-break-after: avoid;
   position: relative;
   /* border-bottom: 1px solid black; */
+}
+
+
+.table-font {
+  font-size: 10pt;
 }
