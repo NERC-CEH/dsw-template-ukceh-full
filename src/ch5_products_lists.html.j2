@@ -1,0 +1,898 @@
+<h4>5.1 Datasets this project plans to create</h4>
+	{% set datasetsPath = [uuids.preservingAndSharingDataCUuid, uuids.datasetsQUuid]|reply_path %}
+	{% set datasetsReply = replies[datasetsPath]|reply_str_value %}
+	{% if datasetsReply == uuids.iWillNotBeProducingAnyDatasetsAsPartOfThisProjectAUuid %}
+		No data will be created by this project.
+	{% endif %}
+
+	{% set datasetListPath = [datasetsPath, uuids.specifyAListOfDatasetsYouWillBeProducingAUuid, uuids.listOfDatasetsQLUuid]|reply_path %}	
+	{% set datasetListReply = replies[datasetListPath]|reply_items %}
+	
+	{% if datasetListReply|length > 0 %}
+		<p> <span style="color: rgb(46, 77, 127);"> A spreadsheet containing a table of the datasets listed here will be made available via email after submission.</span></p>
+
+		{#<ul>#}
+		{% for itemUuid in datasetListReply %}
+
+			{% set datasetTitlePath = [datasetListPath, itemUuid, uuids.datasetNameQUuid]|reply_path %}
+			{% set datasetTitleReply = replies[datasetTitlePath]|reply_str_value %}
+			<p><strong>Dataset working title - </strong>{{datasetTitleReply}}</p>
+
+			{% set datasetDescriptionPath = [datasetListPath, itemUuid, uuids.datasetDescriptionQUuid]|reply_path %}
+			{% set datasetDescriptionReply = replies[datasetDescriptionPath]|reply_str_value %}
+			<p><strong>Brief description, including format </strong>{{datasetDescriptionReply}}</p>
+
+			{% set datasetFormatPath = [datasetListPath, itemUuid, uuids.datasetFormatQUuid]|reply_path %}
+			{% set datasetFormatReply = replies[datasetFormatPath]|reply_str_value %}
+			{% set datasetFormatReplyObj = replies[datasetFormatPath] %}
+            {% set datasetFormatReplySplit = datasetFormatReply.split(": '")[-1][:-2] %}
+			<p><strong>Format </strong>{{ datasetFormatReplySplit }}</p>
+			{#
+			<p><strong>Format </strong>{{datasetFormatReply.value.value.value}}</p>
+			#}
+
+			{# ID #}
+			{% set datasetIDPath = [datasetListPath, itemUuid, uuids.datasetIdentifierIfAnyQUuid]|reply_path %}
+			{% set datasetIDReply = replies[datasetIDPath]|reply_str_value %}
+			{% if datasetIDReply %}
+				<p><strong>ID </strong>{{datasetIDReply}}
+			{% else %}
+				<p><strong>ID </strong>Dataset identifier not yet known or not given.
+			{% endif %}
+
+			{% set datasetLicencePath = [datasetListPath, itemUuid, uuids.whatLicenceSWillTheDatasetBeSharedUnderQLUuid]|reply_path %}
+			{% set datasetLicenceListReply = replies[datasetLicencePath]|reply_items %}
+
+			{% if datasetLicenceListReply|length > 0 %}
+				{#<ul>#}
+				
+				{% for itemLicenceUuid in datasetLicenceListReply %}
+
+					{% set datasetLicenceTypePath = [datasetLicencePath, itemLicenceUuid, uuids.licence_1QUuid]|reply_path %}
+					{% set datasetLicenceTypeReply = replies[datasetLicenceTypePath]|reply_str_value %}
+
+					{% if datasetLicenceTypeReply %}
+						<p><strong>Licence: </strong>{{ km.entities.answers[datasetLicenceTypeReply].label }}</p>
+						<ul>
+
+						{% if datasetLicenceTypeReply == uuids.theDatasetWillBeAvailableUnderSomeRestrictionsAUuid %}
+							{% set datasetLicenceSomeRestrictionsPath = [datasetLicenceTypePath, uuids.theDatasetWillBeAvailableUnderSomeRestrictionsAUuid]|reply_path %}
+
+							{% set whatLicenceConditionsPath = [datasetLicenceSomeRestrictionsPath, uuids.whatConditions_1QUuid]|reply_path %}
+							{% set whatLicenceConditionsReply = replies[whatLicenceConditionsPath]|reply_str_value %}
+							{% if whatLicenceConditionsReply %}
+								{{whatLicenceConditionsReply}}
+							{% else %}
+								Licence conditions not given.
+							{% endif %}
+
+							{% set linkToTheLicenceTextPath = [datasetLicenceSomeRestrictionsPath, uuids.linkToTheLicenceText_1QUuid]|reply_path %}
+							{% set linkToTheLicenceTextReply = replies[linkToTheLicenceTextPath]|reply_str_value %}
+							{% if linkToTheLicenceTextReply %}
+								{{linkToTheLicenceTextReply}}
+							{% else %}
+								Link to the licence text not given.
+							{% endif %}
+
+							{% set howWillReUsersBeAbleToGetAccessPath = [datasetLicenceSomeRestrictionsPath, uuids.howWillReUsersBeAbleToGetAccess_1QUuid]|reply_path %}
+							{% set howWillReUsersBeAbleToGetAccessReply = replies[howWillReUsersBeAbleToGetAccessPath]|reply_str_value %}
+							{% if howWillReUsersBeAbleToGetAccessReply %}
+								<p>Users will get access to the data: {{ km.entities.answers[howWillReUsersBeAbleToGetAccessReply].label }}</p>
+							{% else %}
+								Details of how users will get access not given.
+							{% endif %}
+
+							{% if howWillReUsersBeAbleToGetAccessReply == uuids.throughAnotherProcess_1AUuid %}
+								{% set whatProcessPath = [howWillReUsersBeAbleToGetAccessPath, uuids.throughAnotherProcess_1AUuid, uuids.whatProcess_1QUuid]|reply_path %}
+								{% set whatProcessReply = replies[whatProcessPath]|reply_str_value %}
+								{{whatProcessReply}}
+
+							{% endif %}
+
+							{% set willTheConditionsBePublishedAsPartOfTheMetadataPath = [datasetLicenceSomeRestrictionsPath, uuids.willTheConditionsBePublishedAsPartOfTheMetadata_1QUuid]|reply_path %}
+							{% set datasetLicenceSomeRestrictionsReply = replies[willTheConditionsBePublishedAsPartOfTheMetadataPath]|reply_str_value %}
+							{% if datasetLicenceSomeRestrictionsReply == uuids.no_145AUuid %}
+								<p>The licence conditions will not be published as part of the metadata.</p>
+							{% elif datasetLicenceSomeRestrictionsReply == uuids.yes_135AUuid %}
+								<p>The licence conditions will be published as part of the metadata.</p>
+							{% endif %}
+						{% endif %}
+						</ul>
+
+					{% else %}
+						<p><strong>Licence: </strong> Licence information not given or not yet known </p>
+					{% endif %}
+
+					{% set startingDatePath = [datasetLicencePath, itemLicenceUuid, uuids.startingDate_1QUuid]|reply_path %}
+					{% set startingDateReply = replies[startingDatePath]|reply_str_value %}
+					{% if startingDateReply %}
+						<ul>
+						<p>Starting date: {{startingDateReply}}</p>
+						</ul>
+					{% endif %}
+
+				{% endfor %}
+				{#</ul>#}
+
+			{% endif %}
+			
+			{% set datasetSizePath = [datasetListPath, itemUuid, uuids.whatIsTheApproximateSizeOfTheDatasetQUuid]|reply_path %}
+			{% set datasetSizeReply = replies[datasetSizePath]|reply_str_value %}
+			<p><strong>Size/Quantity</strong>
+			{% if datasetSizeReply %}{{ km.entities.answers[datasetSizeReply].label }}{% else %}<em>unknown</em>{% endif %}</p>
+
+			{% set datasetOwnerPath = [datasetListPath, itemUuid, uuids.whichOrganisationSHoldTheIntellectualPropertyRightsIprToThisDatasetQUuid]|reply_path %}
+			{% set datasetOwnerReply = replies[datasetOwnerPath]|reply_str_value %}
+			<p><strong>Data Owner/IPR</strong> {{datasetOwnerReply}}</p>
+
+			{% set doYouConsiderThisToBeEnvironmentalDataOrAnInformationProductPath = [datasetListPath, itemUuid, uuids.doYouConsiderThisToBeEnvironmentalDataOrAnInformationProductQUuid]|reply_path %}
+			{% set doYouConsiderThisToBeEnvironmentalDataOrAnInformationProductReply = replies[doYouConsiderThisToBeEnvironmentalDataOrAnInformationProductPath]|reply_str_value %}
+			{% if doYouConsiderThisToBeEnvironmentalDataOrAnInformationProductReply %}
+				<p><strong>Type of Data</strong> {{ km.entities.answers[doYouConsiderThisToBeEnvironmentalDataOrAnInformationProductReply].label}}</p>
+			{% endif %}
+
+			{% set datasetExistingDataPath = [datasetListPath, itemUuid, uuids.areDataDerivedFromExistingDataQUuid]|reply_path %}
+			{% set datasetExistingDataReply = replies[datasetExistingDataPath]|reply_str_value %}
+			{% if datasetExistingDataReply %}
+				<p><strong>Are data derived from existing data? </strong>{{ km.entities.answers[datasetExistingDataReply].label }}</p>
+			{% endif %}
+
+			{% set datasetDateGeneratedPath = [datasetListPath, itemUuid, uuids.whatIsTheEstimatedDateForWhenTheDatasetWillBeGeneratedQUuid]|reply_path %}
+			{% set datasetDateGeneratedReply = replies[datasetDateGeneratedPath]|reply_str_value %}
+			<p><strong>Estimated date data generated</strong>{{datasetDateGeneratedReply}} </p>
+
+			{# Long-term preservation plans (including deposit and access embargo date) #}
+			{% set datasetLongTermPlanPath = [datasetListPath, itemUuid, uuids.areThereLongTermPreservationPlansInPlaceForThisDatasetQUuid]|reply_path %}
+			{% set datasetLongTermPlanReply = replies[datasetLongTermPlanPath]|reply_str_value %}
+
+			{% set longTermText = 'Long-Term Plan (e.g. archive with the EIDC) ' %}
+			{% set depositDateText = 'Deposit date (must be before grant end) ' %}
+
+			{% if datasetLongTermPlanReply == uuids.yesItWillBeSentToARepositoryAUuid %}
+
+				{% set repositoryPath = [datasetLongTermPlanPath, uuids.yesItWillBeSentToARepositoryAUuid, uuids.whatRepositoryWillThisDataBeStoredInQUuid]|reply_path %}
+				{% set repositoryReply = replies[repositoryPath]|reply_str_value %}
+
+				{# Deposit date #}
+				{% set depositDatePath = [datasetLongTermPlanPath, uuids.yesItWillBeSentToARepositoryAUuid, uuids.whatIsThePlannedDepositDateQUuid]|reply_path %}
+				{% set depositDateReply = replies[depositDatePath]|reply_str_value %}
+				<strong>{{depositDateText}}</strong> {{depositDateReply}}
+				<br><br>
+
+				{# Embargo #}
+				{% set depositEmbargoPath = [datasetLongTermPlanPath, uuids.yesItWillBeSentToARepositoryAUuid, uuids.willThereBeAnAccessEmbargoPeriodQUuid]|reply_path %}
+				{% set depositEmbargoReply = replies[depositEmbargoPath]|reply_str_value %}
+				{% if depositEmbargoReply == uuids.yes_1AUuid %}
+					{% set depositEmbargoDatePath = [depositEmbargoPath, uuids.yes_1AUuid, uuids.plannedAccessEmbargoReleaseDateQUuid]|reply_path %}
+					{% set depositEmbargoDateReply = replies[depositEmbargoDatePath]|reply_str_value %}
+					{% set embargoText = "There will be an access embargo period, ending on " + depositEmbargoDateReply %}
+				{% elif depositEmbargoReply == uuids.no_1AUuid %}
+					{% set embargoText = "There will be no access embargo period, data will be released immediately after deposit." %}
+				{% endif %}	
+					<strong>Planned access embargo </strong> {{embargoText}}
+				<br><br>				
+
+				{% if repositoryReply %}
+					{# Long term plan + repository answer#}
+					{% if repositoryReply == uuids.aDomainSpecificRepositoryAUuid %} {#A domain specific repository answer was replaced with "Another repository"#}
+						{% set repositorySearchPath = [repositoryPath, uuids.aDomainSpecificRepositoryAUuid, uuids.searchAndSelectARepositoryQUuid]|reply_path %}
+						{% set repositorySearchReply = replies[repositorySearchPath] %}
+
+						{% set whatTypeOfRepositoryIsThisPath = [repositoryPath, uuids.aDomainSpecificRepositoryAUuid, uuids.whatTypeOfRepositoryIsThisQUuid]|reply_path %}
+						{% set whatTypeOfRepositoryIsThisReply = replies[whatTypeOfRepositoryIsThisPath]|reply_str_value %}
+
+						{% set whyHaveYouChosenThisRepositoryPath = [repositoryPath, uuids.aDomainSpecificRepositoryAUuid, uuids.whyHaveYouChosenThisRepositoryQUuid]|reply_path %}
+						{% set whyHaveYouChosenThisRepositoryReply = replies[whyHaveYouChosenThisRepositoryPath]|reply_str_value %}
+
+						{% set whyHaveYouChosenThisRepositoryOtherPleaseSpecifyPath = [repositoryPath, uuids.aDomainSpecificRepositoryAUuid, uuids.whyHaveYouChosenThisRepositoryQUuid, uuids.other_1AUuid, uuids.pleaseSpecify_1QUuid]|reply_path %}
+						{% set whyHaveYouChosenThisRepositoryOtherPleaseSpecifyReply = replies[whyHaveYouChosenThisRepositoryOtherPleaseSpecifyPath]|reply_str_value %}
+						
+						{% set datasetLongTermPlan = 'Will be archived with ' %}
+						
+						{% if repositorySearchReply and whatTypeOfRepositoryIsThisReply and whyHaveYouChosenThisRepositoryReply and whyHaveYouChosenThisRepositoryOtherPleaseSpecifyReply %}
+							<strong>{{longTermText}}</strong> {{datasetLongTermPlan}} {{repositorySearchReply.value.value.value}}, {{km.entities.answers[whatTypeOfRepositoryIsThisReply].label|lower}} because {{whyHaveYouChosenThisRepositoryOtherPleaseSpecifyReply}}. 
+						{% elif repositorySearchReply and whatTypeOfRepositoryIsThisReply and whyHaveYouChosenThisRepositoryReply %}
+							<strong>{{longTermText}}</strong> {{datasetLongTermPlan}} {{repositorySearchReply.value.value.value}}, {{km.entities.answers[whatTypeOfRepositoryIsThisReply].label|lower}}, because {{km.entities.answers[whyHaveYouChosenThisRepositoryReply].label|lower}}. 
+						{% else %}
+							<strong>{{longTermText}}</strong> {{datasetLongTermPlan}} {{missingInformationText}}. 
+						{% endif %}
+
+						{% set willYouContactTheRepositoryBeforehandPath = [repositoryPath, uuids.aDomainSpecificRepositoryAUuid, uuids.willYouContactTheRepositoryBeforehandQUuid]|reply_path %}
+						{% set willYouContactTheRepositoryBeforehandReply = replies[willYouContactTheRepositoryBeforehandPath]|reply_str_value %}
+
+						{% if willYouContactTheRepositoryBeforehandReply %}
+							{% if willYouContactTheRepositoryBeforehandReply == uuids.noThisSubmissionIsRoutineBothForUsAndTheRepositoryAUuid %}
+								 We will not contact the repository beforehand as this is routine for both us and the repository.
+							{% elif willYouContactTheRepositoryBeforehandReply == uuids.yesWeHaveContactedTheRepositoryAUuid %}
+								We have already contacted the repository.
+							{% elif willYouContactTheRepositoryBeforehandReply == uuids.yesWeWillContactTheRepositoryAUuid %}
+								 We will contact the repository beforehand.
+							{% elif willYouContactTheRepositoryBeforehandReply == uuids.weHaveMadeOtherArrangements_5AUuid %}
+								{% set willYouContactTheRepositoryBeforehandOtherArrangementsPath = [willYouContactTheRepositoryBeforehandPath, uuids.weHaveMadeOtherArrangements_5AUuid, uuids.pleaseSpecify_3QUuid]|reply_path %}
+								{% set willYouContactTheRepositoryBeforehandOtherArrangementsReply = replies[willYouContactTheRepositoryBeforehandOtherArrangementsPath]|reply_str_value %}
+
+								{% if willYouContactTheRepositoryBeforehandOtherArrangementsReply %}
+									We have made other arrangements regarding contacting the repository: {{willYouContactTheRepositoryBeforehandOtherArrangementsReply}}
+								{% else %}
+									We have made other arrangements regarding contacting the repository: information not given.
+								{% endif %}
+							{% endif %}
+
+						{% endif %}
+							
+
+					{# Special purpose repository #}	
+					{% elif repositoryReply == uuids.aSpecialPurposeRepositoryCreatedForTheProjectAUuid %}
+						{% set datasetLongTermPlan = 'Will be archived in a special purpose repository created for the project' %}
+						{% set specialRepositoryNamePath = [repositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProjectAUuid, uuids.giveTheNameOfTheRepositoryWhenItIsKnownQUuid]|reply_path %}
+						{% set specialRepositoryNameReply = replies[specialRepositoryNamePath]|reply_str_value%}
+						{% set specialRepositoryUrlPath = [repositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProjectAUuid, uuids.giveTheUrlToTheRepositoryWhenItIsKnownQUuid]|reply_path %}
+						{% set specialRepositoryUrlReply = replies[specialRepositoryUrlPath]|reply_str_value%}
+
+						<strong>{{longTermText}}</strong> {{datasetLongTermPlan}}. The repository is {{specialRepositoryNameReply}} and can be found at {{specialRepositoryUrlReply}}.
+
+						{% set specialRepositorySupportPath = [repositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProjectAUuid, uuids.willYouBeAbleToSupportThisRepositoryForASufficientlyLongTimeQUuid]|reply_path %}
+						{% set specialRepositorySupportReply = replies[specialRepositorySupportPath]|reply_str_value%}
+						{% if specialRepositorySupportReply == uuids.no_123AUuid %}
+							We will not be able to support this repository for a sufficiently long time.
+						{% elif specialRepositorySupportReply == uuids.yes_113AUuid %}
+							We will be able to support this repository for a sufficiently long time.
+						{% else %}
+							Information regarding whether we will be to support this repository has not been given or is not yet known.
+						{% endif %}
+
+						{% set specialRepositoryServiceLevelPath = [repositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProjectAUuid, uuids.whatIsTheServiceLevelYouWillBeOfferingUsersOfTheDataRepositoryQUuid]|reply_path %}
+						{% set specialRepositoryServiceLevelReply = replies[specialRepositoryServiceLevelPath]|reply_str_value%}
+						{% if specialRepositoryServiceLevelReply %}
+							{% set specialRepositoryServiceLevelText = km.entities.answers[specialRepositoryServiceLevelReply].label|lower %}
+							We will be offering users of the repository {{specialRepositoryServiceLevelText}}.
+						{% else %}
+							Information regarding the service level offered to users of the repository has not been given or is not yet known.
+						{% endif %}
+
+						{% set specialRepositorySystemAdminPath = [repositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProjectAUuid, uuids.haveYouArrangedForSystemAdministrationAtLeastSecurityUpdatesAndHardwareMaintenanceForTheServerSQUuid]|reply_path %}
+						{% set specialRepositorySystemAdminReply = replies[specialRepositorySystemAdminPath]|reply_str_value%}
+						{% if specialRepositorySystemAdminReply == uuids.notYet_2AUuid %}
+							We have not yet arranged for system administration (at least security updates) and hardware maintenance for the server(s).
+						{% elif specialRepositorySystemAdminReply == uuids.yes_114AUuid %}
+							We have arranged for system administration (at least security updates) and hardware maintenance for the server(s)
+						{% else %}
+							Information regarding whether we have arranged for system administration (at least security updates) and hardware maintenance for the server(s) has not been given or is not yet known.
+						{% endif %}
+						
+						
+					
+					{# One of the NERC data centre options #}	
+					{% else %}
+						{% set datasetLongTermPlan = 'Will be archived with the ' %}
+							<strong>{{longTermText}}</strong> {{datasetLongTermPlan}} {{km.entities.answers[repositoryReply].label}}
+					{% endif %} 
+				{% endif %}
+
+				{# Who will the data be shared with? #}
+				{% set whoWillTheDataBeSharedWithOnceTransferredToTheRepositoryPath = [datasetLongTermPlanPath, uuids.yesItWillBeSentToARepositoryAUuid, uuids.whoWillTheDataBeSharedWithOnceTransferredToTheRepositoryQUuid]|reply_path %}
+				{% set whoWillTheDataBeSharedWithOnceTransferredToTheRepositoryReply = replies[whoWillTheDataBeSharedWithOnceTransferredToTheRepositoryPath]|reply_str_value %}
+				{% if whoWillTheDataBeSharedWithOnceTransferredToTheRepositoryReply %}
+					<p> Access to the data, once transferred to the repository, will be {{km.entities.answers[whoWillTheDataBeSharedWithOnceTransferredToTheRepositoryReply].label|lower}}. 
+				{% else %}
+					<p> Information regarding who the data will be shared with once transferred to the repository has not been given.
+
+				{% endif %}
+				{# accessing the answers from doAnyOfTheFollowingApplyToThisDatasetQUuid doesn't currently work, commenting out this block until I can work out why - MN
+				{% if whoWillTheDataBeSharedWithOnceTransferredToTheRepositoryReply == uuids.restrictedAccessWillBeRestrictedDueToTheNatureOfTheDataAUuid %}
+					{% set repositoryRestrictedAccessDueToNatureOfDataPath = [whoWillTheDataBeSharedWithOnceTransferredToTheRepositoryPath, uuids.restrictedAccessWillBeRestrictedDueToTheNatureOfTheDataAUuid, uuids.doAnyOfTheFollowingApplyToThisDatasetQUuid]|reply_path %}
+					{% set repositoryRestrictedAccessDueToNatureOfDataReply = replies[whoWillTheDataBeSharedWithOnceTransferredToTheRepositoryPath]|reply_items %}
+
+					This is due to 
+					{% if repositoryRestrictedAccessDueToNatureOfDataReply %}
+						{% for reason in repositoryRestrictedAccessDueToNatureOfDataReply %}
+							{{km.entities.choices[reason].label}}, 
+						{% endfor %}
+					{% else %}
+						a reason not listed in the questionnaire answers.
+					{% endif %}
+				{% endif %}	
+				#}
+				</p>		
+				
+				{# Will there be different versions over time #}
+				{% set willThereBeDifferentVersionsOfThisDataOverTimePath = [datasetLongTermPlanPath, uuids.yesItWillBeSentToARepositoryAUuid, uuids.willThereBeDifferentVersionsOfThisDataOverTimeQUuid]|reply_path %}
+				{% set willThereBeDifferentVersionsOfThisDataOverTimeReply = replies[willThereBeDifferentVersionsOfThisDataOverTimePath]|reply_str_value %}
+				{% if willThereBeDifferentVersionsOfThisDataOverTimeReply == uuids.no_124AUuid %}
+					{% set willThereBeDifferentVersionsOfThisDataOverTimeText = "There will not be different versions of this data over time." %}
+				{% elif willThereBeDifferentVersionsOfThisDataOverTimeReply == uuids.yes_115AUuid %}
+					{% set willThereBeDifferentVersionsOfThisDataOverTimeText = "There will be different versions of this data over time." %}
+				{% else %}
+					{% set willThereBeDifferentVersionsOfThisDataOverTimeText = "Information on versions not given." %}
+				{% endif %}
+				<p><strong>Versions:</strong> {{willThereBeDifferentVersionsOfThisDataOverTimeText}} </p>
+
+				{# Will specific software be needed to use the data #}
+				{% set willSpecificSoftwareBeRequiredToUseTheDataPath = [datasetLongTermPlanPath, uuids.yesItWillBeSentToARepositoryAUuid, uuids.willSpecificSoftwareBeRequiredToUseTheDataQUuid]|reply_path %}
+				{% set willSpecificSoftwareBeRequiredToUseTheDataReply = replies[willSpecificSoftwareBeRequiredToUseTheDataPath]|reply_str_value %}
+				{% if willSpecificSoftwareBeRequiredToUseTheDataReply == uuids.no_125AUuid %}
+					<p><strong>Software needed:</strong> Specific software will not be required to use the data.</p>
+				{% elif willSpecificSoftwareBeRequiredToUseTheDataReply == uuids.yes_116AUuid %}
+					<p><strong>Software needed:</strong> Specific software will be required to use the data:
+
+					{% set willSpecificSoftwareBeRequiredToUseTheDataWhatSoftwarePath = [willSpecificSoftwareBeRequiredToUseTheDataPath, uuids.yes_116AUuid, uuids.whatSoftwareIsNeededToUseTheDataQLUuid]|reply_path %}
+					{% set willSpecificSoftwareBeRequiredToUseTheDataWhatSoftwareReply = replies[willSpecificSoftwareBeRequiredToUseTheDataWhatSoftwarePath]|reply_items %}
+													
+					{% if willSpecificSoftwareBeRequiredToUseTheDataWhatSoftwareReply|length > 0 %}
+						<ul>
+
+						{% for itemWhatSoftwareUuid in willSpecificSoftwareBeRequiredToUseTheDataWhatSoftwareReply %}
+
+							{% set whatSoftwareNeededToUseTheDataPath = [willSpecificSoftwareBeRequiredToUseTheDataWhatSoftwarePath, itemWhatSoftwareUuid, uuids.name_3QUuid]|reply_path %}
+							{% set whatSoftwareNeededToUseTheDataReply = replies[whatSoftwareNeededToUseTheDataPath]|reply_str_value %}
+
+							{% set pidUrlForSoftwareNeededToUseTheDataPath = [willSpecificSoftwareBeRequiredToUseTheDataWhatSoftwarePath, itemWhatSoftwareUuid, uuids.pidForTheSoftwareOrUrlWhereTheSoftwareCanBeFoundQUuid]|reply_path %}
+							{% set pidUrlForSoftwareNeededToUseTheDataReply = replies[pidUrlForSoftwareNeededToUseTheDataPath]|reply_str_value %}	
+
+							{% if whatSoftwareNeededToUseTheDataReply %}
+								{{whatSoftwareNeededToUseTheDataReply}}
+							{% else %}
+								Name of Software needed to use the data not given.
+							{% endif %}
+							{% if pidUrlForSoftwareNeededToUseTheDataReply %}
+								{{pidUrlForSoftwareNeededToUseTheDataReply}}
+							{% else %}
+								PID for the software, or URL where the software can be found, not given.
+							{% endif %}
+							</br>
+						{% endfor %}
+						</ul>
+					{% else %}
+						Information on which software has not been given or is not yet known.
+
+					{% endif %}
+					</p>
+
+
+				{% else %}
+					<p><strong>Software needed:</strong> Information on whether specific software will be required to use the data not given.</p>
+				{% endif %}
+				 
+				
+
+				
+
+			{# Plan for local store + location #}	
+			{% elif datasetLongTermPlanReply == uuids.yesItWillBeKeptLocallyAUuid %}
+				{% set datasetLongTermPlan = 'Will be kept locally' %}
+				{% set depositDate = 'NA' %}
+				{% set localLocationPath = [datasetLongTermPlanPath, uuids.yesItWillBeKeptLocallyAUuid, uuids.pleaseProvideTheLocalLocationForThisDatasetQUuid]|reply_path %}
+				{% set localLocationReply = replies[localLocationPath]|reply_str_value %}
+				
+				{% set localStorageWhyPath = [datasetLongTermPlanPath, uuids.yesItWillBeKeptLocallyAUuid, uuids.why_1QUuid]|reply_path %}
+				{% set localStorageWhyReply = replies[localStorageWhyPath]|reply_str_value %}
+
+				{% set localStorageWhypleaseSpecifyPath = [localStorageWhyPath, uuids.other_2_1AUuid, uuids.pleaseSpecify_2_1QUuid]|reply_path %}
+            	{% set localStorageWhypleaseSpecifyReply = replies[localStorageWhypleaseSpecifyPath]|reply_str_value %}
+
+				<p><strong> {{depositDateText}} </strong> {{depositDate}}</p>
+				<p><strong>{{longTermText}}</strong> {{datasetLongTermPlan}}</p>
+				{% if localLocationReply %}
+					<p><strong>Local storage location: </strong> {{localLocationReply}}</p>
+				{% else %}
+					<p><strong>Local storage location: </strong> {{missingInformationText}}</p>
+				{% endif %}
+
+				{% if localStorageWhyReply == (uuids.funderDoesNotAllowDatasetToBeDepositedAUuid or uuids.datasetContainsSensitiveInformationAUuid or uuids.datasetContainsBackgroundIprPreventingDepositAUuid or uuids.datasetContainsConfidentialInformationAUuid) %}
+					<p><strong>Reason to store locally </strong> {{km.entities.answers[localStorageWhyReply].label}}</p>
+				{% elif localStorageWhyReply == uuids.other_2_1AUuid %}
+                	<p><strong>Reason to store locally: </strong> {{localStorageWhypleaseSpecifyReply}}</p>
+				{% else %}
+					<p><strong>Reason to store locally: </strong> {{missingInformationText}} </p>
+				{% endif %}
+
+			{# Not kept in perpetuity and reasons #}	
+			{% elif datasetLongTermPlanReply == uuids.noItWillNotBeKeptItInPerpetuityAUuid %}
+				{% set datasetLongTermPlan = 'Will not be kept in perpetuity' %}
+				{% set depositDate = 'NA' %}
+				{% set embargoText = 'NA' %}	
+				{% set notKeptWhyPath = [datasetLongTermPlanPath, uuids.noItWillNotBeKeptItInPerpetuityAUuid, uuids.why_4QUuid]|reply_path %}
+				{% set notKeptWhyReply = replies[notKeptWhyPath]|reply_str_value %}
+
+				<p><strong> {{depositDateText}} </strong> {{depositDate}}</p>
+				<p><strong>Planned access embargo </strong> {{embargoText}}</p>
+				<p><strong>{{longTermText}}</strong> {{datasetLongTermPlan}}</p>
+				{% if notKeptWhyReply %}
+					{% if notKeptWhyReply == uuids.otherReasonS_3AUuid %}
+						{% set notKeptWhyPleaseSpecifyPath =  [notKeptWhyPath, uuids.otherReasonS_3AUuid, uuids.pleaseSpecify_5QUuid]|reply_path %}
+						{% set notKeptWhyPleaseSpecifyReply = replies[notKeptWhyPleaseSpecifyPath]|reply_str_value%}
+						<p><strong>Reason not kept </strong> {{notKeptWhyPleaseSpecifyReply}} </p>
+					{% elif notKeptWhyReply == (uuids.datasetIsOfNoLongTermValueAUuid) or (uuids.inadequateAndOrInsufficientFundsOrInfrastructureAUuid) or (uuids.itIsNotAFunderRequirementAUuid) or (theDataCanBeRegeneratedByAModelWithoutSignificantComputingBarriersAUuid) or (theCostOfRegeneratingTheDataDoesNotExceedTheCostOfCurationAUuid) %}
+						<p><strong>Reason not kept </strong> {{km.entities.answers[notKeptWhyReply].label}} </p>
+					{% else %}
+						<p><strong>Reason not kept </strong>Reason not given
+					{% endif %}
+
+				{% else %}
+					<p><strong>Reason not kept </strong>Reason not given
+				{% endif %}	
+			{% endif %}
+
+			{% set whoInTheProjectIsResponsibleForThisDatasetPath = [datasetListPath, itemUuid, uuids.whoInTheProjectIsResponsibleForThisDatasetQUuid]|reply_path %}
+			{% set whoInTheProjectIsResponsibleForThisDatasetReply = replies[whoInTheProjectIsResponsibleForThisDatasetPath]|reply_str_value %}
+			{% if whoInTheProjectIsResponsibleForThisDatasetReply %}
+				<p><strong>Person Responsible for dataset: </strong> {{whoInTheProjectIsResponsibleForThisDatasetReply}} </p>
+			{% endif %}
+		
+		<hr/>
+		{% endfor %}
+		{#</ul>#}
+	{% endif %}
+
+	<h4>5.2 Models this project plans to create</h4>
+
+	{% set modelsPath = [uuids.preservingAndSharingDataCUuid, uuids.modelsQUuid]|reply_path %}
+	{% set modelsReply = replies[modelsPath]|reply_str_value%}
+	{% if modelsReply == uuids.iWillNotBeProducingModelsAsPartOfThisProjectAUuid %}
+		<p>No models will be created by this project.</p>
+	{% elif modelsReply == uuids.specifyAListOfModelsYouWillBeProducingAUuid %}	
+		<p>The following models will be created by this project:</p>
+		{% set modelsListPath = [modelsPath, uuids.specifyAListOfModelsYouWillBeProducingAUuid, uuids.modelListQLUuid]|reply_path %}	
+		{% set modelsListReply = replies[modelsListPath]|reply_items %}
+		
+		{% if modelsListReply|length > 0 %}
+			{#<ul>#}
+			{% for modelItemUuid in modelsListReply %}
+
+				{# Model name #}
+				{% set modelsTitlePath = [modelsListPath, modelItemUuid, uuids.modelNameQUuid]|reply_path %}
+				{% set modelsTitleReply = replies[modelsTitlePath]|reply_str_value %}
+				<p><strong>Model title - </strong>{{modelsTitleReply}}</p>	
+
+				{# Model description #}
+				{% set modelsDescriptionPath = [modelsListPath, modelItemUuid, uuids.modelDescriptionQUuid]|reply_path %}
+				{% set modelsDescriptionReply = replies[modelsDescriptionPath]|reply_str_value %}
+				<p><strong>Brief description </strong>{{modelsDescriptionReply}}</p>
+
+				{# Model identifier DOI #}
+				{% set modelsIDPath = [modelsListPath, modelItemUuid, uuids.modelIdentifierIfAnyQLUuid]|reply_path %}
+				{% set modelsIDReply = replies[modelsIDPath]|reply_str_value %}
+				<p><strong>ID </strong>{{modelsIDReply}}</p>
+
+				{% set modelLicencePath = [modelsListPath, modelItemUuid, uuids.whatLicenceSWillTheModelBeAvailableUnderQLUuid]|reply_path %}
+				{% set modelLicenceListReply = replies[modelLicencePath]|reply_items %}
+
+				{% if modelLicenceListReply|length > 0 %}
+					<ul>
+					{% for itemLicenceUuid in modelLicenceListReply %}
+
+						{% set modelLicenceTypePath = [modelLicencePath, itemLicenceUuid, uuids.licenceQUuid]|reply_path %}
+						{% set modelLicenceTypeReply = replies[modelLicenceTypePath]|reply_str_value %}
+
+						{% if modelLicenceTypeReply %}
+							<p><strong>Licence: </strong>{{ km.entities.answers[modelLicenceTypeReply].label }}</p>
+
+							{% if modelLicenceTypeReply == uuids.theyWillBeAvailableUnderSomeRestrictionsAUuid %}
+								{% set modelLicenceSomeRestrictionsPath = [modelLicenceTypePath, uuids.theyWillBeAvailableUnderSomeRestrictionsAUuid]|reply_path %}
+
+								{% set whatModelLicenceConditionsPath = [modelLicenceSomeRestrictionsPath, uuids.whatConditions_2QUuid]|reply_path %}
+								{% set whatModelLicenceConditionsReply = replies[whatModelLicenceConditionsPath]|reply_str_value %}
+								<p>Conditions for access to the model: {{whatModelLicenceConditionsReply}}</p>
+
+								{% set linkToTheModelLicenceTextPath = [modelLicenceSomeRestrictionsPath, uuids.linkToTheLicenceTextQUuid]|reply_path %}
+								{% set linkToTheModelLicenceTextReply = replies[linkToTheModelLicenceTextPath]|reply_str_value %}
+								<p>Link to licence text: {{linkToTheModelLicenceTextReply}}</p>
+
+								{% set howWillReUsersBeAbleToGetAccessToModelPath = [modelLicenceSomeRestrictionsPath, uuids.howWillReUsersBeAbleToGetAccessQUuid]|reply_path %}
+								{% set howWillReUsersBeAbleToGetAccessToModelReply = replies[howWillReUsersBeAbleToGetAccessToModelPath]|reply_str_value %}
+
+								{% if howWillReUsersBeAbleToGetAccessToModelReply != uuids.throughAnotherProcessAUuid %}
+								<p>Users will get access to the model: {{ km.entities.answers[howWillReUsersBeAbleToGetAccessToModelReply].label }}</p>
+
+								{% elif howWillReUsersBeAbleToGetAccessToModelReply == uuids.throughAnotherProcessAUuid %}
+									{% set whatProcessToAccessModelPath = [howWillReUsersBeAbleToGetAccessToModelPath, uuids.throughAnotherProcessAUuid, uuids.whatProcessQUuid]|reply_path %}
+									{% set whatProcessToAccessModelReply = replies[whatProcessToAccessModelPath]|reply_str_value %}
+									<p>Method by which users will get access to the model: {{whatProcessToAccessModelReply}}</p>
+
+								{% endif %}
+
+								{% set willTheModelLicenceConditionsBePublishedAsPartOfTheMetadataPath = [modelLicenceSomeRestrictionsPath, uuids.willTheConditionsBePublishedAsPartOfTheMetadataQUuid]|reply_path %}
+								{% set modelLicenceSomeRestrictionsReply = replies[willTheModelLicenceConditionsBePublishedAsPartOfTheMetadataPath]|reply_str_value %}
+								
+								{% if modelLicenceSomeRestrictionsReply == uuids.no_128AUuid %}
+									<p>The licence conditions will not be published as part of the metadata.</p>
+								{% elif modelLicenceSomeRestrictionsReply == uuids.yes_120AUuid %}
+									<p>The licence conditions will be published as part of the metadata.</p>
+								{% endif %}
+							{% endif %}
+
+						{% else %}
+							<p><strong>Licence: </strong> Licence information not given or not yet known </p>
+						{% endif %}
+
+						{% set startingDateModelPath = [modelLicencePath, itemLicenceUuid, uuids.startingDateQUuid]|reply_path %}
+						{% set startingDateModelReply = replies[startingDateModelPath]|reply_str_value %}
+						<p>Starting date: {{startingDateModelReply}}</p>
+
+					{% endfor %}
+					</ul>
+				{% endif %}
+
+				{# Approximate size  #}
+				{% set modelsSizePath = [modelsListPath, modelItemUuid, uuids.whatIsTheApproximateSizeOfThisModelAndAssociatedMaterialQUuid]|reply_path %}
+				{% set modelsSizeReply = replies[modelsSizePath]|reply_str_value %}
+				<p><strong>Size/Quantity</strong>
+				{% if modelsSizeReply %}
+					{{ km.entities.answers[modelsSizeReply].label }}
+				{% else %}
+					<em>unknown</em>
+				{% endif %}</p>
+
+				{# Data Owner / IPR - needs km update currently empty #}
+				{% set modelsOwnerPath = [modelsListPath, modelItemUuid, uuids.whichOrganisationSHoldTheIntellectualPropertyRightsIprToThisModelQUuid]|reply_path %}
+				{% set modelsOwnerReply = replies[modelsOwnerPath]|reply_str_value %}
+				{% if modelsOwnerReply %}
+					<p><strong>Model Owner/IPR</strong> {{modelsOwnerReply}}</p>
+				{% else %}
+					<p><strong>Model Owner/IPR</strong> Information not given</p>
+				{% endif %}
+
+				{# Is the model derived from existing model(s)#}
+				{% set modelsDerivedFromExistingModelsPath = [modelsListPath, modelItemUuid, uuids.isTheModelDerivedFromExistingModelSQUuid]|reply_path %}
+				{% set modelsDerivedFromExistingModelsReply = replies[modelsDerivedFromExistingModelsPath]|reply_str_value %}
+
+				{% if modelsDerivedFromExistingModelsReply == uuids.no_2_4AUuid %}
+					<p>The model is not derived from existing models</p>
+				{% elif modelsDerivedFromExistingModelsReply == uuids.yes_2_4AUuid %}
+					<p>The model is derived from existing models</p>
+				{% endif %}
+				
+				{# Estimated date generated #}
+				{% set modelsDateGeneratedPath = [modelsListPath, modelItemUuid, uuids.whatIsTheEstimatedDateForWhenTheModelWillBeCreatedQUuid]|reply_path %}
+				{% set modelsDateGeneratedReply = replies[modelsDateGeneratedPath]|reply_str_value %}
+				
+				{% if modelsDateGeneratedReply %}
+					<p><strong>Estimated date model generated</strong>{{modelsDateGeneratedReply}} </p>
+				{% else %}
+					<p><strong>Estimated date model generated</strong>Information not given</p>
+				{% endif %}
+						
+								
+				{# Versioning of model  #}
+				{% set modelVersionControlPath = [modelsListPath, modelItemUuid, uuids.willYouDepositYourModelInGitHubOrOtherVersionedCodeRepositoryQUuid]|reply_path %}
+				{% set modelVersionControlReply = replies[modelVersionControlPath]|reply_str_value %}
+				{% if modelVersionControlReply == uuids.no_142AUuid %}
+					{% set modelVersionControlText = "This model will not be version controlled on a code repository." %}  
+				{% elif  modelVersionControlReply == uuids.yes_132AUuid %}
+					{% set modelVersionControlUrlPath = [modelVersionControlPath, uuids.yes_132AUuid, uuids.pleaseProvideTheCompleteUrlToTheCodeRepositoryWhenItIsKnownQUuid]|reply_path %}
+					{% set modelVersionControlUrlReply = replies[modelVersionControlUrlPath]|reply_str_value %}
+					{% set modelVersionControlText = "This model will be version controlled on a code repository, and can be found here: "+ modelVersionControlUrlReply %}  
+				{% endif %}
+					<p><strong>Model versioning</strong> {{modelVersionControlText}}</p>
+
+				{# Long term preservation plans #}
+				{% set modelsLongTermPlanPath = [modelsListPath, modelItemUuid, uuids.areThereLongTermPreservationPlansInPlaceForThisModelQUuid]|reply_path %}
+				{% set modelsLongTermPlanReply = replies[modelsLongTermPlanPath]|reply_str_value %}
+				{% set modelsLongTermText = 'Long-Term Plan (e.g. archive with the EIDC) ' %}
+
+				{# Sent to a repository #}
+				{% if modelsLongTermPlanReply == uuids.yesItWillBeSentToARepository_2AUuid %}
+					{% set modelsRepositoryPath = [modelsLongTermPlanPath, uuids.yesItWillBeSentToARepository_2AUuid, uuids.whatRepositoryWillTheModelBeStoredInQUuid]|reply_path %}
+					{% set modelsRepositoryReply = replies[modelsRepositoryPath]|reply_str_value %}
+				
+					{% if modelsRepositoryReply %}
+						{# Long term plan + repository answer#}
+						{#A domain specific repository answer was replaced with "Another repository"#}
+						{% if modelsRepositoryReply == uuids.aDomainSpecificRepository_2AUuid %}
+							{% set modelsRepositorySearchPath = [modelsRepositoryPath, uuids.aDomainSpecificRepository_2AUuid, uuids.searchAndSelectARepository_2QUuid]|reply_path %}
+							{% set modelsRepositorySearchReply = replies[modelsRepositorySearchPath] %}
+
+							{% set modelsLongTermPlan = 'The model will be archived with ' %}
+								<strong>{{modelsLongTermText}}</strong> {{modelsLongTermPlan}} {{modelsRepositorySearchReply.value.value.value}}
+
+						{# Special purpose repository #}	
+						{% elif modelsRepositoryReply == uuids.aSpecialPurposeRepositoryCreatedForTheProject_2AUuid %}
+
+							{% set willYouBeAbleToSupportThisRepositoryForASufficientlyLongTimePath = [modelsRepositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProject_2AUuid, uuids.willYouBeAbleToSupportThisRepositoryForASufficientlyLongTime_2QUuid]|reply_path %}
+							{% set willYouBeAbleToSupportThisRepositoryForASufficientlyLongTimeReply = replies[willYouBeAbleToSupportThisRepositoryForASufficientlyLongTimePath]|reply_str_value %}
+							{% if willYouBeAbleToSupportThisRepositoryForASufficientlyLongTimeReply == uuids.no_127AUuid %}
+								{% set modelsSpecialRepositorySupportLevelText = "We will not support this repository for a sufficiently long time" %}
+							{% elif willYouBeAbleToSupportThisRepositoryForASufficientlyLongTimeReply == uuids.yes_118AUuid %}
+								{% set modelsSpecialRepositorySupportLevelText = "We will support this repository for a sufficiently long time" %}
+							{% endif %}
+
+							{% set whatIsTheServiceLevelYouWillBeOfferingUsersOfTheModelRepositoryPath = [modelsRepositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProject_2AUuid, uuids.whatIsTheServiceLevelYouWillBeOfferingUsersOfTheModelRepositoryQUuid]|reply_path %}
+							{% set whatIsTheServiceLevelYouWillBeOfferingUsersOfTheModelRepositoryReply = replies[whatIsTheServiceLevelYouWillBeOfferingUsersOfTheModelRepositoryPath]|reply_str_value %}
+							{% set whatIsTheServiceLevelYouWillBeOfferingUsersOfTheModelRepositoryText = km.entities.answers[whatIsTheServiceLevelYouWillBeOfferingUsersOfTheModelRepositoryReply].label|lower %}
+
+							{% set didYouArrangeForSystemAdminSecurityMaintenanceForServerPath = [modelsRepositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProject_2AUuid, uuids.didYouArrangeForSystemAdministrationAtLeastSecurityUpdatesAndHardwareMaintenanceForTheServerSQUuid]|reply_path %}
+							{% set didYouArrangeForSystemAdminSecurityMaintenanceForServerReply = replies[didYouArrangeForSystemAdminSecurityMaintenanceForServerPath]|reply_str_value %}
+							{% if didYouArrangeForSystemAdminSecurityMaintenanceForServerReply == uuids.notYet_3AUuid %}
+								{% set didYouArrangeForSystemAdminSecurityMaintenanceForServerText = "We have not yet arranged for system administration (at least security updates) and hardware maintenance for the server(s)" %}
+							{% elif didYouArrangeForSystemAdminSecurityMaintenanceForServerReply == uuids.yes_119AUuid %}
+								{% set didYouArrangeForSystemAdminSecurityMaintenanceForServerText = "We have arranged for system administration (at least security updates) and hardware maintenance for the server(s)" %}
+							{% endif %}
+
+							{% set modelsLongTermPlan = 'Will be archived in a special purpose repository created for the project' %}
+							{% set modelsSpecialRepositoryNamePath = [modelsRepositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProject_2AUuid, uuids.giveTheNameOfTheRepositoryWhenItIsKnown_2QUuid]|reply_path %}
+							{% set modelsSpecialRepositoryNameReply = replies[modelsSpecialRepositoryNamePath]|reply_str_value%}
+							{% set modelsSpecialRepositoryUrlPath = [modelsRepositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProject_2AUuid, uuids.giveTheUrlToTheRepositoryWhenItIsKnown_2QUuid]|reply_path %}
+							{% set modelsSpecialRepositoryUrlReply = replies[modelsSpecialRepositoryUrlPath]|reply_str_value%}
+
+							<strong>{{modelsLongTermText}}</strong> {{modelsLongTermPlan}}. The repository is {{modelsSpecialRepositoryNameReply}} and can be found at {{modelsSpecialRepositoryUrlReply}}. {{modelsSpecialRepositorySupportLevelText}}. 
+							The service level we will offer will be {{whatIsTheServiceLevelYouWillBeOfferingUsersOfTheModelRepositoryText}}. {{didYouArrangeForSystemAdminSecurityMaintenanceForServerText}}.
+						
+						{# One of the NERC data centre options #}	
+						{% else %}
+							{% set modelsLongTermPlan = 'Will be archived with the ' %}
+								<strong>{{modelsLongTermText}}</strong> {{modelsLongTermPlan}} {{km.entities.answers[modelsRepositoryReply].label}}
+						{% endif %} 
+					{% endif %}
+
+
+				{% elif modelsLongTermPlanReply == uuids.yesItWillBeKeptLocally_2AUuid %}
+					{% set modelsLongTermPlan = 'Will be kept locally' %}
+					{% set modelsLocalLocationPath = [modelsLongTermPlanReply, uuids.yesItWillBeKeptLocally_2AUuid, uuids.pleaseProvideTheLocalLocationForThisModelQUuid]|reply_path %}
+					{% set modelsLocalLocationReply = replies[modelsLocalLocationPath]|reply_str_value %}
+					{% set modelsLocalStorageWhyPath = [modelsLongTermPlan, uuids.yesItWillBeKeptLocally_2AUuid, uuids.why_2_1QUuid]|reply_path %}
+					{% set modelsLocalStorageWhyReply = replies[modelsLocalStorageWhyPath]|reply_str_value %}
+
+					<p><strong>{{modelsLongTermText}}</strong> {{modelsLongTermPlan}}</p>
+					<p><strong>Local storage location: </strong> {{modelsLocalLocationReply}}</p>
+					{% if modelsLocalStorageWhyReply%}
+						<p><strong>Reason to store locally </strong> {{km.entities.answers[modelsLocalStorageWhyReply].label}}</p>
+					{% endif %}				
+				{% elif modelsLongTermPlanReply == uuids.noItWillNotBeKeptInPerpetuityAUuid %}
+					{% set modelsNotKeptWhyPath = [modelsLongTermPlanPath, uuids.noItWillNotBeKeptInPerpetuityAUuid, uuids.why_6QUuid]|reply_path %}
+					{% set modelsNotKeptWhyReply = replies[modelsNotKeptWhyPath]|reply_str_value %}
+
+					{% if modelsNotKeptWhyReply == uuids.otherReasonS_5AUuid %}
+						{% set modelsPleaseSpecifyPath = [modelsNotKeptWhyPath, uuids.otherReasonS_5AUuid, uuids.pleaseSpecify_9QUuid]|reply_path %}
+						{% set modelsPleaseSpecifyReply = replies[modelsPleaseSpecifyPath]|reply_str_value %}
+						{% set modelsLongTermPlan = "It will not be kept in perpetuity. " + modelsPleaseSpecifyReply %}
+					{% else %}	
+						{% set modelsLongTermPlan = "It will not be kept in perpetuity. " + km.entities.answers[modelsNotKeptWhyReply].label %}
+					{% endif %}							
+					<p><strong>{{modelsLongTermText}}</strong> {{modelsLongTermPlan}}</p>
+				{% endif %}
+
+				{# Project staff responsible #}
+				{% set modelsResponsiblePersonPath = [modelsListPath, modelItemUuid, uuids.whoInTheProjectIsResponsibleForThisModelQUuid]|reply_path %}
+				{% set modelsResponsiblePersonReply = replies[modelsResponsiblePersonPath]|reply_str_value %}
+				<p><strong>Project staff responsible</strong> {{modelsResponsiblePersonReply}}</p>	
+
+				<hr/>
+			{% endfor %}
+		{% endif %}	
+		{#</ul>#}
+	{% endif %}	
+
+	<h4>5.3 Software packages this project plans to create</h4>
+	{% set softwarePath = [uuids.preservingAndSharingDataCUuid, uuids.softwarePackagesQUuid]|reply_path %}
+	{% set softwareReply = replies[softwarePath]|reply_str_value%}
+	{% if softwareReply == uuids.iWillNotBeProducingAnySoftwarePackagesAsPartOfThisProjectAUuid %}
+		<p>No software packages will be created by this project.</p>
+	{% elif softwareReply == uuids.specifyAListOfSoftwarePackagesYouWillBeProducingAUuid %}	
+		{% set softwareListPath = [softwarePath, uuids.specifyAListOfSoftwarePackagesYouWillBeProducingAUuid, uuids.softwarePackagesListQLUuid]|reply_path %}	
+		{% set softwareListReply = replies[softwareListPath]|reply_items %}
+		
+		{% if softwareListReply|length > 0 %}
+			<ul>
+			{% for itemUuid in softwareListReply %}	
+				{# Software name #}
+				{% set softwareTitlePath = [softwareListPath, itemUuid, uuids.softwarePackageNameQUuid]|reply_path %}
+				{% set softwareTitleReply = replies[softwareTitlePath]|reply_str_value %}
+				<p><strong>Software title - </strong>{{softwareTitleReply}}</p>				
+				
+				{# Software description #}
+				{% set softwareDescriptionPath = [softwareListPath, itemUuid, uuids.softwarePackageDescriptionQUuid]|reply_path %}
+				{% set softwareDescriptionReply = replies[softwareDescriptionPath]|reply_str_value %}
+				<p><strong>Brief description </strong>{{softwareDescriptionReply}}</p>			
+				
+				{# Software identifier DOI #}
+				{% set softwarePackageIdentifierIfAnyPath = [softwareListPath, itemUuid, uuids.softwarePackageIdentifierIfAnyQLUuid]|reply_path %}
+				{% set softwarePackageIdentifierIfAnyReply = replies[softwarePackageIdentifierIfAnyPath]|reply_str_value %}
+				<p><strong>Software ID: </strong>{{softwarePackageIdentifierIfAnyReply}}</p>
+
+				{# Open source license #}
+				{% set softwareLicensePath = [softwareListPath, itemUuid, uuids.willYouBeAddingAnOpenSourceLicenceQUuid]|reply_path %}
+				{% set softwareLicenseReply = replies[softwareLicensePath]|reply_str_value %}
+				{% if softwareLicenseReply == uuids.no_133AUuid %}
+					{% set softwareLicenseText = "We will not be adding an Open Source License" %}
+					{% set softwareLicenseWhyNotPath = [softwareLicensePath, uuids.no_133AUuid, uuids.doAnyOfTheFollowingApplyQUuid]|reply_path %}
+					{% set softwareLicenseWhyNotReply = replies[softwareLicenseWhyNotPath]|reply_str_value %}
+					{% set softwareLicenseInfoText = "because" + softwareLicenseWhyNotReply %}
+				{% elif softwareLicenseReply == uuids.yesWeHaveDecidedOnAnOpenSourceLicenceAUuid %}
+					{% set softwareLicenseText = "We will be adding an Open Source License" %}
+					{% set softwareLicenseWhichPath = [softwareLicensePath, uuids.yesWeHaveDecidedOnAnOpenSourceLicenceAUuid, uuids.whatIsTheLicence_2QUuid]|reply_path %}
+					{% set softwareLicenseWhichReply = replies[softwareLicenseWhichPath]|reply_str_value %}
+					{% set softwareLicenseInfoText = "We will use " + softwareLicenseWhichReply %}
+				{% endif %}		
+				<p><strong>Licensing</strong> {{softwareLicenseText}} {{softwareLicenseInfoText}}</p>
+
+				{# Software derived from existing package #}
+				{# CURRENT NEVER DESIRABLE
+				{% set softwarePackageDerivedFromAnExistingPackagePath = [softwareListPath, itemUuid, uuids.isTheSoftwarePackageDerivedFromAnExistingPackageQUuid]|reply_path %}
+				{% set softwarePackageDerivedFromAnExistingPackageReply = replies[softwarePackageDerivedFromAnExistingPackagePath]|reply_str_value %}
+				{% if softwarePackageDerivedFromAnExistingPackageReply == uuids.no_5_3AUuid %}
+					Software package is derived from an existing package
+				{% elif softwarePackageDerivedFromAnExistingPackageReply == uuids.yes_5_3AUuid %}
+
+				{% endif %}
+				#}
+
+				
+				{# Version control  #}
+				{% set softwareVersionControlPath = [softwareListPath, itemUuid, uuids.willYouDepositYourSoftwarePackageInGitHubOrOtherVersionedCodeRepositoryQUuid]|reply_path %}
+				{% set softwareVersionControlReply = replies[softwareVersionControlPath]|reply_str_value %}
+				{% if softwareVersionControlReply == uuids.no_2_1AUuid %}
+					{% set softwareVersionControlText = "We are not using version control for our code." %}
+				{% elif softwareVersionControlReply == uuids.yes_2_1AUuid %}
+					{% set softwareVersionControlUrlPath = [softwareVersionControlPath, uuids.yes_2_1AUuid, uuids.pleaseProvideTheCompleteUrlToTheCodeRepositoryWhenItIsKnown_2QUuid]|reply_path %}
+					{% set softwareVersionControlUrlReply = replies[softwareVersionControlUrlPath]|reply_str_value %}
+					{% set softwareVersionControlText = "Our code is version controlled and stored in the following location: " + softwareVersionControlUrlReply %}
+				{% endif %}
+				<p><strong>Version control</strong> {{softwareVersionControlText}}</p>
+
+				{# Long term preservation plans #}
+				{% set softwareLongTermPlanPath = [softwareListPath, itemUuid, uuids.areThereLongTermPreservationPlansInPlaceForThisSoftwarePackageQUuid]|reply_path %}
+				{% set softwareLongTermPlanReply = replies[softwareLongTermPlanPath]|reply_str_value %}
+				{% set softwareLongTermText = 'Long-Term Plan (e.g. archive with the EIDC) ' %}
+
+				{# Sent to a repository #}
+				{% if softwareLongTermPlanReply == uuids.yesItWillBeSentToARepository_3AUuid %}
+					{% set softwareRepositoryPath = [softwareLongTermPlanPath, uuids.yesItWillBeSentToARepository_3AUuid, uuids.whatRepositoryWillTheSoftwarePackageBeStoredInQUuid]|reply_path %}
+					{% set softwareRepositoryReply = replies[softwareRepositoryPath]|reply_str_value %}
+				
+				{% if softwareRepositoryReply %}
+					{# Long term plan + repository answer#}
+					{#A domain specific repository answer was replaced with "Another repository"#}
+					{% if softwareRepositoryReply == uuids.aDomainSpecificRepository_3AUuid %}
+						{% set softwareRepositorySearchPath = [softwareRepositoryPath, uuids.aDomainSpecificRepository_3AUuid, uuids.searchAndSelectARepository_3QUuid]|reply_path %}
+						{% set softwareRepositorySearchReply = replies[softwareRepositorySearchPath] %}
+
+						{% set softwareLongTermPlan = 'Will be archived with ' %}
+							<strong>{{softwareLongTermText}}</strong> {{softwareLongTermPlan}} {{softwareRepositorySearchReply.value.value.value}}
+
+					{# Special purpose repository #}	
+					{% elif softwareLongTermPlanReply == uuids.aSpecialPurposeRepositoryCreatedForTheProject_3AUuid %}
+						{% set softwareLongTermPlan = 'Will be archived in a special purpose repository created for the project' %}
+						{% set softwareSpecialRepositoryNamePath = [softwareRepositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProject_3AUuid, uuids.giveTheNameOfTheRepositoryWhenItIsKnown_3QUuid]|reply_path %}
+						{% set softwareSpecialRepositoryNameReply = replies[softwareSpecialRepositoryNamePath]|reply_str_value%}
+						{% set softwareSpecialRepositoryUrlPath = [softwareRepositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProject_3AUuid, uuids.giveTheUrlToTheRepositoryWhenItIsKnown_3QUuid]|reply_path %}
+						{% set softwareSpecialRepositoryUrlReply = replies[softwareSpecialRepositoryUrlPath]|reply_str_value%}
+
+						<strong>{{softwareLongTermText}}</strong> {{softwareLongTermPlan}}. The repository is {{softwareSpecialRepositoryNameReply}} and can be found at {{softwareSpecialRepositoryUrlReply}}.
+					
+					{# One of the NERC data centre options #}	
+					{% else %}
+						{% set softwareLongTermPlan = 'Will be archived with the ' %}
+							<strong>{{softwareLongTermText}}</strong> {{softwareLongTermPlan}} {{km.entities.answers[softwareRepositoryReply].label}}
+					{% endif %} 
+				{% endif %}
+
+				{% elif softwareLongTermPlanReply == uuids.yesItWillBeKeptLocally_3AUuid %}
+					{% set softwareLongTermPlan = 'Will be kept locally' %}
+					{% set softwareLocalLocationPath = [softwareLongTermPlanPath, uuids.yesItWillBeKeptLocally_3AUuid, uuids.pleaseProvideTheLocalLocationForThisSoftwarePackageQUuid]|reply_path %}
+					{% set softwareLocalLocationReply = replies[softwareLocalLocationPath]|reply_str_value %}
+					{% set softwareLocalStorageWhyPath = [softwareLongTermPlanPath, uuids.yesItWillBeKeptLocally_3AUuid, uuids.why_3_1QUuid]|reply_path %}
+					{% set softwareLocalStorageWhyReply = replies[softwareLocalStorageWhyPath]|reply_str_value %}
+
+					<p><strong>{{softwareLongTermText}}</strong> {{softwareLongTermPlan}}</p>
+					<p><strong>Local storage location: </strong> {{softwareLocalLocationReply}}</p>
+					{% if softwareLocalStorageWhyReply%}
+						<p><strong>Reason to store locally </strong> {{km.entities.answers[softwareLocalStorageWhyReply].label}}</p>
+					{% endif %}				
+				{% elif softwareLongTermPlanReply == uuids.noItWillNotBeKeptInPerpetuity_2AUuid %}
+					{% set softwareNotKeptWhyPath = [softwareLongTermPlanPath, uuids.noItWillNotBeKeptInPerpetuity_2AUuid, uuids.why_8QUuid]|reply_path %}
+					{% set softwareNotKeptWhyReply = replies[softwareNotKeptWhyPath]|reply_str_value %}
+
+					{% if softwareNotKeptWhyReply == uuids.otherReasonS_7AUuid %}
+						{% set softwarePleaseSpecifyPath = [softwareNotKeptWhyPath, uuids.otherReasonS_7AUuid, uuids.pleaseSpecify_6_1QUuid]|reply_path %}
+						{% set softwarePleaseSpecifyReply = replies[softwarePleaseSpecifyPath]|reply_str_value %}
+						{% set softwareLongTermPlan = "It will not be kept in perpetuity. " + softwarePleaseSpecifyReply %}
+					{% else %}	
+						{% set softwareLongTermPlan = "It will not be kept in perpetuity. " + km.entities.answers[softwareNotKeptWhyReply].label %}
+					{% endif %}							
+					<p><strong>{{softwareLongTermText}}</strong> {{softwareLongTermPlan}}</p>
+				{% endif %}
+
+				{% set whoInTheProjectIsResponsibleForThisSoftwarePackagePath = [softwareListPath, itemUuid, uuids.whoInTheProjectIsResponsibleForThisSoftwarePackageQUuid]|reply_path %}
+				{% set whoInTheProjectIsResponsibleForThisSoftwarePackageReply = replies[whoInTheProjectIsResponsibleForThisSoftwarePackagePath]|reply_str_value %}
+				<p><strong>Person responsible: </strong> {{whoInTheProjectIsResponsibleForThisSoftwarePackageReply}}</p>
+
+
+
+				<hr/>				
+			{% endfor %}
+			</ul>
+		{% endif %}
+	{% endif %}
+
+	{# Section 4.4 - Physical samples #}
+	<h4>5.4 Physical samples this project plans to collect</h4>
+	{% set samplesPath = [uuids.preservingAndSharingDataCUuid, uuids.physicalCollectionsAndSamplesQUuid]|reply_path %}
+	{% set samplesReply = replies[samplesPath]|reply_str_value%}
+	{% if samplesReply == uuids.iWillNotBeProducingAnyPhysicalCollectionsOrSamplesAsPartOfThisProjectAUuid %}
+		<p>No physical samples are collected by this project.</p>
+	{% elif samplesReply == uuids.specifyAListOfPhysicalSamplesYouWillBeProducingAUuid %}	
+		{% set samplesListPath = [samplesPath, uuids.specifyAListOfPhysicalSamplesYouWillBeProducingAUuid, uuids.listOfPhysicalCollectionsQLUuid]|reply_path %}	
+		{% set samplesListReply = replies[samplesListPath]|reply_items %}
+		
+		{% if samplesListReply|length > 0 %}
+			<ul>
+			{% for itemUuid in samplesListReply %}
+				{# Sample name #}
+				{% set samplesTitlePath = [samplesListPath, itemUuid, uuids.physicalCollectionNameQUuid]|reply_path %}
+				{% set samplesTitleReply = replies[samplesTitlePath]|reply_str_value %}
+				<p><strong>Physical samples title - </strong>{{samplesTitleReply}}</p>	
+
+				{# Sample description #}
+				{% set samplesDescriptionPath = [samplesListPath, itemUuid, uuids.physicalCollectionDescriptionQUuid]|reply_path %}
+				{% set samplesDescriptionReply = replies[samplesDescriptionPath]|reply_str_value %}
+				<p><strong>Brief description </strong>{{samplesDescriptionReply}}</p>			
+				
+				{# Sample date generated #}
+				{% set samplesDateGeneratedPath = [samplesListPath, itemUuid, uuids.whatIsTheEstimatedDateForWhenThePhysicalCollectionWillBeAssembledQUuid]|reply_path %}
+				{% set samplesDateGeneratedReply = replies[samplesDateGeneratedPath]|reply_str_value %}
+				<p><strong>Estimated date samples generated</strong>{{samplesDateGeneratedReply}} </p>
+					
+				{# Sample Owner/IPR #}
+				{% set samplesOwnerPath = [samplesListPath, itemUuid, uuids.whichOrganisationSOwnThePhysicalCollectionQUuid]|reply_path %}
+				{% set samplesOwnerReply = replies[samplesOwnerPath]|reply_str_value %}
+				<p><strong>Sample Owner/IPR</strong> {{samplesOwnerReply}}</p>
+
+				{# Sample estimated size #}
+				{% set samplesSizePath = [samplesListPath, itemUuid, uuids.whatIsTheApproximateSizeOfThePhysicalCollectionQUuid]|reply_path %}
+				{% set samplesSizeReply = replies[samplesSizePath]|reply_str_value %}
+				{% if samplesSizeReply %}
+					<p><strong>Approximate size</strong> {{km.entities.answers[samplesSizeReply].label}}</p>
+				{% endif %}
+
+				{# Sample project staff responsible #}
+				{% set samplesResponsiblePersonPath = [samplesListPath, itemUuid, uuids.whoInThisProjectWillBeResponsibleForThisPhysicalCollectionQUuid]|reply_path %}
+				{% set samplesResponsiblePersonReply = replies[samplesResponsiblePersonPath]|reply_str_value %}
+				<p><strong>Project staff responsible</strong> {{samplesResponsiblePersonReply}}</p>			
+				
+				{# Estimated date samples assembled #}
+				{% set samplesDatePath = [samplesListPath, itemUuid, uuids.whatIsTheEstimatedDateForWhenThePhysicalCollectionWillBeAssembledQUuid]|reply_path %}
+				{% set samplesDateReply = replies[samplesDatePath]|reply_str_value %}
+				<p><strong>Estimated date samples assembled</strong> {{samplesDateReply}}</p>	
+
+				{# Sample preservation plan #}
+				{% set samplesLongTermPlanPath = [samplesListPath, itemUuid, uuids.areThereLongTermPreservationPlansInPlaceForThisPhysicalCollectionQUuid]|reply_path %}
+				{% set samplesLongTermPlanReply = replies[samplesLongTermPlanPath]|reply_str_value %}
+
+				{% if samplesLongTermPlanReply == uuids.noItWillNotBeKeptItInPerpetuity_2AUuid %}
+					{% set samplesLongTermText = "It will not be kept in perpetuity." %}
+					{% set whySamplesNotKeptPath = [samplesLongTermPlanPath, uuids.noItWillNotBeKeptItInPerpetuity_2AUuid, uuids.why_9QUuid]|reply_path %}
+					{% set whySamplesNotKeptReply = replies[whySamplesNotKeptPath]|reply_str_value %}
+
+					{% if whySamplesNotKeptReply %}
+						{% if whySamplesNotKeptReply == uuids.otherReasonS_8AUuid %}
+							{% set samplesPleaseSpecifyPath = [whySamplesNotKeptPath, uuids.otherReasonS_8AUuid, uuids.pleaseSpecify_14QUuid]|reply_path %}
+							{% set samplesPleaseSpecifyReply = replies[samplesPleaseSpecifyPath]|reply_str_value  %}
+							{% set samplesLongTermText = "It will not be kept in perpetuity. " + samplesPleaseSpecifyReply + "."%}
+						{% else %}	
+							{% set samplesLongTermText = "It will not be kept in perpetuity. " + km.entities.answers[whySamplesNotKeptReply].label %}
+						{% endif %}
+					{% endif %}
+
+				{% elif samplesLongTermPlanReply == uuids.yesItWillBeStoredAtASpecialisedUkcehFacilityAUuid %}
+					{% set samplesLongTermText = "It will be stored at a specialised UKCEH facility." %}
+
+				{% elif samplesLongTermPlanReply == uuids.yesItWillBeArchivedInASpecialisedFacilityAUuid %}
+					{% set nameOfFacilityPath = [samplesLongTermPlanPath, uuids.yesItWillBeArchivedInASpecialisedFacilityAUuid, uuids.nameOfFacilityQUuid]|reply_path %}
+					{% set nameOfFacilityReply = replies[nameOfFacilityPath]|reply_str_value %}
+					{% set lenghtSampleKeptPath = [samplesLongTermPlanPath, uuids.yesItWillBeArchivedInASpecialisedFacilityAUuid, uuids.howLongWillThisCollectionBeKeptQUuid]|reply_path %}
+					{% set lenghtSampleKeptReply = replies[lenghtSampleKeptPath]|reply_str_value %}
+					{% if lenghtSampleKeptReply == uuids.forAFixedPeriod_4AUuid %}
+						{% set specifyLengthKeptPath = [lenghtSampleKeptPath, uuids.forAFixedPeriod_4AUuid, uuids.specifyForHowLongCollectionWillBeKeptQUuid]|reply_path %}
+						{% set specifyLengthKeptReply = replies[specifyLengthKeptPath]|reply_str_value %}
+						{% set samplesLongTermText = "It will be archived in the following specialised facility: " + nameOfFacilityReply + " and will be kept " + km.entities.answers[lenghtSampleKeptReply].label + " of/until " + specifyLengthKeptReply %}
+					{% elif lenghtSampleKeptReply == uuids.asLongAsTechnicallyPossible_4AUuid %}
+						{% set samplesLongTermText = "It will be archived in the following specialised facility: " + nameOfFacilityReply + " and will be kept " + km.entities.answers[lenghtSampleKeptReply].label %}
+					{% endif %}
+				{% endif %}	
+				<p><strong>Long term preservation plan</strong> {{samplesLongTermText}}</p>			
+
+			<hr/>	
+			{% endfor %}
+			</ul>
+		{% endif %}
+	{% endif %}

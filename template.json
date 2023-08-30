@@ -49,8 +49,9 @@
                     }
                 },
                 {
-                    "name": "wkhtmltopdf",
-                    "options": {
+                    "name": "weasyprint",
+                    "options":{
+                        "pdf.custom_metadata":"True"
                     }
                 }
             ]
@@ -65,7 +66,7 @@
                 {
                     "name": "jinja",
                     "options": {
-                        "template": "src/index.html.j2",
+                        "template": "src/index_msWord.html.j2",
                         "content-type": "text/html",
                         "extension": "html"
                     }
@@ -111,28 +112,7 @@
                 {
                     "name": "jinja",
                     "options": {
-                        "template": "src/index_preview.html.j2",
-                        "content-type": "text/html",
-                        "extension": "html"
-                    }
-                },
-                {
-                    "name": "wkhtmltopdf",
-                    "options": {}
-                }
-            ]
-        },
-        {
-            "uuid": "05d0c249-3ce2-4066-b699-ac8b92fc2e33",
-            "name": "WeasyPrint PDF testing ",
-            "shortName": "weasy pdf",
-            "icon": "fas fa-file",
-            "color": "#f15722",
-            "steps": [
-                {
-                    "name": "jinja",
-                    "options": {
-                        "template": "src/index_preview.html.j2",
+                        "template": "src/index_pdf_preview.html.j2",
                         "content-type": "text/html",
                         "extension": "html"
                     }

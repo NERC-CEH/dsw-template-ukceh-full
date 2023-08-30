@@ -1,0 +1,178 @@
+
+<h4>5.5 Data publication costs </h4>
+
+{# Will repositories charge #}
+{% set willRepositoriesChargeForServicesPath = [uuids.preservingAndSharingDataCUuid, uuids.willAnyOfTheRepositoriesYouUseChargeYouForTheirServicesQUuid]|reply_path %}
+{% set willRepositoriesChargeForServicesReply = replies[willRepositoriesChargeForServicesPath]|reply_str_value %}
+
+{% if willRepositoriesChargeForServicesReply == uuids.no_138AUuid %}
+    {% set willRepositoriesChargeForServicesText = "None of the repositories we use will charge us for their services." %}
+    <p>{{willRepositoriesChargeForServicesText}}</p>
+{% elif willRepositoriesChargeForServicesReply == uuids.yes_129AUuid %}
+    {% set howWillYouBePayingForTheseServicesPath = [willRepositoriesChargeForServicesPath, uuids.yes_129AUuid, uuids.howWillYouBePayingForTheseServicesQUuid]|reply_path %}
+    {% set howWillYouBePayingForTheseServicesReply = replies[howWillYouBePayingForTheseServicesPath]|reply_str_value %}
+    {% set willRepositoriesChargeForServicesText = "The repositories will be charging for their services." %}
+
+    {% if howWillYouBePayingForTheseServicesReply %}
+        {% if howWillYouBePayingForTheseServicesReply == uuids.weWillPayForTheseCostsByOtherMeansAUuid %}
+            {% set howWillYouPayForTheCostsOfTheseServicesPath = [howWillYouBePayingForTheseServicesPath,uuids.weWillPayForTheseCostsByOtherMeansAUuid, uuids.howWillYouPayForTheseCostsQUuid]|reply_path %}
+            {% set howWillYouPayForTheCostsOfTheseServicesReply = replies[howWillYouPayForTheCostsOfTheseServicesPath]|reply_str_value %}
+            {% set willRepositoriesChargeForServicesText =  "The repositories will be charging for their services and we will pay for these costs by " + howWillYouPayForTheCostsOfTheseServicesReply|lower + "." %}
+        {% elif howWillYouBePayingForTheseServicesReply == (uuids.weHaveBudgetedForTheseCostsInTheProjectAUuid) or (uuids.theseCostsWillBeCarriedByOneOfTheDepartmentsInvolvedInTheProjectAUuid) or (uuids.theseCostsWillBeCarriedByOneOfTheInstitutesInvolvedInTheProjectAUuid) %}
+            {% set willRepositoriesChargeForServicesText =  "The repositories will be charging for their services and " + km.entities.answers[howWillYouBePayingForTheseServicesReply].label|lower + "." %}
+        {% endif %}
+    {% endif %}
+
+    <p>{{willRepositoriesChargeForServicesText}}</p>
+{% elif willRepositoriesChargeForServicesReply == uuids.notApplicableWeWontDepositAnyProjectDataAUuid %}
+    {# do nothing? #}
+{% endif %}
+
+{# Recurring fees #}
+{% set recurringFeesToKeepDataOrDocumentsAvailablePath = [uuids.preservingAndSharingDataCUuid, uuids.areThereAnyOtherRecurringFeesToKeepDataOrDocumentsAvailableQUuid]|reply_path %}
+{% set recurringFeesToKeepDataOrDocumentsAvailableReply = replies[recurringFeesToKeepDataOrDocumentsAvailablePath]|reply_str_value %}
+{% if recurringFeesToKeepDataOrDocumentsAvailableReply == uuids.no_139AUuid %}
+    {% set recurringFeesToKeepDataOrDocumentsAvailableText = "There are no other recurring fees to keep data or documents available." %}
+    <p>{{recurringFeesToKeepDataOrDocumentsAvailableText}}</p>
+{% elif recurringFeesToKeepDataOrDocumentsAvailableReply == uuids.yes_130AUuid %}
+    {% set recurringFeesToKeepDataOrDocumentsAvailableText = "There are other recurring fees to keep data or documents available." %}
+    <p>{{recurringFeesToKeepDataOrDocumentsAvailableText}}</p>
+{% elif recurringFeesToKeepDataOrDocumentsAvailableReply == uuids.notApplicableWeWontDepositAnyProjectData_2AUuid %}
+    {# do nothing? #}
+{% endif %}
+
+{# Time and effort to prepare data #}
+{% set budgetForTheTimeTakenToPrepareDataForPublicationPath = [uuids.preservingAndSharingDataCUuid, uuids.didYouBudgetForTheTimeAndEffortItWillTakeToPrepareTheDataForPublicationQUuid]|reply_path %}
+{% set budgetForTheTimeTakenToPrepareDataForPublicationReply = replies[budgetForTheTimeTakenToPrepareDataForPublicationPath]|reply_str_value %}
+{% if budgetForTheTimeTakenToPrepareDataForPublicationReply == uuids.no_140AUuid %}
+    {% set budgetForTheTimeTakenToPrepareDataForPublicationText = "We have not budgeted for the time and effort it will take to prepare the data for publication." %}
+    <p>{{budgetForTheTimeTakenToPrepareDataForPublicationText}}</p>
+{% elif budgetForTheTimeTakenToPrepareDataForPublicationReply == uuids.yes_131AUuid %}
+    {% set budgetForTheTimeTakenToPrepareDataForPublicationText = "We have budgeted for the time and effort it will take to prepare the data for publication." %}
+    <p>{{budgetForTheTimeTakenToPrepareDataForPublicationText}}</p>
+{% elif budgetForTheTimeTakenToPrepareDataForPublicationReply == uuids.notApplicableWeWontDepositAnyProjectData_3AUuid %}
+    {# do nothing? #}
+{% endif %}
+
+{#  data deposited in different repositories can be recognised as belonging to the same study #}
+{% set dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyPath = [uuids.preservingAndSharingDataCUuid, uuids.willYouBeMakingSureThatBlocksOfDataDepositedInDifferentRepositoriesCanBeRecognisedAsBelongingToTheSameStudyQUuid]|reply_path %}
+{% set dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyReply = replies[dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyPath]|reply_str_value %}
+{% if dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyReply == uuids.no_141AUuid %}
+    <p> We will not be making sure that blocks of data deposited in different repositories can be recognised as belonging to the same study. </p>
+
+{% elif dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyReply == uuids.allDataWillBeDepositedInTheSameRepositoryAndLinkedWhereRelevantAUuid %}
+    {% set dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyText = km.entities.answers[dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyReply].label + "." %}
+    <p> {{dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyText}} </p>
+
+{% elif dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyReply == uuids.yesAllDatasetsWillHaveLinksToTheRelatedDataAUuid %}
+    {% set dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyText = "We will be making sure that blocks of data deposited in different repositories can be recognised as belonging to the same study by linking related data." %}
+    <p> {{dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyText}} </p>	
+
+{% elif dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyReply == uuids.yesAllDatasetsWillBeLinkedFromASingleCatalogEntryAUuid %}
+    {% set dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyText = "We will be making sure that blocks of data deposited in different repositories can be recognised as belonging to the same study by linking all datasets from a single catalogue entry." %}
+    <p> {{dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyText}} </p>	
+
+{% elif dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyReply == uuids.yesWeHaveMadeOtherArrangementsAUuid %}
+    {% set dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyOtherArrangementsPath = [dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyPath, uuids.yesWeHaveMadeOtherArrangementsAUuid, uuids.whatOtherArrangements_8QUuid]|reply_path %}
+    {% set dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyOtherArrangementsReply = replies[dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyOtherArrangementsPath]|reply_str_value %}
+    <p> We have made other arrangements to ensure that blocks of data deposited in different repositories can be recognised as belonging to the same study: {{dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyOtherArrangementsReply}} </p>
+
+{% elif dataDepositedInDifferentRepositoriesCanBeRecognisedAsSameStudyReply == uuids.notApplicableWeWontDepositAnyProjectData_4AUuid %}
+    {# do nothing? #}
+
+{% endif %}
+
+
+{# ---- Section 6 ---- #}
+<div class="question">
+{% if ctx.phaseUuid == "e6b3786d-9246-4179-b78e-d99c8ca9435c" %}
+	<h3>6. Project closure </h3>
+
+	{% set projectClosurePath = [uuids.projectClosureCUuid, uuids.canYouConfirmThisProjectHasFinishedQUuid]|reply_path %}
+	{% set projectClosureReply = replies[projectClosurePath]|reply_str_value %}
+
+	{% if projectClosureReply == uuids.no_143AUuid %}
+		{% set dateExpectProjectToBeCompletedPath = [projectClosurePath, uuids.no_143AUuid, uuids.enterTheDateYouExpectTheProjectToBeCompletedQUuid]|reply_path %}
+		{% set dateExpectProjectToBeCompletedReply = replies[dateExpectProjectToBeCompletedPath]|reply_str_value %}
+		<p>Project not yet closed.</p>
+		Project expected to be completed by {{dateExpectProjectToBeCompletedReply}}
+
+	{% elif projectClosureReply == uuids.yes_133AUuid %}
+		
+		{% set havePreExistingDataOrModelsBeenDeletedOrMovedToArchivePath = [uuids.projectClosureCUuid, uuids.ifYourProjectUsedPreExistingDataOrModelsHaveTheseBeenDeletedOrMovedToAnArchiveSpaceQUuid]|reply_path %}
+		{% set havePreExistingDataOrModelsBeenDeletedOrMovedToArchiveReply = replies[havePreExistingDataOrModelsBeenDeletedOrMovedToArchivePath]|reply_str_value %}
+
+		{% if havePreExistingDataOrModelsBeenDeletedOrMovedToArchiveReply == uuids.no_2_2AUuid %}
+			<p>Pre-existing data or models have not yet been deleted or moved to an archive.</p>
+		{% elif havePreExistingDataOrModelsBeenDeletedOrMovedToArchiveReply == uuids.yes_2_2AUuid %}
+			<p>Pre-existing data or models have been deleted or moved to an archive.</p>
+		{% elif havePreExistingDataOrModelsBeenDeletedOrMovedToArchiveReply == uuids.notApplicableWeDidntUseAnyPreExistingDataOrModelsAUuid %}
+			{# <p>We didn't use any pre-existing data or models.</p> #} {# could just print nothing here?#}
+		{% endif %}
+
+
+		{% set hasProjectcollectedResearchDataOrToolsPath = [uuids.projectClosureCUuid, uuids.hasYourProjectCollectedOrCreatedAnyResearchDataOrDataRelatedToolsQUuid]|reply_path %}
+		{% set hasProjectcollectedResearchDataOrToolsReply = replies[hasProjectcollectedResearchDataOrToolsPath]|reply_str_value %}
+
+		{% if hasProjectcollectedResearchDataOrToolsReply == uuids.no_3_1AUuid %}
+			<p>This project has not collected or created any research data or data-related tools.</p>
+		{% elif hasProjectcollectedResearchDataOrToolsReply == uuids.yes_3_1AUuid %}
+			<p>This project has collected or created research data or data-related tools.</p>
+
+			{% set doesTheListOfDatasetsCoverAllDataGeneratedAndForEachDatasetStateTheOutcomeOfTheLongTermPlanPath = [hasProjectcollectedResearchDataOrToolsPath, uuids.yes_3_1AUuid, uuids.doesTheListOfDatasetsCoverAllDataGeneratedAndForEachDatasetStateTheOutcomeOfTheLongTermPlanQUuid]|reply_path %}
+			{% set doesTheListOfDatasetsCoverAllDataGeneratedAndForEachDatasetStateTheOutcomeOfTheLongTermPlanReply = replies[doesTheListOfDatasetsCoverAllDataGeneratedAndForEachDatasetStateTheOutcomeOfTheLongTermPlanPath]|reply_str_value %}
+
+			{% if doesTheListOfDatasetsCoverAllDataGeneratedAndForEachDatasetStateTheOutcomeOfTheLongTermPlanReply == uuids.no_4_1AUuid %}
+				<p><b>The project cannot be considered complete as the list of datasets is not complete and up to date</b></p>
+			{% elif doesTheListOfDatasetsCoverAllDataGeneratedAndForEachDatasetStateTheOutcomeOfTheLongTermPlanReply == uuids.yes_4_1AUuid %}
+				<p>The list of datasets (in Chapter 'Preserving and sharing data') covers all the data generated and, for each dataset, states the outcome of the long-term plan.</p>
+			{% endif %}
+
+
+			{% set areThereConfidentialDataThatRequireOngoingManagementPath = [hasProjectcollectedResearchDataOrToolsPath, uuids.yes_3_1AUuid, uuids.areThereAnyConfidentialSensitiveDataThatCannotBeMadeAccessibleButNeedToBeRetainedAndThereforeRequireOngoingManagementToProtectQUuid]|reply_path %}
+			{% set areThereConfidentialDataThatRequireOngoingManagementReply = replies[areThereConfidentialDataThatRequireOngoingManagementPath]|reply_str_value %}
+
+			{% if areThereConfidentialDataThatRequireOngoingManagementReply == uuids.no_5_1AUuid %}
+				{# don't need to print anything?#}
+			{% elif areThereConfidentialDataThatRequireOngoingManagementReply == uuids.yes_5_1AUuid %}
+				<p>There are confidential/sensitive data that cannot be made accessible but need to be retained and therefore require ongoing management to protect.</p>
+			{% endif %}
+
+		{% endif %}
+
+		{% set hasYourProjectCreatedAnyModelsPath = [uuids.projectClosureCUuid, uuids.hasYourProjectCreatedAnyModelsOfLongTermValueQUuid]|reply_path %}
+		{% set hasYourProjectCreatedAnyModelsReply = replies[hasYourProjectCreatedAnyModelsPath]|reply_str_value %}
+
+		{% if hasYourProjectCreatedAnyModelsReply == uuids.no_6_1AUuid %}
+			{# don't need to print anything?#}
+		{% elif hasYourProjectCreatedAnyModelsReply == uuids.yes_6_1AUuid %}
+			This project has created model(s) of long-term value.
+
+			{% set hasTheListOfModelsBeenUpdatedToStateTheOutcomeOfTheLongTermPlanForEachModelPath = [hasYourProjectCreatedAnyModelsPath, uuids.yes_6_1AUuid, uuids.hasTheListOfModelsBeenUpdatedToStateTheOutcomeOfTheLongTermPlanForEachModelQUuid]|reply_path %}
+			{% set hasTheListOfModelsBeenUpdatedToStateTheOutcomeOfTheLongTermPlanForEachModelReply = replies[hasTheListOfModelsBeenUpdatedToStateTheOutcomeOfTheLongTermPlanForEachModelPath]|reply_str_value %}
+
+			{% if hasTheListOfModelsBeenUpdatedToStateTheOutcomeOfTheLongTermPlanForEachModelReply == uuids.no_7_1AUuid %}
+				The list of models has <b>not</b> been updated to state the long term plan for each model. <b>The project cannot be considered complete.</b>.
+			{% elif hasTheListOfModelsBeenUpdatedToStateTheOutcomeOfTheLongTermPlanForEachModelReply == uuids.yes_7_1AUuid %}
+				The list of models has been updated to state the long term plan for each model.
+			{% endif %}
+		{% endif %}
+
+
+		{% set hasAllTheDocumentationRelatingToTheDataAndModelsBeenUpdatedAndArchivedToBeRetainedAsAnAuditTrailPath = [uuids.projectClosureCUuid, uuids.hasAllTheDocumentationRelatingToTheDataAndModelsBeenUpdatedAndArchivedToBeRetainedAsAnAuditTrailQUuid]|reply_path %}
+		{% set hasAllTheDocumentationRelatingToTheDataAndModelsBeenUpdatedAndArchivedToBeRetainedAsAnAuditTrailReply  = replies[hasAllTheDocumentationRelatingToTheDataAndModelsBeenUpdatedAndArchivedToBeRetainedAsAnAuditTrailPath]|reply_str_value %}
+
+		{% if hasAllTheDocumentationRelatingToTheDataAndModelsBeenUpdatedAndArchivedToBeRetainedAsAnAuditTrailReply == uuids.no_8_1AUuid %}
+			<p>The documentation relating to the data and models has <b>not</b> been updated and archived to be retained as an audit trail</p>
+		{% elif hasAllTheDocumentationRelatingToTheDataAndModelsBeenUpdatedAndArchivedToBeRetainedAsAnAuditTrailReply == uuids.yes_8_1AUuid %}
+			<p>The documentation relating to the data and models has been updated and archived to be retained as an audit trail</p>
+		{% elif hasAllTheDocumentationRelatingToTheDataAndModelsBeenUpdatedAndArchivedToBeRetainedAsAnAuditTrailReply == uuids.notApplicableWeDidNotUseAnyDataOrModelsAUuid %}
+			{# don't need to print anything?#}
+		{% endif %}
+
+
+
+	{% endif %}	
+
+{% endif %}	
+</div>

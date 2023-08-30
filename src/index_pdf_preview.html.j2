@@ -18,13 +18,10 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous"/>
   </head>
 
-
-
   {# ---- Header - to include images ---- #}
   <header class = preview-header>
     {% include "src/ukceh-dmp-template-infopanel.html.j2" with context %}
 		<img class="imgr" style="vertical-align:center" src="https://brandroom.ceh.ac.uk/sites/default/files/images/theme/UKCEH-Logo_Long_Pos_RGB_720x170.png" alt="UKCEH logo">
-	  
 	  <h3 style="text-align: center">Project Data Management Plan for UKCEH Research</h3>
   </header>
 
@@ -34,6 +31,8 @@
   <body>
     <article class="dmp">
       {% include "src/ukceh-dmp-template.html.j2" with context %}
+      {% include "src/ch5_products_landscape_tables.html.j2" with context %}
+      {% include "src/ch5-6_ukceh-dmp-template.html.j2" with context %}
     </article>
   </body>
 </html>

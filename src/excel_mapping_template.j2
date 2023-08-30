@@ -790,7 +790,6 @@
             {% endif %}
 
             {# put answers together #}
-
             {%- do declarations_models.append({
             'modelTitleReply': modelTitleReplyText,
             'modelDescriptionReply': modelDescriptionReplyText,
@@ -831,8 +830,311 @@
 
 
 
+{# Software packages #}
+{%- set declarations_software = [] -%}
 
+{% set softwarePath = [uuids.preservingAndSharingDataCUuid, uuids.softwarePackagesQUuid]|reply_path %}
+{% set softwareReply = replies[softwarePath]|reply_str_value%}
+{% set softwareListPath = [softwarePath, uuids.specifyAListOfSoftwarePackagesYouWillBeProducingAUuid, uuids.softwarePackagesListQLUuid]|reply_path %}	
+{% set softwareListReply = replies[softwareListPath]|reply_items %}
+
+{% if softwareReply == uuids.iWillNotBeProducingAnySoftwarePackagesAsPartOfThisProjectAUuid %}
+    {#if no software then set all the answers to empty #}
+    {%- do declarations_software.append({
+    'softwareTitleReplyText': "No software packages will be created by this project.",
+    'softwareDescriptionReplyText': "",
+    'softwarePackageIdentifierIfAnyReplyText': "",
+    'softwareLicenseText': "",
+    'softwareDateCreatedReplyText': "",
+    'softwareVersionControlText': "",
+    'softwareLongTermPlanText': "",
+    'softdepositDateReplyText': "",
+    'softembargoText': "",
+    'personResponsibleSoftwareText': ""
+    }) -%}
+
+{% elif (softwareReply == uuids.specifyAListOfSoftwarePackagesYouWillBeProducingAUuid) and (softwareListReply|length > 0) %}
+    {% for softItemUuid in softwareListReply %}
+    
+        {# Software name #}
+        {% set softwareTitlePath = [softwareListPath, softItemUuid, uuids.softwarePackageNameQUuid]|reply_path %}
+        {% set softwareTitleReply = replies[softwareTitlePath]|reply_str_value %}
+        {% if softwareTitleReply %}
+            {% set softwareTitleReplyText = softwareTitleReply %}
+        {% else %}
+            {% set softwareTitleReplyText = missingInformationText %}
+        {% endif %}			
         
+        {# Software description #}
+        {% set softwareDescriptionPath = [softwareListPath, softItemUuid, uuids.softwarePackageDescriptionQUuid]|reply_path %}
+        {% set softwareDescriptionReply = replies[softwareDescriptionPath]|reply_str_value %}
+        {% if softwareDescriptionReply %}
+            {% set softwareDescriptionReplyText = softwareDescriptionReply %}
+        {% else %}
+            {% set softwareDescriptionReplyText = missingInformationText %}
+        {% endif %}				
+        
+        {# Software identifier DOI #}
+        {% set softwarePackageIdentifierIfAnyPath = [softwareListPath, softItemUuid, uuids.softwarePackageIdentifierIfAnyQLUuid]|reply_path %}
+        {% set softwarePackageIdentifierIfAnyReply = replies[softwarePackageIdentifierIfAnyPath]|reply_str_value %}
+        {% if softwarePackageIdentifierIfAnyReply %}
+            {% set softwarePackageIdentifierIfAnyReplyText = softwarePackageIdentifierIfAnyReply %}
+        {% else %}
+            {% set softwarePackageIdentifierIfAnyReplyText = missingInformationText %}
+        {% endif %}					
+
+        {# Open source license #}
+        {% set softwareLicensePath = [softwareListPath, softItemUuid, uuids.willYouBeAddingAnOpenSourceLicenceQUuid]|reply_path %}
+        {% set softwareLicenseReply = replies[softwareLicensePath]|reply_str_value %}
+        {% if softwareLicenseReply %}
+            {% if softwareLicenseReply == uuids.no_133AUuid %}
+                {% set softwareLicenseYesNoText = "We will not be adding an Open Source License" %}
+                {% set softwareLicenseWhyNotPath = [softwareLicensePath, uuids.no_133AUuid, uuids.doAnyOfTheFollowingApplyQUuid]|reply_path %}
+                {% set softwareLicenseWhyNotListReply = replies[softwareLicenseWhyNotPath]|reply_items %}
+                
+                {% set values = [] %}
+                {% for itemLicenceReason in softwareLicenseWhyNotListReply %}
+                    {% set value =  km.entities.choices[itemLicenceReason].label %}
+                    {% if value is defined %}
+                        {% set _ = values.append(value) %}
+                    {% endif %}
+                {% endfor %}
+
+                {% set softwareLicenseInfoText = " because: " + values|join(', ')  %}
+            {% elif softwareLicenseReply == uuids.yesWeHaveDecidedOnAnOpenSourceLicenceAUuid %}
+                {% set softwareLicenseYesNoText = "We will be adding an Open Source License" %}
+                {% set softwareLicenseWhichPath = [softwareLicensePath, uuids.yesWeHaveDecidedOnAnOpenSourceLicenceAUuid, uuids.whatIsTheLicence_2QUuid]|reply_path %}
+                {% set softwareLicenseWhichReply = replies[softwareLicenseWhichPath]|reply_str_value %}
+                {% set softwareLicenseInfoText = "We will use " + softwareLicenseWhichReply %}
+            {% endif %}	
+            {% set softwareLicenseText = softwareLicenseYesNoText + softwareLicenseInfoText %}
+        {% else %}
+            {% set softwareLicenseText = missingInformationText %}
+        {% endif %}
+
+        {# Software derived from existing package #}
+        {# CURRENT NEVER DESIRABLE
+        {% set softwarePackageDerivedFromAnExistingPackagePath = [softwareListPath, itemUuid, uuids.isTheSoftwarePackageDerivedFromAnExistingPackageQUuid]|reply_path %}
+        {% set softwarePackageDerivedFromAnExistingPackageReply = replies[softwarePackageDerivedFromAnExistingPackagePath]|reply_str_value %}
+        {% if softwarePackageDerivedFromAnExistingPackageReply == uuids.no_5_3AUuid %}
+            Software package is derived from an existing package
+        {% elif softwarePackageDerivedFromAnExistingPackageReply == uuids.yes_5_3AUuid %}
+
+        {% endif %}
+        #}
+        {% set softwareDateCreatedPath = [softwareListPath, softItemUuid, uuids.whatIsTheEstimatedDateForWhenTheSoftwarePackageWillBeCreatedQUuid]|reply_path %}
+        {% set softwareDateCreatedReply = replies[softwareDateCreatedPath]|reply_str_value %}
+        {% if softwareDateCreatedReply %}
+            {% set softwareDateCreatedReplyText = softwareDateCreatedReply %}
+        {% else %}
+            {% set softwareDateCreatedReplyText = missingInformationText %}
+        {% endif %}				
+        
+        {# Version control  #}
+        {% set softwareVersionControlPath = [softwareListPath, softItemUuid, uuids.willYouDepositYourSoftwarePackageInGitHubOrOtherVersionedCodeRepositoryQUuid]|reply_path %}
+        {% set softwareVersionControlReply = replies[softwareVersionControlPath]|reply_str_value %}
+        {% if softwareVersionControlReply %}
+            {% if softwareVersionControlReply == uuids.no_2_1AUuid %}
+                {% set softwareVersionControlText = "We are not using version control for our code." %}
+            {% elif softwareVersionControlReply == uuids.yes_2_1AUuid %}
+                {% set softwareVersionControlUrlPath = [softwareVersionControlPath, uuids.yes_2_1AUuid, uuids.pleaseProvideTheCompleteUrlToTheCodeRepositoryWhenItIsKnown_2QUuid]|reply_path %}
+                {% set softwareVersionControlUrlReply = replies[softwareVersionControlUrlPath]|reply_str_value %}
+                {% set softwareVersionControlText = "Our code is version controlled and stored in the following location: " + softwareVersionControlUrlReply %}
+            {% endif %}
+        {% else %}
+            {% set softwareVersionControlText = missingInformationText %}
+        {% endif %}
+
+        {# Long term preservation plans #}
+        {% set softwareLongTermPlanPath = [softwareListPath, softItemUuid, uuids.areThereLongTermPreservationPlansInPlaceForThisSoftwarePackageQUuid]|reply_path %}
+        {% set softwareLongTermPlanReply = replies[softwareLongTermPlanPath]|reply_str_value %}
+
+        {# set embargo and deposit date as N/A now, to be replaced if user selects yes it will be sent to a repository #}
+        {% set softdepositDateReplyText = "N/A" %}
+        {% set softembargoText = "N/A" %}
 
 
+        {# Sent to a repository #}
+        {% if softwareLongTermPlanReply == uuids.yesItWillBeSentToARepository_3AUuid %}
 
+            {% set softwareRepositoryVerifiedPath = [softwareLongTermPlanPath, uuids.yesItWillBeSentToARepository_3AUuid, uuids.haveYouVerifiedThatTheRepositoryStoresSoftwarePackagesQUuid]|reply_path %}
+            {% set softwareRepositoryVerifiedReply = replies[softwareRepositoryVerifiedPath]|reply_str_value %}
+            {% if softwareRepositoryVerifiedReply %}
+                {% set softwareRepositoryVerifiedText = softwareRepositoryVerifiedReply %}
+            {% else %}
+                {% set softwareRepositoryVerifiedText = missingInformationText %}
+            {% endif %}
+
+            {# Deposit date #}
+            {% set softdepositDatePath = [softwareLongTermPlanPath, uuids.yesItWillBeSentToARepository_3AUuid, uuids.whatIsThePlannedDepositDate_2QUuid]|reply_path %}
+            {% set softdepositDateReply = replies[softdepositDatePath]|reply_str_value %}
+            {% if softdepositDateReply %}
+                {% set softdepositDateReplyText = softdepositDateReply %}
+            {% else %}
+                {% set softdepositDateReplyText = missingInformationText %}
+            {% endif %}
+            
+            {# Embargo #}
+            {% set softdepositEmbargoPath = [softwareLongTermPlanPath, uuids.yesItWillBeSentToARepository_3AUuid, uuids.willThereBeAnAccessEmbargoPeriod_1QUuid]|reply_path %}
+            {% set softdepositEmbargoReply = replies[softdepositEmbargoPath]|reply_str_value %}
+            {% if softdepositEmbargoReply == uuids.yes_4_3AUuid %}
+                {% set softdepositEmbargoDatePath = [softdepositEmbargoPath, uuids.yes_6_3AUuid, uuids.plannedAccessEmbargoReleaseDate_2QUuid]|reply_path %}
+                {% set softdepositEmbargoDateReply = replies[softdepositEmbargoDatePath]|reply_str_value %}
+                {% set softembargoText = softdepositEmbargoDateReply %}
+            {% elif softdepositEmbargoReply == uuids.no_6_3AUuid %}
+                {% set softembargoText = "No embargo period - data will be released immediately after deposit" %}
+            {% else %}
+                {% set softembargoText = missingInformationText %}
+            {% endif %}
+
+
+            {# what repository #}
+            {% set softwareRepositoryPath = [softwareLongTermPlanPath, uuids.yesItWillBeSentToARepository_3AUuid, uuids.whatRepositoryWillTheSoftwarePackageBeStoredInQUuid]|reply_path %}
+            {% set softwareRepositoryReply = replies[softwareRepositoryPath]|reply_str_value %}
+            {% if softwareRepositoryReply %}
+                {# Long term plan + repository answer#}
+                {#A domain specific repository answer was replaced with "Another repository"#}
+                {% if softwareRepositoryReply == uuids.aDomainSpecificRepository_3AUuid %}
+                    {% set softwareRepositorySearchPath = [softwareRepositoryPath, uuids.aDomainSpecificRepository_3AUuid, uuids.searchAndSelectARepository_3QUuid]|reply_path %}
+                    {% set softwareRepositorySearchReply = replies[softwareRepositorySearchPath] %}
+
+                    {% set softwareRepositorySearchWhatTypeOfRepositoryPath = [softwareRepositoryPath, uuids.aDomainSpecificRepository_3AUuid, uuids.whatTypeOfRepositoryIsThis_3QUuid]|reply_path %}
+                    {% set softwareRepositorySearchWhatTypeOfRepositoryReply = replies[softwareRepositorySearchWhatTypeOfRepositoryPath]|reply_str_value  %}
+                    {% if softwareRepositorySearchWhatTypeOfRepositoryReply %}
+                        {% set softwareRepositorySearchWhatTypeOfRepositoryReplyText = km.entities.answers[softwareRepositorySearchWhatTypeOfRepositoryReply].label %}
+                    {% else %}
+                        {% set softwareRepositorySearchWhatTypeOfRepositoryReplyText = missingInformationText %}
+                    {% endif %}
+
+                    {% set softwareRepositorySearchWhyThisRepositoryPath = [softwareRepositoryPath, uuids.aDomainSpecificRepository_3AUuid, uuids.whyHaveYouChosenThisRepository_3QUuid]|reply_path %}
+                    {% set softwareRepositorySearchWhyThisRepositoryReply = replies[softwareRepositorySearchWhyThisRepositoryPath]|reply_str_value  %}
+
+                    {% if softwareRepositorySearchWhyThisRepositoryReply == uuids.funderRequirementEGForNonNercFundedProjects_3AUuid %}
+                        {% set softwareRepositorySearchWhyThisRepositoryReplyText = km.entities.answers[softwareRepositorySearchWhyThisRepositoryReply].label %}
+
+                    {% elif softwareRepositorySearchWhyThisRepositoryReply == uuids.other_5_1AUuid %}
+                        {% set softwareRepositorySearchWhyThisRepositoryOtherPath = [softwareRepositoryPath, uuids.aDomainSpecificRepository_3AUuid, uuids.whyHaveYouChosenThisRepository_3QUuid, uuids.other_5_1AUuid, uuids.pleaseSpecify_5_1QUuid]|reply_path %}
+                        {% set softwareRepositorySearchWhyThisRepositoryOtherReply = replies[softwareRepositorySearchWhyThisRepositoryOtherPath]|reply_str_value %}
+
+                        {% if softwareRepositorySearchWhyThisRepositoryOtherReply %}
+                            {% set softwareRepositorySearchWhyThisRepositoryReplyText = softwareRepositorySearchWhyThisRepositoryOtherReply|lower %}
+                        {% else %}
+                            {% set softwareRepositorySearchWhyThisRepositoryReplyText = missingInformationText %}
+                        {% endif %}
+                    {% endif %}	
+
+                    {% if softwareRepositorySearchReply and softwareRepositorySearchWhatTypeOfRepositoryReply and softwareRepositorySearchWhyThisRepositoryReply %}
+                        {% set softwareLongTermPlanText = 'Archived with ' + softwareRepositorySearchReply.value.value.value + ", " + softwareRepositorySearchWhatTypeOfRepositoryReplyText + ", because: " + softwareRepositorySearchWhyThisRepositoryReplyText %}
+                    {% else %}
+                        {% set softwareLongTermPlanText = missingInformationText %}
+                    {% endif %}
+
+                {# Special purpose repository #}	
+                {% elif softwareLongTermPlanReply == uuids.aSpecialPurposeRepositoryCreatedForTheProject_3AUuid %}
+                    {% set softwareLongTermPlan = 'Will be archived in a special purpose repository created for the project' %}
+                    {% set softwareSpecialRepositoryNamePath = [softwareRepositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProject_3AUuid, uuids.giveTheNameOfTheRepositoryWhenItIsKnown_3QUuid]|reply_path %}
+                    {% set softwareSpecialRepositoryNameReply = replies[softwareSpecialRepositoryNamePath]|reply_str_value%}
+                    {% set softwareSpecialRepositoryUrlPath = [softwareRepositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProject_3AUuid, uuids.giveTheUrlToTheRepositoryWhenItIsKnown_3QUuid]|reply_path %}
+                    {% set softwareSpecialRepositoryUrlReply = replies[softwareSpecialRepositoryUrlPath]|reply_str_value%}
+
+                    {% set softwareSpecialRepositorySupportTimePath = [softwareRepositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProject_3AUuid, uuids.willYouBeAbleToSupportThisRepositoryForASufficientlyLongTime_3QUuid]|reply_path %}
+                    {% set softwareSpecialRepositorySupportTimeReply = replies[softwareSpecialRepositorySupportTimePath]|reply_str_value%}
+                    {% if softwareSpecialRepositorySupportTimeReply == uuids.no_135AUuid %}
+                        {% set softwareSpecialRepositorySupportTimeText = "We won't be able to support the repository for a sufficiently long time." %}
+                    {% elif softwareSpecialRepositorySupportTimeReply == uuids.yes_125AUuid %}
+                        {% set softwareSpecialRepositorySupportTimeText = "We will support the repository for a sufficiently long time." %}
+                    {% endif %}
+
+                    {% set softwareSpecialRepositoryServiceLevelPath = [softwareRepositoryPath, uuids.aSpecialPurposeRepositoryCreatedForTheProject_3AUuid, uuids.whatIsTheServiceLevelYouWillBeOfferingUsersOfTheSoftwarePackageRepositoryQUuid]|reply_path %}
+                    {% set softwareSpecialRepositoryServiceLevelReply = replies[softwareSpecialRepositoryServiceLevelPath]|reply_str_value%}					
+                    
+
+                    {% if softwareSpecialRepositoryNameReply and softwareSpecialRepositoryUrlReply and softwareSpecialRepositorySupportTimeReply and softwareSpecialRepositoryServiceLevelReply %}
+                        {% set softwareLongTermPlanText = 'A special purpose repository created for the project, ' + softwareSpecialRepositoryNameReply + ", " + softwareSpecialRepositoryUrlReply + ". Service level provided: " + softwareSpecialRepositoryServiceLevelReply + softwareSpecialRepositorySupportTimeText %}
+                    {% else %}
+                        {% set softwareLongTermPlanText = missingInformationText %}
+                    {% endif %}
+                
+                {# One of the NERC data centre options #}	
+                {% else %}
+                    {% set softwareLongTermPlanText = softwareRepositoryReply %}
+                {% endif %}
+            {% else %}
+                {% set softwareLongTermPlanText = missingInformationText %}
+            {% endif %}
+
+        {% elif softwareLongTermPlanReply == uuids.yesItWillBeKeptLocally_3AUuid %}
+            {% set softwareLongTermPlan = 'Will be kept locally at ' %}
+            {% set softwareLocalLocationPath = [softwareLongTermPlanPath, uuids.yesItWillBeKeptLocally_3AUuid, uuids.pleaseProvideTheLocalLocationForThisSoftwarePackageQUuid]|reply_path %}
+            {% set softwareLocalLocationReply = replies[softwareLocalLocationPath]|reply_str_value %}
+
+            {% set softwareLocalStorageWhyPath = [softwareLongTermPlanPath, uuids.yesItWillBeKeptLocally_3AUuid, uuids.why_3_1QUuid]|reply_path %}
+            {% set softwareLocalStorageWhyReply = replies[softwareLocalStorageWhyPath]|reply_str_value %}
+
+            {% set softwareLocalStorageWhyOtherPath = [softwareLocalStorageWhyPath, uuids.other_6_1AUuid, uuids.pleaseSpecify_6_1QUuid]|reply_path %}
+            {% set softwareLocalStorageWhyOtherReply = replies[softwareLocalStorageWhyOtherPath]|reply_str_value %}
+
+            {% if softwareLocalLocationReply and (softwareLocalStorageWhyReply == uuids.other_6_1AUuid)  %}
+                {% set softwareLongTermPlanText = softwareLongTermPlan + softwareLocalLocationReply + " because " + softwareLocalStorageWhyOtherReply %}
+            {% elif softwareLocalLocationReply and softwareLocalStorageWhyReply %}
+                {% set softwareLongTermPlanText = softwareLongTermPlan + softwareLocalLocationReply + " because " + km.entities.answers[softwareLocalStorageWhyReply].label %}
+            {% else %}
+                {% set softwareLongTermPlanText = missingInformationText %}
+            {% endif %}				
+
+
+        {% elif softwareLongTermPlanReply == uuids.noItWillNotBeKeptInPerpetuity_2AUuid %}
+            {% set softwareNotKeptWhyPath = [softwareLongTermPlanPath, uuids.noItWillNotBeKeptInPerpetuity_2AUuid, uuids.why_8QUuid]|reply_path %}
+            {% set softwareNotKeptWhyReply = replies[softwareNotKeptWhyPath]|reply_str_value %}				
+
+            {% if softwareNotKeptWhyReply == uuids.otherReasonS_7AUuid %}
+                {% set softwareNotKeptWhyPleaseSpecifyPath = [softwareNotKeptWhyPath, uuids.otherReasonS_7AUuid, uuids.pleaseSpecify_13QUuid]|reply_path %}
+                {% set softwareNotKeptWhyPleaseSpecifyReply = replies[softwareNotKeptWhyPleaseSpecifyPath]|reply_str_value %}
+                {% set softwareLongTermPlanText = "It will not be kept in perpetuity because " + softwareNotKeptWhyPleaseSpecifyReply %}
+            {% elif softwareNotKeptWhyReply %}
+                {% set softwareLongTermPlanText = "It will not be kept in perpetuity beacuse " + km.entities.answers[softwareNotKeptWhyReply].label %}
+            {% else %}
+                {% set softwareLongTermPlanText = missingInformationText %}
+            {% endif %}		
+
+        {% endif %}
+
+        {% set whoInTheProjectIsResponsibleForThisSoftwarePackagePath = [softwareListPath, softItemUuid, uuids.whoInTheProjectIsResponsibleForThisSoftwarePackageQUuid]|reply_path %}
+        {% set whoInTheProjectIsResponsibleForThisSoftwarePackageReply = replies[whoInTheProjectIsResponsibleForThisSoftwarePackagePath]|reply_str_value %}
+
+        {% if whoInTheProjectIsResponsibleForThisSoftwarePackageReply %}
+            {% set personResponsibleSoftwareText = whoInTheProjectIsResponsibleForThisSoftwarePackageReply %}
+        {% else %}
+            {% set personResponsibleSoftwareText = missingInformationText %}
+        {% endif %}	
+
+        {# put answers together #}
+        {%- do declarations_software.append({
+        'softwareTitleReplyText': softwareTitleReplyText,
+        'softwareDescriptionReplyText': softwareDescriptionReplyText,
+        'softwarePackageIdentifierIfAnyReplyText': softwarePackageIdentifierIfAnyReplyText,
+        'softwareLicenseText': softwareLicenseText,
+        'softwareDateCreatedReplyText': softwareDateCreatedReplyText,
+        'softwareVersionControlText': softwareVersionControlText,
+        'softwareLongTermPlanText': softwareLongTermPlanText,
+        'softdepositDateReplyText': softdepositDateReplyText,
+        'softembargoText': softembargoText,
+        'personResponsibleSoftwareText': personResponsibleSoftwareText
+        }) -%}
+    {% endfor %}	
+
+{% elif (softwareReply == uuids.specifyAListOfSoftwarePackagesYouWillBeProducingAUuid) and softwareListReply|length == 0 %}
+
+    {%- do declarations_software.append({
+    'softwareTitleReplyText': "No software packages listed!",
+    'softwareDescriptionReplyText': "",
+    'softwarePackageIdentifierIfAnyReplyText': "",
+    'softwareLicenseText': "",
+    'softwareDateCreatedReplyText': "",
+    'softwareVersionControlText': "",
+    'softwareLongTermPlanText': "",
+    'softdepositDateReplyText': "",
+    'softembargoText': "",
+    'personResponsibleSoftwareText': ""
+    }) -%}
+{% endif %}
