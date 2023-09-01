@@ -1138,3 +1138,159 @@
     'personResponsibleSoftwareText': ""
     }) -%}
 {% endif %}
+
+
+{# Physical samples #}
+{%- set declarations_physicalSamples = [] -%}
+
+{% set samplesPath = [uuids.preservingAndSharingDataCUuid, uuids.physicalCollectionsAndSamplesQUuid]|reply_path %}
+{% set samplesReply = replies[samplesPath]|reply_str_value%}
+{% set samplesListPath = [samplesPath, uuids.specifyAListOfPhysicalSamplesYouWillBeProducingAUuid, uuids.listOfPhysicalCollectionsQLUuid]|reply_path %}	
+{% set samplesListReply = replies[samplesListPath]|reply_items %}
+
+{% if samplesReply == uuids.iWillNotBeProducingAnyPhysicalCollectionsOrSamplesAsPartOfThisProjectAUuid %}
+    {#if no physical samples then set all the answers to empty #}
+    {%- do declarations_physicalSamples.append({
+    'samplesTitleReplyText': "No physical samples will be created by this project.",
+    'samplesDescriptionReplyText': "",
+    'samplesSizeReplyText': "",
+    'samplesOwnerReplyText': "",
+    'samplesDateGeneratedReplyText': "",
+    'samplesLongTermText': "",
+    'samplesResponsiblePersonReplyText': ""
+    }) -%}
+
+{% elif (samplesReply == uuids.specifyAListOfPhysicalSamplesYouWillBeProducingAUuid) and (samplesListReply|length > 0) %}	
+    {% for physicalitemUuid in samplesListReply %}
+        {# Sample name #}
+        {% set samplesTitlePath = [samplesListPath, physicalitemUuid, uuids.physicalCollectionNameQUuid]|reply_path %}
+        {% set samplesTitleReply = replies[samplesTitlePath]|reply_str_value %}
+        {% if samplesTitleReply %}
+            {% set samplesTitleReplyText = samplesTitleReply %}
+        {% else %}
+            {% set samplesTitleReplyText = missingInformationText %}
+        {% endif %}		
+
+        {# Sample description #}
+        {% set samplesDescriptionPath = [samplesListPath, physicalitemUuid, uuids.physicalCollectionDescriptionQUuid]|reply_path %}
+        {% set samplesDescriptionReply = replies[samplesDescriptionPath]|reply_str_value %}
+        {% if samplesDescriptionReply %}
+            {% set samplesDescriptionReplyText = samplesDescriptionReply %}
+        {% else %}
+            {% set samplesDescriptionReplyText = missingInformationText %}
+        {% endif %}					
+        
+        {# Sample date generated #}
+        {% set samplesDateGeneratedPath = [samplesListPath, physicalitemUuid, uuids.whatIsTheEstimatedDateForWhenThePhysicalCollectionWillBeAssembledQUuid]|reply_path %}
+        {% set samplesDateGeneratedReply = replies[samplesDateGeneratedPath]|reply_str_value %}
+        {% if samplesDateGeneratedReply %}
+            {% set samplesDateGeneratedReplyText = samplesDateGeneratedReply %}
+        {% else %}
+            {% set samplesDateGeneratedReplyText = missingInformationText %}
+        {% endif %}		
+            
+        {# Sample Owner/IPR #}
+        {% set samplesOwnerPath = [samplesListPath, physicalitemUuid, uuids.whichOrganisationSOwnThePhysicalCollectionQUuid]|reply_path %}
+        {% set samplesOwnerReply = replies[samplesOwnerPath]|reply_str_value %}
+        {% if samplesOwnerReply %}
+            {% set samplesOwnerReplyText = samplesOwnerReply %}
+        {% else %}
+            {% set samplesOwnerReplyText = missingInformationText %}
+        {% endif %}		
+
+        {# Sample estimated size #}
+        {% set samplesSizePath = [samplesListPath, physicalitemUuid, uuids.whatIsTheApproximateSizeOfThePhysicalCollectionQUuid]|reply_path %}
+        {% set samplesSizeReply = replies[samplesSizePath]|reply_str_value %}
+        {% if samplesSizeReply %}
+            {% set samplesSizeReplyText = km.entities.answers[samplesSizeReply].label %}
+        {% else %}
+            {% set samplesOwnerReplyText = missingInformationText %}
+        {% endif %}		
+
+        {# Sample project staff responsible #}
+        {% set samplesResponsiblePersonPath = [samplesListPath, physicalitemUuid, uuids.whoInThisProjectWillBeResponsibleForThisPhysicalCollectionQUuid]|reply_path %}
+        {% set samplesResponsiblePersonReply = replies[samplesResponsiblePersonPath]|reply_str_value %}
+        {% if samplesResponsiblePersonReply %}
+            {% set samplesResponsiblePersonReplyText = samplesResponsiblePersonReply %}
+        {% else %}
+            {% set samplesResponsiblePersonReplyText = missingInformationText %}
+        {% endif %}		
+        
+        {# Sample preservation plan #}
+        {% set samplesLongTermPlanPath = [samplesListPath, physicalitemUuid, uuids.areThereLongTermPreservationPlansInPlaceForThisPhysicalCollectionQUuid]|reply_path %}
+        {% set samplesLongTermPlanReply = replies[samplesLongTermPlanPath]|reply_str_value %}
+
+        {% if samplesLongTermPlanReply == uuids.noItWillNotBeKeptItInPerpetuity_2AUuid %}
+            {% set samplesLongTermText = "It will not be kept in perpetuity." %}
+            {% set whySamplesNotKeptPath = [samplesLongTermPlanPath, uuids.noItWillNotBeKeptItInPerpetuity_2AUuid, uuids.why_9QUuid]|reply_path %}
+            {% set whySamplesNotKeptReply = replies[whySamplesNotKeptPath]|reply_str_value %}
+
+            {% if whySamplesNotKeptReply %}
+                {% if whySamplesNotKeptReply == uuids.otherReasonS_8AUuid %}
+                    {% set samplesPleaseSpecifyPath = [whySamplesNotKeptPath, uuids.otherReasonS_8AUuid, uuids.pleaseSpecify_14QUuid]|reply_path %}
+                    {% set samplesPleaseSpecifyReply = replies[samplesPleaseSpecifyPath]|reply_str_value  %}
+                    {% set samplesLongTermText = "It will not be kept in perpetuity. " + samplesPleaseSpecifyReply + "."%}
+                {% else %}	
+                    {% set samplesLongTermText = "It will not be kept in perpetuity. " + km.entities.answers[whySamplesNotKeptReply].label %}
+                {% endif %}
+            {% else %}
+                {% set samplesLongTermText = "It will not be kept in perpetuity. Reasons why not given." %}
+
+            {% endif %}
+
+        {% elif samplesLongTermPlanReply == uuids.yesItWillBeArchivedInASpecialisedFacilityAUuid %}
+            {% set nameOfFacilityPath = [samplesLongTermPlanPath, uuids.yesItWillBeArchivedInASpecialisedFacilityAUuid, uuids.nameOfFacilityQUuid]|reply_path %}
+            {% set nameOfFacilityReply = replies[nameOfFacilityPath]|reply_str_value %}
+            {% set lengthSampleKeptPath = [samplesLongTermPlanPath, uuids.yesItWillBeArchivedInASpecialisedFacilityAUuid, uuids.howLongWillThisCollectionBeKeptQUuid]|reply_path %}
+            {% set lengthSampleKeptReply = replies[lengthSampleKeptPath]|reply_str_value %}
+
+            {% if nameOfFacilityReply and lengthSampleKeptReply %}
+
+                {% if lengthSampleKeptReply == uuids.forAFixedPeriod_4AUuid %}
+                    {% set specifyLengthKeptPath = [lengthSampleKeptPath, uuids.forAFixedPeriod_4AUuid, uuids.specifyForHowLongCollectionWillBeKeptQUuid]|reply_path %}
+                    {% set specifyLengthKeptReply = replies[specifyLengthKeptPath]|reply_str_value %}
+                    {% if specifyLengthKeptReply %}
+                        {% set samplesLongTermText = "It will be archived in the following specialised facility: " + nameOfFacilityReply + " and will be kept " + km.entities.answers[lengthSampleKeptReply].label|lower + " of/until " + specifyLengthKeptReply %}
+                    {% else %}
+                        {% set samplesLongTermText = "It will be archived in the following specialised facility: " + nameOfFacilityReply + " and will be kept " + km.entities.answers[lengthSampleKeptReply].label|lower + " of/until " + missingInformationText %}
+                    {% endif %}
+                {% elif lengthSampleKeptReply == uuids.asLongAsTechnicallyPossible_4AUuid %}
+                    {% set samplesLongTermText = "It will be archived in the following specialised facility: " + nameOfFacilityReply + " and will be kept " + km.entities.answers[lengthSampleKeptReply].label|lower %}
+                {% endif %}
+            {% else %}
+                {% set samplesLongTermText = missingInformationText %}
+            {% endif %}
+
+        {% elif samplesLongTermPlanReply == uuids.yesItWillBeStoredAtASpecialisedUkcehFacilityAUuid %}
+            {% set samplesLongTermText = "It will be stored at a specialised UKCEH facility." %}
+
+        {% else %}
+            {% set samplesLongTermText = missingInformationText %}
+        {% endif %}	
+
+
+        {# put answers together #}
+        {%- do declarations_physicalSamples.append({
+        'samplesTitleReplyText': samplesTitleReplyText,
+        'samplesDescriptionReplyText': samplesDescriptionReplyText,
+        'samplesSizeReplyText': samplesSizeReplyText,
+        'samplesOwnerReplyText': samplesOwnerReplyText,
+        'samplesDateGeneratedReplyText': samplesDateGeneratedReplyText,
+        'samplesLongTermText': samplesLongTermText,
+        'samplesResponsiblePersonReplyText': samplesResponsiblePersonReplyText
+        }) -%}
+
+    {% endfor %}
+
+{% elif (samplesReply == uuids.specifyAListOfPhysicalSamplesYouWillBeProducingAUuid) and (samplesListReply|length == 0) %}	
+
+    {%- do declarations_physicalSamples.append({
+    'samplesTitleReplyText': "No physical samples listed!",
+    'samplesDescriptionReplyText': "",
+    'samplesSizeReplyText': "",
+    'samplesOwnerReplyText': "",
+    'samplesDateGeneratedReplyText': "",
+    'samplesLongTermText': "",
+    'samplesResponsiblePersonReplyText': ""
+    }) -%}
+{% endif %}

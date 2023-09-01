@@ -709,6 +709,132 @@
 
 
 
+{%- set physicalSamples = [
+    {
+    "type": "row",
+    "subtype": "string",
+    "cell": "A1",
+    "data":  ['Title', 'Description', 'Size', 'Owner', 'Date created', 
+                'Preservation Plan', 'Person Responsible'],
+    "format": "centerHead",
+    }
+] -%}
+
+{%- for declaration in mapping.declarations_physicalSamples -%}
+    {%- do physicalSamples.extend([
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 0,
+            "row": 0 + loop.index,
+            "value": declaration.samplesTitleReplyText,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 1,
+            "row": 0 + loop.index,
+            "value": declaration.samplesDescriptionReplyText,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 2,
+            "row": 0 + loop.index,
+            "value": declaration.samplesSizeReplyText,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 3,
+            "row": 0 + loop.index,
+            "value": declaration.samplesOwnerReplyText,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 4,
+            "row": 0 + loop.index,
+            "value": declaration.samplesDateGeneratedReplyText,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 5,
+            "row": 0 + loop.index,
+            "value": declaration.samplesLongTermText,
+            "format": "gridName",
+        },
+        {
+            "type": "cell",
+            "subtype": "string",
+            "col": 6,
+            "row": 0 + loop.index,
+            "value": declaration.samplesResponsiblePersonReplyText,
+            "format": "gridName",
+        }
+    ]) -%}
+{%- endfor -%}
+{%- do physicalSamples.append({
+    "type": "row",
+    "col": 0,
+    "row": 1 + mapping.declarations_physicalSamples|length,
+    "data": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+    ],
+    "format": "bottomRow",
+}) -%}
+
+{%- set sheetPhysicalSamples = {
+    "name": "Physical Samples",
+    "options": {
+        "column_pixels": [
+            {
+                "first_col": 0,
+                "last_col": 1,
+                "width": 250,
+            },
+            {
+                "first_col": 2,
+                "last_col": 2,
+                "width": 100,
+            },
+            {
+                "first_col": 3,
+                "last_col": 3,
+                "width": 150,
+            },
+            {
+                "first_col": 4,
+                "last_col": 4,
+                "width": 120,
+            },
+            {
+                "first_col": 5,
+                "last_col": 5,
+                "width": 300,
+            },
+            {
+                "first_col": 6,
+                "last_col": 6,
+                "width": 150,
+            }
+        ],
+    },
+    "data": physicalSamples,
+} -%}
+
 
 {%- set excel = {
     "properties": {
@@ -719,7 +845,9 @@
         sheetMetadata,
         sheetData,
         sheetModels,
-        sheetSoftware
+        sheetSoftware,
+        sheetPhysicalSamples
+
     ]
 } -%}
 {{ excel|tojson(2) }}
