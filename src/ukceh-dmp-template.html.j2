@@ -510,7 +510,13 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 
 					{% set datasetUsedVersionUsedPath = [datasetUsedVersionPath, uuids.yes_4AUuid, uuids.whichVersionWillYouUseQUuid]|reply_path %}
 					{% set datasetUsedVersionUsedReply = replies[datasetUsedVersionUsedPath]|reply_str_value %}
-					{% set datasetUsedVersionUsedText = "We are using the following version: " + datasetUsedVersionUsedReply + " and " %}
+					{% if datasetUsedVersionUsedReply %}
+						{% set datasetUsedVersionUsedReplyText = datasetUsedVersionUsedReply %}
+					{% else %}
+						{% set datasetUsedVersionUsedReplyText = missingInformationText %}
+					{% endif %}
+
+					{% set datasetUsedVersionUsedText = "We are using the following version: " + datasetUsedVersionUsedReplyText + " and " %}
 
 					{% set datasetUsedVersionChangePath = [datasetUsedVersionPath, uuids.yes_4AUuid, uuids.willYouChangeVersionIfItUpdatesQUuid]|reply_path %}
 					{% set datasetUsedVersionChangeReply = replies[datasetUsedVersionChangePath]|reply_str_value %}
@@ -522,6 +528,8 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 						{% set datasetUsedVersionChangeText = "if the dataset updates new analyses will be done with the newest version. " %}
 					{% elif datasetUsedVersionChangeReply == uuids.allAnalysesWillBeReDoneWithTheNewestVersionAUuid %}
 						{% set datasetUsedVersionChangeText = "if the dataset updates all analyses will be re-done with the newest version. " %}
+					{% else %}
+						{% set datasetUsedVersionChangeText = missingInformationText %}
 					{% endif %}	
 					{% set datasetVersionFinalText = datasetVersionText + datasetUsedVersionUsedText + datasetUsedVersionChangeText %}
 					<p>{{datasetVersionFinalText}}</p>
