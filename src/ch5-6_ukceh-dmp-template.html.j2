@@ -1,4 +1,3 @@
-
 <h4>5.5 Data publication costs </h4>
 
 {# Will repositories charge #}
@@ -158,7 +157,6 @@
 			{% endif %}
 		{% endif %}
 
-
 		{% set hasAllTheDocumentationRelatingToTheDataAndModelsBeenUpdatedAndArchivedToBeRetainedAsAnAuditTrailPath = [uuids.projectClosureCUuid, uuids.hasAllTheDocumentationRelatingToTheDataAndModelsBeenUpdatedAndArchivedToBeRetainedAsAnAuditTrailQUuid]|reply_path %}
 		{% set hasAllTheDocumentationRelatingToTheDataAndModelsBeenUpdatedAndArchivedToBeRetainedAsAnAuditTrailReply  = replies[hasAllTheDocumentationRelatingToTheDataAndModelsBeenUpdatedAndArchivedToBeRetainedAsAnAuditTrailPath]|reply_str_value %}
 
@@ -169,8 +167,6 @@
 		{% elif hasAllTheDocumentationRelatingToTheDataAndModelsBeenUpdatedAndArchivedToBeRetainedAsAnAuditTrailReply == uuids.notApplicableWeDidNotUseAnyDataOrModelsAUuid %}
 			{# don't need to print anything?#}
 		{% endif %}
-
-
 
 	{% endif %}	
 
