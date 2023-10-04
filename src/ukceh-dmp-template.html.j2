@@ -41,19 +41,30 @@
 		<dd>
 			<ul>
 				<li><a href="https://www.legislation.gov.uk/ukpga/2018/12/pdfs/ukpga_20180012_en.pdf" target="_blank">Data Protection Act 2018</a>,</li>
-				<li><a href="https://gdpr-info.eu/" target="_blank">General Data Protection Regulation (GDPR)</a></li>
+				<li><a href="https://gdpr-info.eu/" target="_blank">General Data Protection Regulation (GDPR)</a></li>				
 				{% if funderReply|length > 0 %}
+					{# create namespace variable to determine if funding policy has already been printed, prevents repeats. Namespace necessary to preserve values outside between loops #}
+					{% set ns_funder = namespace(NERCcounter = "False") %}
+					{% set ns_funder.otherFunderCounter = "False" %}
+
 					{% for itemUuid in funderReply %}
 						{% set funderNamePath = [funderPath, itemUuid, uuids.funderQUuid]|reply_path %}
-						{% set funderNameReply = replies[funderNamePath]|reply_str_value %}
-						{% set funderNameReplySplit = funderNameReply.split("'")[3] %}
-						{% if (funderNameReplySplit == "Natural Environment Research Council" or funderNameReplySplit == "NERC") %}
+						{% set funderNameReply = replies[funderNamePath] %}
+						{% set funderNameReplySplit = funderNameReply.value.value.value %}
+												
+						{% if (funderNameReplySplit == "Natural Environment Research Council" or funderNameReplySplit == "NERC") and (ns_funder.NERCcounter == "False") %}
 							<li><a href="https://www.ukri.org/about-us/nerc/our-policies-and-standards/nerc-data-policy/" target="_blank">NERC Data Policy</a></li>
+							{% set ns_funder.NERCcounter = "True" %}
+						{% elif ns_funder.otherFunderCounter == "False" %}
+							<li><a href="https://cehacuk.sharepoint.com/sites/research-data-management/SitePages/Data-Policies.aspx" target="_blank">UKCEH guidance on data policy</a></li>							
+							{% set ns_funder.otherFunderCounter = "True" %}
 						{% else %}
-							<li><a href="https://cehacuk.sharepoint.com/sites/research-data-management/SitePages/Data-Policies.aspx" target="_blank">UKCEH guidance on data policy</a></li>
+							{# do nothing? #}
 						{% endif %}
+
 					{% endfor %}
 				{% endif %}
+				
 			</ul>
 		</dd>	
 	<span style="color: grey;">
@@ -90,10 +101,10 @@ DOIs issued for datasets archived at the EIDC can be used as a persistent citati
 Archiving data at the EIDC (or agreed alternative) will help you meet NERC Data Policy, satisfy the requirements of science journals and UKCEH, 
 comply with legal data-sharing obligations under UK law and can ensure their reusability in the future for you and the scientific community as a whole.
 
-
 {# ---- Section ---- #}
+<P style="page-break-before: always">
 <div class="question">
-	<h3 class = "newpager">1. Project Information</h3>
+	<h3>1. Project Information</h3>
 	{% set acronymPath = [uuids.projectInformationCUuid, uuids.projectAcronymOrShortNameQUuid]|reply_path %}
 	{% set acronymReply = replies[acronymPath]|reply_str_value %}
 	
@@ -150,7 +161,19 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				<ul>
 					{% for itemUuid in funderReply %}
 						{% set funderNamePath = [funderPath, itemUuid, uuids.funderQUuid]|reply_path %}
-							{% set funderNameReply = replies[funderNamePath] %}
+						{% set funderNameReply = replies[funderNamePath] %}
+
+						{% set funderDataPolicyPath = [funderPath, itemUuid, uuids.areYouAwareOfTheFundersDataPolicyAndDataRequirementsQUuid]|reply_path %}
+						{% set funderDataPolicyReply = replies[funderNamePath]|reply_str_value %}
+						{% if funderDataPolicyReply == uuids.no_144AUuid %}
+							{% set funderDataPolicyReplyText = "We are not aware of the funders data policy and data requirements."%}
+						{% elif funderDataPolicyReply == uuids.yes_134AUuid %}
+							{% set funderDataPolicyReplyText = "We are aware of the funders data policy and data requirements."%}
+						{% else %}
+							{% set funderDataPolicyReplyText = "We have not indicated if we aware of the funders data policy and data requirements."%}
+						{% endif %}
+						<p>{{funderDataPolicyReplyText}}</p>
+
 						
 						{% set fundingStatusPath = [funderPath, itemUuid, uuids.fundingStatusQUuid]|reply_path %}
 						{% set fundingStatusReply = replies[fundingStatusPath]|reply_str_value %}
@@ -261,37 +284,75 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 					{% endif %}
 				{% endfor %} 	
 				</ul>
-			</dd>	
-	
+			</dd>
 	{% endif %}
 
 	{# Partners and subcontractors #}
-
 	{% set otherPartnersPath = [uuids.projectInformationCUuid, uuids.otherPartnersQLUuid]|reply_path %}
 	{% set otherPartnersReply = replies[otherPartnersPath]|reply_items %}
 
+
 	{% if otherPartnersReply|length > 0 %} 
-		<ul>
+		{% set externalCollaboratorList = [] %}
+		{% set subcontractorsList = [] %}
+
 		{% for itemUuid in otherPartnersReply %}
-
-			{% set otherPartnersNamePath = [otherPartnersPath, itemUuid, uuids.name_2QUuid]|reply_path %}
-				{% set otherPartnersNameReply = replies[otherPartnersNamePath]|reply_str_value %}
 			{% set otherPartnersAffiliationPath = [otherPartnersPath, itemUuid, uuids.affiliation_2QUuid]|reply_path %}
-				{% set otherPartnersAffiliationReply = replies[otherPartnersAffiliationPath]|reply_str_value %}
+			{% set otherPartnersAffiliationReply = replies[otherPartnersAffiliationPath]|reply_str_value %}
 			{% set otherPartnersRolePath = [otherPartnersPath, itemUuid, uuids.role_2QUuid]|reply_path %}
-				{% set otherPartnersRoleReply = replies[otherPartnersRolePath]|reply_str_value %}
+			{% set otherPartnersRoleReply = replies[otherPartnersRolePath]|reply_str_value %}
 
+			
 			{% if otherPartnersRoleReply %}
 				{% if otherPartnersRoleReply == uuids.externalCollaboratorAUuid %}
-					<dt>External Collaborators</dt> <dd><ul style = "list-style-type:none;"><li>{{otherPartnersAffiliationReply}}</li></ul></dd>
+					{% set externalCollaboratorList = externalCollaboratorList.append(otherPartnersAffiliationReply) %}
 				{% elif otherPartnersRoleReply == uuids.subcontractorAUuid %}
-					<dt>Subcontractors</dt><dd><ul style = "list-style-type:none;"><li>{{otherPartnersAffiliationReply}}</li></ul></dd>
+					{% set subcontractorsList = subcontractorsList.append(otherPartnersAffiliationReply) %}
 				{% endif %}
 			{% endif %}
-			
 		{% endfor %}
-		</ul>
+
+		{% set otherPartnersDict = {
+		"subcontractors" : {"headerText" : "Subcontractors",
+								"role" : subcontractorsList},
+		"externalCollaborators" : {"headerText" : "External Collaborators",
+								"role" : externalCollaboratorList},
+						} 
+		%}
+{#
+		{% if externalCollaboratorList|length > 0 %}
+			<dt>External Collaborators</dt>
+			<dd>
+			{% for ExternalitemUuid in externalCollaboratorList %}
+				{{ExternalitemUuid}}
+			{% endfor %}
+			</dd>
+		{% endif %}
+
+		{% if subcontractorsList|length > 0 %}
+			<dt>Subcontractors</dt>
+			<dd>
+			{% for ExternalitemUuid in subcontractorsList %}
+				{{ExternalitemUuid}}
+			{% endfor %}
+			</dd>
+		{% endif %}
+#}
+		
+		
+		{% for key, value in otherPartnersDict.items() %}
+			<dt>{{value.headerText}}</dt>
+			<dd>
+			{% if value.role | length > 0 %}
+				{{value.role | join(", ")}}
+			{% endif %}
+			</dd>
+		{% endfor %} 	
+		
+		
+
 	{% endif %}
+	</dl>
 
 	{# More than one DMP? #}
 	{% set projectLikelyToRequireMoreThanOneDMPPath = [uuids.projectInformationCUuid, uuids.isThisProjectLikelyToRequireMoreThanOneFullDataManagementPlanQUuid]|reply_path %}

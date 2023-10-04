@@ -5,3 +5,10 @@
 {%- endmacro -%}
 
 
+{# Handle missing variables 
+{% macro safe_variable(variable, default_value="Default Value if Missing") %}
+    {{ variable|default(default_value) }}
+{% endmacro %}
+#}
+
+
