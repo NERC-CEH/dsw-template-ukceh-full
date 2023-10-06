@@ -90,7 +90,7 @@ section {
 header {
   padding-top: 40px;
   width: 100vw;
-  height: 195px;
+  height: 150px;
   page-break-after: avoid;
   position: relative;
   /* border-bottom: 1px solid black; */
@@ -197,11 +197,11 @@ div#dmp-content {
 
 
 .box {
-    background: ghostwhite; 
-		font-size: 20px; 
-		padding: 10px; 
-		border: 1px solid red; 
-		margin: 10px;
+  background: ghostwhite; 
+  font-size: 20px; 
+  padding: 10px; 
+  border: 1px solid red; 
+  margin: 20px 0;
 }
 
 .box-action {
@@ -209,7 +209,7 @@ div#dmp-content {
   font-size: 18px; 
   padding: 10px; 
   border: 1px solid red; 
-  margin: 10px;
+  margin: 20px 0;
 }
 
 .box-ready {
@@ -217,13 +217,13 @@ div#dmp-content {
   font-size: 16px; 
   padding: 10px; 
   border: 1px solid green; 
-  margin: 10px;
+  margin: 20px;
 }
 
 .preview-header {
   padding-top: 40px;
   width: 100vw;
-  height: 350px;
+  height: 150px;
   page-break-after: avoid;
   position: relative;
   /* border-bottom: 1px solid black; */
@@ -232,4 +232,9 @@ div#dmp-content {
 
 .table-font {
   font-size: 10pt;
+}
+
+.submission_checks {
+  page-break-inside: auto; /* Allow breaks inside this element */
+  page-break-before: auto; /* Allow breaks before this element */
 }

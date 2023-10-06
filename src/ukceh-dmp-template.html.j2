@@ -74,8 +74,8 @@
 </dl>
 
 {# ---- Timeline text ---- #}
-
-<h4 class="newpage">Timeline</h4>
+<P style="page-break-before: always">
+<h4>Timeline</h4>
 <dl>
 	<dt>Before submitting the proposal</dt>
 		<dd>
@@ -291,8 +291,8 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 	{% set otherPartnersPath = [uuids.projectInformationCUuid, uuids.otherPartnersQLUuid]|reply_path %}
 	{% set otherPartnersReply = replies[otherPartnersPath]|reply_items %}
 
-
 	{% if otherPartnersReply|length > 0 %} 
+		
 		{% set externalCollaboratorList = [] %}
 		{% set subcontractorsList = [] %}
 
@@ -312,33 +312,24 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 			{% endif %}
 		{% endfor %}
 
-		{% set otherPartnersDict = {
-		"subcontractors" : {"headerText" : "Subcontractors",
-								"role" : subcontractorsList},
-		"externalCollaborators" : {"headerText" : "External Collaborators",
-								"role" : externalCollaboratorList},
-						} 
-		%}
-{#
-		{% if externalCollaboratorList|length > 0 %}
-			<dt>External Collaborators</dt>
-			<dd>
-			{% for ExternalitemUuid in externalCollaboratorList %}
-				{{ExternalitemUuid}}
-			{% endfor %}
-			</dd>
-		{% endif %}
+		{% if (externalCollaboratorList|length > 0) and (subcontractorsList|length > 0) %}
+			{% set otherPartnersDict = {
+			"subcontractors" : {"headerText" : "Subcontractors",
+									"role" : subcontractorsList},
+			"externalCollaborators" : {"headerText" : "External Collaborators",
+									"role" : externalCollaboratorList},} %}
+							
+		{% elif (externalCollaboratorList|length == 0) and (subcontractorsList|length > 0) %}
+			{% set otherPartnersDict = {
+			"subcontractors" : {"headerText" : "Subcontractors",
+									"role" : subcontractorsList},} %}
 
-		{% if subcontractorsList|length > 0 %}
-			<dt>Subcontractors</dt>
-			<dd>
-			{% for ExternalitemUuid in subcontractorsList %}
-				{{ExternalitemUuid}}
-			{% endfor %}
-			</dd>
+		{% elif (externalCollaboratorList|length > 0) and (subcontractorsList|length == 0) %}
+			{% set otherPartnersDict = {
+			"externalCollaborators" : {"headerText" : "External Collaborators",
+									"role" : externalCollaboratorList},} %}
+
 		{% endif %}
-#}
-		
 		
 		{% for key, value in otherPartnersDict.items() %}
 			<dt>{{value.headerText}}</dt>
@@ -348,8 +339,6 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 			{% endif %}
 			</dd>
 		{% endfor %} 	
-		
-		
 
 	{% endif %}
 	</dl>

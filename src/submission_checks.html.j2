@@ -1,4 +1,5 @@
 {# DMP submission failure and inconsistency warning boxes #}
+<submission_checks>
 
 {% set DMPSubmissionFailure = "no" %}
 {# Ch 3 yes collecting data, Ch 5 no not collecting data - need to do reverse #}
@@ -318,3 +319,5 @@ If NO to (creating AND reusing data) but YES to processing/analysing --> warning
 {%- set declarations = {
 	'check': DMPSubmissionFailure
 } -%}
+
+</submission_checks>
