@@ -1,7 +1,7 @@
 {
     "templateId": "ukceh-full-dmp",
     "organizationId": "ukceh",
-    "version": "0.0.26",
+    "version": "0.0.28",
     "name": "UKCEH FULL DMP",
     "description": "DMP to satisfy UKCEH requirements",
     "license": "Apache-2.0",
@@ -15,6 +15,7 @@
             "maxVersion": "0.0.19"
         }
     ],
+      
     "formats": [
         {
             "uuid": "0471b394-4328-4dd0-81bc-d8796fed1edf",
@@ -66,7 +67,7 @@
                 {
                     "name": "jinja",
                     "options": {
-                        "template": "src/index_msWord.html.j2",
+                        "template": "src/index_pdf_preview.html.j2",
                         "content-type": "text/html",
                         "extension": "html"
                     }

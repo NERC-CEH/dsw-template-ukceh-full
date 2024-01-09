@@ -1440,98 +1440,96 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 
 
 				{# Managing data in the workspace #} 
-
 				{% set managingDataInWorkspacePath = [sharedWorkingSpaceForDataPath, uuids.yes_52AUuid, uuids.howWillYouManageDataInTheWorkSpaceQUuid, uuids.exploreHintsAndTipsForGoodPractice_3AUuid]|reply_path %}
+				{% set managingDataInWorkspaceReply = replies[managingDataInWorkspacePath]|reply_str_value %}
+				{% if managingDataInWorkspaceReply %}
 
-				{% set workingWithDataInOtherFormThanArchivedPath = [managingDataInWorkspacePath, uuids.willYouBeWorkingWithYourDataInAnotherFormThanTheWayItWillBeArchivedQUuid]|reply_path %}
-				{% set workingWithDataInOtherFormThanArchivedReply = replies[workingWithDataInOtherFormThanArchivedPath]|reply_str_value %}
-				{% if workingWithDataInOtherFormThanArchivedReply == uuids.noDataFormatWillBeArchivedInTheSameWayWeWorkWithItAUuid %}
-					<p>We will archive project data in the same format(s) we'll use to work on it.</p>
-				{% elif workingWithDataInOtherFormThanArchivedReply == uuids.yesThereWillBeAConversionStepBeforeArchivingAUuid %}
-					<p>The data will require a format conversion step before being archived in order to ensure it is readable and remains understandable in the future.</p>
-				{% endif %}
-
-				{# When will raw data become available #}
-
-				{% set whenWillYourRawDataBecomeAvailablePath = [managingDataInWorkspacePath, uuids.whenWillYourRawDataBecomeAvailableQUuid]|reply_path %}
-				{% set whenWillYourRawDataBecomeAvailableReply = replies[whenWillYourRawDataBecomeAvailablePath]|reply_str_value %}
-				{% if whenWillYourRawDataBecomeAvailableReply %}
-					{% set whenWillYourRawDataBecomeAvailabletext = km.entities.answers[whenWillYourRawDataBecomeAvailableReply].label %} 
-					{{whenWillYourRawDataBecomeAvailabletext}}.
-				{% endif %}
-
-				{# how much raw data kept in workspace #}
-
-				{% set howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpacePath = [managingDataInWorkspacePath, uuids.howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpaceQUuid]|reply_path %}
-				{% set howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpaceReply = replies[howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpacePath]|reply_str_value %}
-		
-				{% if howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpaceReply == uuids.rawDataCanBeCleanedOutOrArchivedQuicklyAUuid %}
-					{% set doYourRawDataNeedToBeArchivedPath = [howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpacePath, uuids.rawDataCanBeCleanedOutOrArchivedQuicklyAUuid, uuids.doYourRawDataNeedToBeArchivedQUuid]|reply_path %}
-					{% set doYourRawDataNeedToBeArchivedReply = replies[doYourRawDataNeedToBeArchivedPath]|reply_str_value %}
-					{{km.entities.answers[howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpaceReply].label}}
-
-					{% if doYourRawDataNeedToBeArchivedReply == uuids.noItIsAlsoStoredElsewhereCanBeRecoveredEasilyAUuid %}
-						and does not need to be archived as it is stored elsewhere and can be recovered easily.
-					{% elif doYourRawDataNeedToBeArchivedReply == uuids.noItCanBeRemeasuredEasilyAndMoreCheaplyThanArchivingAUuid %}
-						and does not need to be archived as it can be remeasured easily and more cheaply than archiving.
-					{% elif doYourRawDataNeedToBeArchivedReply == uuids.yes_55AUuid %}
-						and needs to be archived.
+					{% set workingWithDataInOtherFormThanArchivedPath = [managingDataInWorkspacePath, uuids.willYouBeWorkingWithYourDataInAnotherFormThanTheWayItWillBeArchivedQUuid]|reply_path %}
+					{% set workingWithDataInOtherFormThanArchivedReply = replies[workingWithDataInOtherFormThanArchivedPath]|reply_str_value %}
+					{% if workingWithDataInOtherFormThanArchivedReply == uuids.noDataFormatWillBeArchivedInTheSameWayWeWorkWithItAUuid %}
+						<p>We will archive project data in the same format(s) we'll use to work on it.</p>
+					{% elif workingWithDataInOtherFormThanArchivedReply == uuids.yesThereWillBeAConversionStepBeforeArchivingAUuid %}
+						<p>The data will require a format conversion step before being archived in order to ensure it is readable and remains understandable in the future.</p>
 					{% endif %}
-				{% elif howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpaceReply %}
-					{{km.entities.answers[howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpaceReply].label}}.
-				{% endif %}
 
+					{# When will raw data become available #}
 
-				{# Volume of intermediate data #}
+					{% set whenWillYourRawDataBecomeAvailablePath = [managingDataInWorkspacePath, uuids.whenWillYourRawDataBecomeAvailableQUuid]|reply_path %}
+					{% set whenWillYourRawDataBecomeAvailableReply = replies[whenWillYourRawDataBecomeAvailablePath]|reply_str_value %}
+					{% if whenWillYourRawDataBecomeAvailableReply %}
+						{% set whenWillYourRawDataBecomeAvailabletext = km.entities.answers[whenWillYourRawDataBecomeAvailableReply].label %} 
+						{{whenWillYourRawDataBecomeAvailabletext}}.
+					{% endif %}
 
-				{% set didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptPath = [managingDataInWorkspacePath, uuids.didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptQUuid]|reply_path %}
-				{% set didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptReply = replies[didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptPath]|reply_str_value %}
-				{% if didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptReply %}
-					<p>{{km.entities.answers[didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptReply].label}}
-				{% endif %}
+					{# how much raw data kept in workspace #}
 
-				{% if didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptReply == uuids.aLargeVolumeOfIntermediateDataWillBeInTheWorkSpaceAUuid %}
-					{% set isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpPath = [didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptPath, uuids.aLargeVolumeOfIntermediateDataWillBeInTheWorkSpaceAUuid, uuids.isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpQUuid]|reply_path %}
-					{% set isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpReply = replies[isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpPath]|reply_str_value %}
-					and {{km.entities.answers[isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpReply].label|lower}}. </p>
+					{% set howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpacePath = [managingDataInWorkspacePath, uuids.howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpaceQUuid]|reply_path %}
+					{% set howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpaceReply = replies[howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpacePath]|reply_str_value %}
+			
+					{% if howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpaceReply == uuids.rawDataCanBeCleanedOutOrArchivedQuicklyAUuid %}
+						{% set doYourRawDataNeedToBeArchivedPath = [howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpacePath, uuids.rawDataCanBeCleanedOutOrArchivedQuicklyAUuid, uuids.doYourRawDataNeedToBeArchivedQUuid]|reply_path %}
+						{% set doYourRawDataNeedToBeArchivedReply = replies[doYourRawDataNeedToBeArchivedPath]|reply_str_value %}
+						{{km.entities.answers[howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpaceReply].label}}
 
-					{% if isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpReply == uuids.weCanOffloadIntermediateResultsToAScratchAreaThatIsNotBackedUpAUuid %}
-						{% set areYouSureYouWillNotNeedABackupOfTheDataStoredOnTheScratchFileSystemsPath = [isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpPath, uuids.weCanOffloadIntermediateResultsToAScratchAreaThatIsNotBackedUpAUuid, uuids.areYouSureYouWillNotNeedABackupOfTheDataStoredOnTheScratchFileSystemsQUuid]|reply_path %}
-						{% set areYouSureYouWillNotNeedABackupOfTheDataStoredOnTheScratchFileSystemsReply = replies[areYouSureYouWillNotNeedABackupOfTheDataStoredOnTheScratchFileSystemsPath]|reply_str_value %}
-						{% if areYouSureYouWillNotNeedABackupOfTheDataStoredOnTheScratchFileSystemsReply == uuids.no_53AUuid %}
-							We are not sure that we will not need a backup of the data stored on the scratch file systems. 
-						{% elif areYouSureYouWillNotNeedABackupOfTheDataStoredOnTheScratchFileSystemsReply == uuids.yes_56AUuid %}
-							We are sure that we will not need a backup of the data stored on the scratch file systems.
+						{% if doYourRawDataNeedToBeArchivedReply == uuids.noItIsAlsoStoredElsewhereCanBeRecoveredEasilyAUuid %}
+							and does not need to be archived as it is stored elsewhere and can be recovered easily.
+						{% elif doYourRawDataNeedToBeArchivedReply == uuids.noItCanBeRemeasuredEasilyAndMoreCheaplyThanArchivingAUuid %}
+							and does not need to be archived as it can be remeasured easily and more cheaply than archiving.
+						{% elif doYourRawDataNeedToBeArchivedReply == uuids.yes_55AUuid %}
+							and needs to be archived.
+						{% endif %}
+					{% elif howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpaceReply %}
+						{{km.entities.answers[howMuchOfTheRawDataDoYouNeedToKeepInTheWorkSpaceReply].label}}.
+					{% endif %}
+
+					{# Volume of intermediate data #}
+					{% set didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptPath = [managingDataInWorkspacePath, uuids.didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptQUuid]|reply_path %}
+					{% set didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptReply = replies[didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptPath]|reply_str_value %}
+					{% if didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptReply %}
+						<p>{{km.entities.answers[didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptReply].label}}
+					{% endif %}
+
+					{% if didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptReply == uuids.aLargeVolumeOfIntermediateDataWillBeInTheWorkSpaceAUuid %}
+						{% set isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpPath = [didYouPlanHowMuchIntermediateDataYouWillGetDuringAnalysisAndHowLongEachNeedsToBeKeptPath, uuids.aLargeVolumeOfIntermediateDataWillBeInTheWorkSpaceAUuid, uuids.isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpQUuid]|reply_path %}
+						{% set isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpReply = replies[isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpPath]|reply_str_value %}
+						and {{km.entities.answers[isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpReply].label|lower}}. </p>
+
+						{% if isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpReply == uuids.weCanOffloadIntermediateResultsToAScratchAreaThatIsNotBackedUpAUuid %}
+							{% set areYouSureYouWillNotNeedABackupOfTheDataStoredOnTheScratchFileSystemsPath = [isItPossibleToStoreIntermediateTemporaryDataOnASeparateScratchAreaThatIsNotBackedUpPath, uuids.weCanOffloadIntermediateResultsToAScratchAreaThatIsNotBackedUpAUuid, uuids.areYouSureYouWillNotNeedABackupOfTheDataStoredOnTheScratchFileSystemsQUuid]|reply_path %}
+							{% set areYouSureYouWillNotNeedABackupOfTheDataStoredOnTheScratchFileSystemsReply = replies[areYouSureYouWillNotNeedABackupOfTheDataStoredOnTheScratchFileSystemsPath]|reply_str_value %}
+							{% if areYouSureYouWillNotNeedABackupOfTheDataStoredOnTheScratchFileSystemsReply == uuids.no_53AUuid %}
+								We are not sure that we will not need a backup of the data stored on the scratch file systems. 
+							{% elif areYouSureYouWillNotNeedABackupOfTheDataStoredOnTheScratchFileSystemsReply == uuids.yes_56AUuid %}
+								We are sure that we will not need a backup of the data stored on the scratch file systems.
+							{% endif %}
 						{% endif %}
 					{% endif %}
-				{% endif %}
-				
+					
 
-
-				{# storage needs change over time howDoesTheStorageNeedChangeOverTimeQUuid #}
-				{% set howDoesTheStorageNeedChangeOverTimePath = [managingDataInWorkspacePath, uuids.howDoesTheStorageNeedChangeOverTimeQUuid]|reply_path %}
-				{% set howDoesTheStorageNeedChangeOverTimeReply = replies[howDoesTheStorageNeedChangeOverTimePath]|reply_str_value %}
-				{{km.entities.answers[howDoesTheStorageNeedChangeOverTimeReply].label}}
-
-
-
-
-
-				{% set firstDataComeInPath = [managingDataInWorkspacePath, uuids.howWillYourFirstDataComeInQUuid]|reply_path %}
-				{% set firstDataComeInReply = replies[firstDataComeInPath]|reply_str_value %}
-
-				{% if firstDataComeInReply %}
-					{% if firstDataComeInReply == uuids.initialDataWillNeedToBeMadeAvailableThroughALocalNetworkCopyAUuid %}	
-						{% set firstDataComeIn = 'it will need to be made available through a network copy.' %}
-					{% elif firstDataComeInReply == uuids.weWillNeedAHighSpeedNetworkConnectionToCopyTheInitialDataAUuid %}
-						{% set firstDataComeIn = 'we will need a high speed network connection to make an initial copy.' %}
-					{% elif firstDataComeInReply == uuids.initialDataWillArriveOnSeparateMediaAndWillNeedToBeCopiedToTheWorkSpaceAUuid %}
-						{% set firstDataComeIn = 'we will need to copy it to the workspace as it will arrive on separate media.' %}
-					{% elif firstDataComeInReply == uuids.noSpecialPlanningIsNeededForTheInitialDataAUuid %}
-						{% set firstDataComeIn = 'no special planning is needed.' %}	
+					{# storage needs change over time howDoesTheStorageNeedChangeOverTimeQUuid #}
+					{% set howDoesTheStorageNeedChangeOverTimePath = [managingDataInWorkspacePath, uuids.howDoesTheStorageNeedChangeOverTimeQUuid]|reply_path %}
+					{% set howDoesTheStorageNeedChangeOverTimeReply = replies[howDoesTheStorageNeedChangeOverTimePath]|reply_str_value %}
+					{% if howDoesTheStorageNeedChangeOverTimeReply %}
+						{{km.entities.answers[howDoesTheStorageNeedChangeOverTimeReply].label}}
 					{% endif %}
 
-					<p>When data first comes in {{firstDataComeIn}} </p>
+					{% set firstDataComeInPath = [managingDataInWorkspacePath, uuids.howWillYourFirstDataComeInQUuid]|reply_path %}
+					{% set firstDataComeInReply = replies[firstDataComeInPath]|reply_str_value %}
+
+					{% if firstDataComeInReply %}
+						{% if firstDataComeInReply == uuids.initialDataWillNeedToBeMadeAvailableThroughALocalNetworkCopyAUuid %}	
+							{% set firstDataComeIn = 'it will need to be made available through a network copy.' %}
+						{% elif firstDataComeInReply == uuids.weWillNeedAHighSpeedNetworkConnectionToCopyTheInitialDataAUuid %}
+							{% set firstDataComeIn = 'we will need a high speed network connection to make an initial copy.' %}
+						{% elif firstDataComeInReply == uuids.initialDataWillArriveOnSeparateMediaAndWillNeedToBeCopiedToTheWorkSpaceAUuid %}
+							{% set firstDataComeIn = 'we will need to copy it to the workspace as it will arrive on separate media.' %}
+						{% elif firstDataComeInReply == uuids.noSpecialPlanningIsNeededForTheInitialDataAUuid %}
+							{% set firstDataComeIn = 'no special planning is needed.' %}	
+						{% endif %}
+
+						<p>When data first comes in {{firstDataComeIn}} </p>
+					{% endif %}
+				
 				{% endif %}
 
 				{# Availability and reliability of workspace #}
@@ -2044,9 +2042,9 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 				{% set dataStoredExternallyReply = replies[dataStoredExternallyPath]|reply_str_value %}
 
 				{% if dataStoredExternallyReply == uuids.no_74AUuid %}
-					<p>Project members will not store data or software externally (e.g. computers in the lab/field, external hard drives connected to those computers), which means we will need to make sure data are adequately backed-up and control who has access to facilities where data are stored.</p>
+					<p>Project members will not store data or software externally (e.g. computers in the lab/field, external hard drives connected to those computers).</p>
 				{% elif dataStoredExternallyReply == uuids.yes_72AUuid %}
-					<p>Project members will store data or software externally (e.g. computers in the lab/field, external hard drives).</p>
+					<p>Project members will store data or software externally (e.g. computers in the lab/field, external hard drives connected to those computers), which means we will need to make sure data are adequately backed-up and control who has access to facilities where data are stored.</p>
 				{% endif %}
 
 				{# Do project members carry data with them #}
@@ -2243,7 +2241,12 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 	{% elif funderRequirementToDepositWithRepositoryReply == uuids.yes_6_2AUuid %}
 		{% set estimateTheVolumeOfDataYouAreLikelyToBeDepositingWithARepositoryPath = [funderRequirementToDepositWithRepositoryPath, uuids.yes_6_2AUuid, uuids.estimateTheVolumeOfDataYouAreLikelyToBeDepositingWithARepositoryQUuid]|reply_path %}
 		{% set estimateTheVolumeOfDataYouAreLikelyToBeDepositingWithARepositoryReply = replies[estimateTheVolumeOfDataYouAreLikelyToBeDepositingWithARepositoryPath]|reply_str_value %}
-		{% set estimateTheVolumeOfDataYouAreLikelyToBeDepositingWithARepositoryText = "Estimate of volume of data we are likely to be depositing with a repository: " + km.entities.answers[estimateTheVolumeOfDataYouAreLikelyToBeDepositingWithARepositoryReply].label %}
+		
+		{% if estimateTheVolumeOfDataYouAreLikelyToBeDepositingWithARepositoryReply %}
+			{% set estimateTheVolumeOfDataYouAreLikelyToBeDepositingWithARepositoryText = "Estimate of volume of data we are likely to be depositing with a repository: " + km.entities.answers[estimateTheVolumeOfDataYouAreLikelyToBeDepositingWithARepositoryReply].label %}
+		{% else %}
+			{% set estimateTheVolumeOfDataYouAreLikelyToBeDepositingWithARepositoryText = "Estimate of volume of data we are likely to be depositing with a repository: " + missingInformationText %}
+		{% endif %}
 		<p> {{estimateTheVolumeOfDataYouAreLikelyToBeDepositingWithARepositoryText}} </p>
 	{% elif funderRequirementToDepositWithRepositoryReply == uuids.notApplicableNoDataBeingGeneratedAUuid %}
 		{# do nothing? #}
