@@ -134,7 +134,7 @@ If NO to (creating AND reusing data) but YES to processing/analysing --> warning
 	{% set modelsUsedPath = [uuids.reUsingDataCUuid, uuids.willTheProjectUseAnyPreExistingOrThirdPartyModelsQUuid]|reply_path %}
 	{% set modelsUsedReply = replies[modelsUsedPath]|reply_str_value %}
 
-	{% if (ns.found == true) and (modelsUsedReply == uuids.no_10AUuid) %}
+	{% if otherMeansModellingReply == uuids.yes_30AUuid and (ns.found == true) and (modelsUsedReply == uuids.no_10AUuid) %}
 		<h6 class = box>
 			<span style="color: red;">
 			<p><b>Inconsistency warning</b> <br>
