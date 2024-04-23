@@ -125,6 +125,29 @@
                     }
                 }
             ]
+        },
+        {
+            "uuid": "3d3847dd-183b-40f2-bcc0-d9924d7b8b53",
+            "name": "PDF - NERC funded",
+            "shortName": "pdf",
+            "icon": "fas fa-file",
+            "color": "#f15722",
+            "steps": [
+                {
+                    "name": "jinja",
+                    "options": {
+                        "template": "src/index_nerc_frontPage.html.j2",
+                        "content-type": "text/html",
+                        "extension": "html"
+                    }
+                },
+                {
+                    "name": "weasyprint",
+                    "options":{
+                        "pdf.custom_metadata":"True"
+                    }
+                }
+            ]
         }
     ],
     "_tdk": {

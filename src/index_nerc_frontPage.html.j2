@@ -1,0 +1,87 @@
+<!DOCTYPE HTML>
+{%- set km = ctx.knowledgeModel -%}
+{%- set replies = ctx.questionnaireReplies -%}
+{%- set report = ctx.report -%}
+{%- set metricDefinitions = ctx.metrics -%}
+{%- set levelDefinitions = ctx.levels -%}
+{%- set missingInformationText = "Information not supplied."%}
+{% import "src/macros.html.j2" as macros with context %}
+{% import "src/ukceh_km_uuid.j2" as uuids with context %}
+
+<html lang="en">
+  <head>
+    <title>Data Management Plan</title>
+    <meta charset="utf-8">
+    <style>
+      {% include "src/style.css" %}
+    </style>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous"/>
+  </head>
+
+
+
+  {# ---- Header - to include images ---- #}
+  <header>
+		<img class="imgr" style="margin-left: 100px; display:inline-block;" src="https://brandroom.ceh.ac.uk/sites/default/files/images/theme/UKCEH-Logo_Long_Pos_RGB_720x170.png" alt="UKCEH logo">
+    <img class="imgr" style="display:inline-block;" src="https://eidc.ac.uk/sites/default/files/eidcImages/NERC_EDS_medium.png" alt="NERC EDS logo">
+	  <h3 style="text-align: center">Project Data Management Plan for NERC funded UKCEH Research</h3>
+  </header>
+  
+  
+
+  {% set funderPath = [uuids.projectInformationCUuid, uuids.fundingQLUuid]|reply_path %}
+  {% set funderReply = replies[funderPath]|reply_items %}
+
+
+  {% if funderReply|length > 0 %}
+    {% for itemUuid in funderReply %}
+      {% set funderNamePath = [funderPath, itemUuid, uuids.funderQUuid]|reply_path %}
+      {% set funderNameReply = replies[funderNamePath] %}
+      {% set funderNameReplySplit = funderNameReply.value.value.value %}
+                  
+      {% if (funderNameReplySplit == "Natural Environment Research Council" or funderNameReplySplit == "NERC") %}
+
+
+        {% set grantNumberPath = [funderPath, itemUuid, uuids.grantNumberQUuid]|reply_path %}
+        {% set grantNumberReply = replies[grantNumberPath]|reply_str_value %}
+        {% if grantNumberReply %}
+          {% set grantNumberReplyText = grantNumberReply %}
+        {% else %}
+          {% set grantNumberReplyText = missingInformationText %}
+        {% endif %}
+        <dl>
+          <dt>NERC Grant number</dt> <dd>{{grantNumberReplyText}}</dd>
+        </dl>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+
+  {% include "src/submission_checks.html.j2" with context %}
+
+  {# ---- Body ---- #}
+  <body>
+    <article class="dmp">
+      {% include "src/ukceh-dmp-template.html.j2" with context %}
+      {% include "src/ch5_products_landscape_tables.html.j2" with context %}
+      {% include "src/ch5-6_ukceh-dmp-template.html.j2" with context %}
+    </article>
+  </body>
+</html>
+
+
+{#
+{% set versions = ctx.questionnaireVersions %}
+{{versions|reply_str_value}}
+
+{% for item in versions.items() %}
+  {{item}}
+{%endfor%}
+
+questionnaireVersions: [{'createdAt': '2023-10-03T15:41:09.704794177Z', 'createdBy':
+{'firstName': 'Matthew', 'gravatarHash': '3c7b1a3bb5e05b458523b222d5356ecf', 'imageUrl':
+None, 'lastName': 'Nichols', 'uuid': '6cccd131-01f7-435e-a128-d1956ee9daaa'}, 'description':
+None, 'eventUuid': '587ba198-dfed-4f2b-8195-dd1899f194fe', 'name': 'Test version 031023',
+'updatedAt': '2023-10-03T15:41:09.704794177Z', 'uuid': 'd14ad512-6e4a-4477-
+b53f-335acf6ec5f0'}]
+#}
+
