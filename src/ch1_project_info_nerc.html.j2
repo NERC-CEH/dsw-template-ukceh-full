@@ -1,0 +1,468 @@
+{# ---- Summary details ---- #}
+
+{% set funderPath = [uuids.projectInformationCUuid, uuids.fundingQLUuid]|reply_path %}
+{% set funderReply = replies[funderPath]|reply_items %}
+
+
+{% if funderReply|length > 0 %}
+{% for itemUuid in funderReply %}
+	{% set funderNamePath = [funderPath, itemUuid, uuids.funderQUuid]|reply_path %}
+	{% set funderNameReply = replies[funderNamePath] %}
+	{% set funderNameReplySplit = funderNameReply.value.value.value %}
+				
+	{% if (funderNameReplySplit == "Natural Environment Research Council" or funderNameReplySplit == "NERC") %}
+
+
+	{% set grantNumberPath = [funderPath, itemUuid, uuids.grantNumberQUuid]|reply_path %}
+	{% set grantNumberReply = replies[grantNumberPath]|reply_str_value %}
+	{% if grantNumberReply %}
+		{% set grantNumberReplyText = grantNumberReply %}
+	{% else %}
+		{% set grantNumberReplyText = missingInformationText %}
+	{% endif %}
+	<h5  style="text-align: center">NERC Grant number: {{grantNumberReplyText}}</h5>
+
+
+
+	<dl>
+		<dt style="text-align: center">NERC Grant number</dt> <dd>{{grantNumberReplyText}}</dd>
+	</dl>
+	{% endif %}
+{% endfor %}
+{% endif %}
+
+
+
+{#
+
+{% set projectNamePath = [uuids.projectInformationCUuid, uuids.projectTitleQUuid]|reply_path %}
+{% set projectName = replies[projectNamePath]|reply_str_value %}
+{% set projectNumberPath = [uuids.projectInformationCUuid, uuids.projectNumberQUuid]|reply_path %}
+{% set projectNumber = replies[projectNumberPath]|reply_str_value %}
+
+{% set funderPath = [uuids.projectInformationCUuid, uuids.fundingQLUuid]|reply_path %}
+{% set funderReply = replies[funderPath]|reply_items %}
+<h4>UKCEH Project</h4> 
+<dl>
+	<dt>Project name</dt> <dd>{{projectName}}</dd>
+	<dt>Project number</dt> <dd>{{projectNumber}}</dd>
+</dl>
+#}
+
+{# ---- Document details ---- #}
+
+<h4>Document Details</h4>
+<dl>
+
+	<dt>Creation Date</dt>	
+		<dd>{{ ctx.createdAt|datetime_format("%B %d, %Y") }}</dd>
+	<dt>Based on</dt>
+        <dd>{{ ctx.package.name }}, {{ ctx.package.version }} (<span class="package-id"><span class="organization-id">{{ ctx.package.organizationId }}</span>:<span class="km-id">{{ ctx.package.kmId }}</span>:<span class="version">{{ ctx.package.version }}</span></span>)</dd>
+	<dt>Description</dt> 
+		<dd>
+			This Data Management Plan (DMP) summarises the data management tasks and responsibilities in your science project.  
+			It is a live document to be updated with content as required and reviewed during the lifetime of the project.
+		</dd>
+	<dt>Copyright of DMP</dt> 
+		<dd>
+			UK Centre for Ecology & Hydrology (UKCEH)
+		</dd>	
+	<dt>Scope of DMP</dt> 
+		<dd>
+			<em>This Data Management Plan document summarises staff responsibilities, data collection policies, resourcing of data management, data quality, IPR considerations, policies on access to data and data dissemination during the project and arrangements for long-term management of data beyond the project. 
+			Necessary details are set out in supplementary documents stored with key project documentation.</em>
+		</dd>
+	<dt>Policies applicable to data and models in this research</dt> 
+		<dd>
+			<ul>
+				<li><a href="https://www.legislation.gov.uk/ukpga/2018/12/pdfs/ukpga_20180012_en.pdf" target="_blank">Data Protection Act 2018</a>,</li>
+				<li><a href="https://gdpr-info.eu/" target="_blank">General Data Protection Regulation (GDPR)</a></li>				
+				{% if funderReply|length > 0 %}
+					{# create namespace variable to determine if funding policy has already been printed, prevents repeats. Namespace necessary to preserve values outside between loops #}
+					{% set ns_funder = namespace(NERCcounter = "False") %}
+					{% set ns_funder.otherFunderCounter = "False" %}
+
+					{% for itemUuid in funderReply %}
+						{% set funderNamePath = [funderPath, itemUuid, uuids.funderQUuid]|reply_path %}
+						{% set funderNameReply = replies[funderNamePath] %}
+						{% set funderNameReplySplit = funderNameReply.value.value.value %}
+												
+						{% if (funderNameReplySplit == "Natural Environment Research Council" or funderNameReplySplit == "NERC") and (ns_funder.NERCcounter == "False") %}
+							<li><a href="https://www.ukri.org/about-us/nerc/our-policies-and-standards/nerc-data-policy/" target="_blank">NERC Data Policy</a></li>
+							{% set ns_funder.NERCcounter = "True" %}
+						{% elif ns_funder.otherFunderCounter == "False" %}
+							<li><a href="https://cehacuk.sharepoint.com/sites/research-data-management/SitePages/Data-Policies.aspx" target="_blank">UKCEH guidance on data policy</a></li>							
+							{% set ns_funder.otherFunderCounter = "True" %}
+						{% else %}
+							{# do nothing? #}
+						{% endif %}
+
+					{% endfor %}
+				{% endif %}
+				
+			</ul>
+		</dd>	
+	<span style="color: grey;">
+	<dt>Created by</dt>
+	<dd><span style="color: grey;">{{ ctx.createdBy.firstName }} {{ ctx.createdBy.lastName }} ({{ macros.formatEmail(ctx.createdBy.email) }})</span></dd>
+	</span>		
+</dl>
+
+{# ---- Timeline text ---- #}
+<P style="page-break-before: always">
+<h4>Timeline</h4>
+<dl>
+	<dt>Before submitting the proposal</dt>
+		<dd>
+			We will generate an outline DMP based on key aspects of our planned approach.
+		</dd>
+	<dt>First 3-6 months of project</dt>
+		<dd>
+			We will identify what datasets will be generated and, where applicable, will work with a NERC data centre to update the proposal DMP to fully consider all planned data activities during the project.
+		</dd>
+	<dt>During the project</dt>
+		<dd>
+			We will review the DMP regularly (at least annually) and update as necessary to reflect changes.
+			Detailed planning will start for the deposit of any datasets identified as of long-term value 6-9 months before project end.
+		</dd>	
+	<dt>End of project</dt>
+		<dd>
+			We will review the DMP to confirm that the Preservation Plan has been implemented for each dataset identified as of long-term value.
+		</dd>
+</dl>
+
+<p>*<i>Datasets can and should be deposited to the EIDC as soon as they are complete. The EIDC will issue a Digital Object Identifier (DOI) and implement any agreed embargo on data access. </i></p>
+DOIs issued for datasets archived at the EIDC can be used as a persistent citation reference and link to discover information about the dataset.  
+Archiving data at the EIDC (or agreed alternative) will help you meet NERC Data Policy, satisfy the requirements of science journals and UKCEH, 
+comply with legal data-sharing obligations under UK law and can ensure their reusability in the future for you and the scientific community as a whole.
+
+{# ---- Section ---- #}
+<P style="page-break-before: always">
+<div class="question">
+	<h3>1. Project Information</h3>
+
+	{% set projectNamePath = [uuids.projectInformationCUuid, uuids.projectTitleQUuid]|reply_path %}
+	{% set projectName = replies[projectNamePath]|reply_str_value %}
+	{% set projectNumberPath = [uuids.projectInformationCUuid, uuids.projectNumberQUuid]|reply_path %}
+	{% set projectNumber = replies[projectNumberPath]|reply_str_value %}
+	{% set acronymPath = [uuids.projectInformationCUuid, uuids.projectAcronymOrShortNameQUuid]|reply_path %}
+	{% set acronymReply = replies[acronymPath]|reply_str_value %}
+	
+	{# Abstract #}
+	{% set projectAbstractPath = [uuids.projectInformationCUuid, uuids.projectAbstractQUuid]|reply_path %}
+	{% set projectAbstractReply = replies[projectAbstractPath]|reply_str_value %}
+	{% set projectProposalPath = [uuids.projectInformationCUuid, uuids.linkToAProjectProposalOrAnotherDescriptionOfTheMethodsUsedInTheProjectQUuid]|reply_path %}
+	{% set projectProposalReply = replies[projectProposalPath]|reply_str_value %}
+
+	<dl>
+		<dt>Project Title</dt>
+			<dd>
+				{{projectName}}
+			</dd>
+
+		{% if acronymReply %}
+			<dt>Project Acronym</dt>
+			<dd>
+				{{acronymReply}}
+			</dd>
+
+		{% endif %}
+		<dt>Project Abstract</dt> 
+			<dd>
+				{{projectAbstractReply}}
+			</dd>
+		<dt>Proposal</dt>
+			<dd>
+				{% if projectProposalReply %}
+					More information on the proposal can be found <a href = {{projectProposalReply}}>here</a>.
+				{% else %}	
+					{{missingInformationText}}
+				{% endif%}
+			</dd>
+
+	{% set projectStartDatePath = [uuids.projectInformationCUuid, uuids.dateTheProjectWillStartQUuid]|reply_path %}
+	{% set projectStartDateReply = replies[projectStartDatePath]|reply_str_value %}
+	{% set projectEndDatePath = [uuids.projectInformationCUuid, uuids.dateTheProjectWillEndQUuid]|reply_path %}
+	{% set projectEndDateReply = replies[projectEndDatePath]|reply_str_value %}
+
+		<dt>Project Start</dt>
+			<dd>
+				{{projectStartDateReply}}
+			</dd>
+		<dt>Project End</dt>
+			<dd>
+				{{projectEndDateReply}}
+			</dd>
+
+		<dt>Funders</dt>
+		<dd>
+			{% if funderReply|length > 0 %}
+				<ul>
+					{% for itemUuid in funderReply %}
+						{% set funderNamePath = [funderPath, itemUuid, uuids.funderQUuid]|reply_path %}
+						{% set funderNameReply = replies[funderNamePath] %}
+
+						{% set funderDataPolicyPath = [funderPath, itemUuid, uuids.areYouAwareOfTheFundersDataPolicyAndDataRequirementsQUuid]|reply_path %}
+						{% set funderDataPolicyReply = replies[funderNamePath]|reply_str_value %}
+						{% if funderDataPolicyReply == uuids.no_144AUuid %}
+							{% set funderDataPolicyReplyText = "We are not aware of the funders data policy and data requirements."%}
+						{% elif funderDataPolicyReply == uuids.yes_134AUuid %}
+							{% set funderDataPolicyReplyText = "We are aware of the funders data policy and data requirements."%}
+						{% else %}
+							{% set funderDataPolicyReplyText = "We have not indicated if we aware of the funders data policy and data requirements."%}
+						{% endif %}
+						<p>{{funderDataPolicyReplyText}}</p>
+
+						
+						{% set fundingStatusPath = [funderPath, itemUuid, uuids.fundingStatusQUuid]|reply_path %}
+						{% set fundingStatusReply = replies[fundingStatusPath]|reply_str_value %}
+						{% set fundingStatusText = 'Unknown' %}
+						{% if fundingStatusReply %}
+							{% set fundingStatusText = km.entities.answers[fundingStatusReply].label %}
+						{% endif %}
+
+						{% set grantPath = [funderPath, itemUuid, uuids.grantNumberQUuid]|reply_path %}
+						{% set grantReply = replies[grantPath]|reply_str_value %}
+						{% set grantReplyText = "Information not supplied" %}
+						{% if grantReply %}
+							{% set grantReplyText = grantReply %}
+						{% endif %}
+						
+						{% if fundingStatusReply == uuids.grantedAUuid %}
+							<li>{{ funderNameReply.value.value.value }} (status: <span style="color: green;">{{fundingStatusText}}</span>, grant number: {{grantReplyText}})</li>
+						{% elif fundingStatusReply == uuids.rejectedAUuid %}
+							<li>{{ funderNameReply.value.value.value }} (status: <span style="color: red;">{{fundingStatusText}}</span>, grant number: {{grantReplyText}})</li>
+						{% elif fundingStatusReply == uuids.appliedAUuid or fundingStatusReply == uuids.plannedAUuid %}
+							<li>{{ funderNameReply.value.value.value }} (status: <span style="color: orange;">{{fundingStatusText}}</span>, grant number: {{grantReplyText}})</li>
+						{% else %}
+							<li>{{ funderNameReply.value.value.value }} (status: <span style="color: red;">{{fundingStatusText}}</span>, grant number: {{grantReplyText}})</li>
+						{% endif %}
+						
+					{% endfor %}
+				</ul>
+			{% endif %}
+		</dd>
+
+	{# Contributors #}
+	{% set contributorsPath = [uuids.projectInformationCUuid, uuids.contributorsQLUuid]|reply_path %}
+	{% set contributorsReply = replies[contributorsPath]|reply_items %}
+
+	{% if contributorsReply|length > 0 %} 
+		{% set primaryContactList = [] %}
+		{% set projectManagerList = [] %}
+		{% set dataManagerList = [] %}
+		{% set qualityManagerList = [] %}
+		{% set researcherList = [] %}
+
+		{% for itemUuid in contributorsReply %}
+			{% set contributorNamePath = [contributorsPath, itemUuid, uuids.nameQUuid] | reply_path %}
+			{% set contributorNameReply = replies[contributorNamePath]  %}
+			{% set contributorAffiliationPath = [contributorsPath, itemUuid, uuids.affiliationQUuid] | reply_path %}
+			{% set contributorAffiliationReply = replies[contributorAffiliationPath] | reply_str_value %}
+			{% set contributorRolePath = [contributorsPath, itemUuid, uuids.roleQUuid] | reply_path %}
+			{% set contributorRoleReply = replies[contributorRolePath] | reply_items %}
+
+{# 
+			{% if contributorNameReply and contributorNameReply.value.value.type == 'IntegrationType' %}				
+				{% set link = km.entities.integrations[nameQUuid].itemUrl|replace('${id}', contributorNameReplyReply.value.value.id) %}
+				href="{{link}}" target="_blank"{{ contributorNameReply.value.value.value }}
+			{% elif contributorNameReply and contributorNameReply.value.value.type == 'PlainType' %}
+				<li>{{ contributorNameReply.value.value.value }} </li>   
+			{% endif %} 
+#}
+
+			{# For each reply, loop through the roles and append the name of contributor to role list #}
+			{% for itemUuid in contributorRoleReply %}
+				{% if itemUuid == uuids.primaryContactChoiceUuid %}
+					{% set primaryContactList = primaryContactList.append(contributorNameReply.value.value.value + " (" + (contributorAffiliationReply) + ")" ) %}
+				{% elif itemUuid == uuids.projectManagerChoiceUuid %}
+					{% set projectManagerList = projectManagerList.append(contributorNameReply.value.value.value+ " (" + (contributorAffiliationReply) + ")" ) %}
+				{% elif itemUuid == uuids.dataManagerChoiceUuid %}	
+					{% set dataManagerList = dataManagerList.append(contributorNameReply.value.value.value+ " (" + (contributorAffiliationReply) + ")" ) %}
+				{% elif itemUuid == uuids.qualityManagerChoiceUuid %}
+					{% set qualityManagerList = qualityManagerList.append(contributorNameReply.value.value.value+ " (" + (contributorAffiliationReply) + ")" ) %}
+				{% elif itemUuid == uuids.researcherChoiceUuid %}
+					{% set researcherList = researcherList.append(contributorNameReply.value.value.value+ " (" + (contributorAffiliationReply) + ")" ) %} 
+					{# split("'")[8] #}
+					{#[4] + " ("+contributorAffiliationReply+")") #}
+				{% endif %}
+			{% endfor %}
+		{% endfor %}
+
+		
+		{# Reorganise the role lists into a dictionary #}
+		{% set roleDict = {
+			"primaryContact" : {"headerText" : "Primary contact", 
+							"contributorInfo" : primaryContactList},
+			"projectManager" : {"headerText" : "Project manager", 
+							"contributorInfo" : projectManagerList},
+			"dataManager" : {"headerText" : "Data manager", 
+							"contributorInfo" : dataManagerList},
+			"qualityManager" : {"headerText" : "Quality manager", 
+							"contributorInfo" : qualityManagerList},
+			"researcher" : {"headerText" : "Researcher", 
+							"contributorInfo" : researcherList},			
+				} 
+		%}
+
+		{# key and .items() are required arguments when looping through a dictionary #}
+		{# or python3/jinja will mistake it for a list #}
+		{# otherwise the same method, can access values with dict.item or dict["item"] #}
+		<dt>Contributors</dt>
+			<dd>
+				<ul style = "list-style-type:none;">
+				{% for key, role in roleDict.items() %}
+					<li><b>{{role.headerText}}:</b>
+					{% if role.contributorInfo | length > 0 %}
+						
+						{{role.contributorInfo | join(", ")}}
+
+						</li>
+					{% else %}
+						{{missingInformationText}}</li>
+					{% endif %}
+				{% endfor %} 	
+				</ul>
+			</dd>
+	{% endif %}
+
+	{# Partners and subcontractors #}
+	{% set otherPartnersPath = [uuids.projectInformationCUuid, uuids.otherPartnersQLUuid]|reply_path %}
+	{% set otherPartnersReply = replies[otherPartnersPath]|reply_items %}
+
+	{% if otherPartnersReply|length > 0 %} 
+		
+		{% set externalCollaboratorList = [] %}
+		{% set subcontractorsList = [] %}
+
+		{% for itemUuid in otherPartnersReply %}
+			{% set otherPartnersAffiliationPath = [otherPartnersPath, itemUuid, uuids.affiliation_2QUuid]|reply_path %}
+			{% set otherPartnersAffiliationReply = replies[otherPartnersAffiliationPath]|reply_str_value %}
+			{% set otherPartnersRolePath = [otherPartnersPath, itemUuid, uuids.role_2QUuid]|reply_path %}
+			{% set otherPartnersRoleReply = replies[otherPartnersRolePath]|reply_str_value %}
+
+			
+			{% if otherPartnersRoleReply %}
+				{% if otherPartnersRoleReply == uuids.externalCollaboratorAUuid %}
+					{% set externalCollaboratorList = externalCollaboratorList.append(otherPartnersAffiliationReply) %}
+				{% elif otherPartnersRoleReply == uuids.subcontractorAUuid %}
+					{% set subcontractorsList = subcontractorsList.append(otherPartnersAffiliationReply) %}
+				{% endif %}
+			{% endif %}
+		{% endfor %}
+
+		{% if (externalCollaboratorList|length > 0) and (subcontractorsList|length > 0) %}
+			{% set otherPartnersDict = {
+			"subcontractors" : {"headerText" : "Subcontractors",
+									"role" : subcontractorsList},
+			"externalCollaborators" : {"headerText" : "External Collaborators",
+									"role" : externalCollaboratorList},} %}
+							
+		{% elif (externalCollaboratorList|length == 0) and (subcontractorsList|length > 0) %}
+			{% set otherPartnersDict = {
+			"subcontractors" : {"headerText" : "Subcontractors",
+									"role" : subcontractorsList},} %}
+
+		{% elif (externalCollaboratorList|length > 0) and (subcontractorsList|length == 0) %}
+			{% set otherPartnersDict = {
+			"externalCollaborators" : {"headerText" : "External Collaborators",
+									"role" : externalCollaboratorList},} %}
+
+		{% endif %}
+		
+		{% for key, value in otherPartnersDict.items() %}
+			<dt>{{value.headerText}}</dt>
+			<dd>
+			{% if value.role | length > 0 %}
+				{{value.role | join(", ")}}
+			{% endif %}
+			</dd>
+		{% endfor %} 	
+
+	{% endif %}
+	</dl>
+
+	{# More than one DMP? #}
+	{% set projectLikelyToRequireMoreThanOneDMPPath = [uuids.projectInformationCUuid, uuids.isThisProjectLikelyToRequireMoreThanOneFullDataManagementPlanQUuid]|reply_path %}
+	{% set projectLikelyToRequireMoreThanOneDMPReply = replies[projectLikelyToRequireMoreThanOneDMPPath]|reply_str_value %}
+	{% if projectLikelyToRequireMoreThanOneDMPReply %}
+		{% if projectLikelyToRequireMoreThanOneDMPReply == uuids.noAllTheDataHandlingCanBeCoveredByOnePlanU200BAUuid %}
+
+		{% elif projectLikelyToRequireMoreThanOneDMPReply == uuids.yesItIsALargeProjectProgrammeWithDistinctWorkPackagesOrAreasOfWorkWithDistinctDataHandlingRequirementsAndOutputsAUuid %}
+			<p> This is a large project/programme with distinct work packages or areas of work with distinct data handling requirements and outputs. It will therefore require more than one full DMP. </p>
+		{% elif projectLikelyToRequireMoreThanOneDMPReply == uuids. notSureYetAUuid %}
+			<p> We are not yet sure if this project will require more than one full DMP. </p>
+		{% endif %}
+	{% endif %}
+
+	{# Expertise #}
+	{% set expertisePath = [uuids.projectInformationCUuid, uuids.willYouRequireSpecialistExpertiseInAdditionToWhatIsUsuallyAvailableQUuid]|reply_path %}
+	{% set expertiseReply = replies[expertisePath]|reply_str_value %}
+	
+	{% if expertiseReply == uuids.noWeHaveAllTheExpertiseWeNeedAUuid %}
+		<p>We have all the expertise we need and do not require any additional specialist expertise.</p>
+	{% elif expertiseReply == uuids.yesWeWillBeTrainingExistingStaffStudentsAUuid %}
+		<p>We will be training existing staff/students to gain the expertise we require.
+		{% set whatKindOfTrainingPath = [expertisePath, uuids.whatKindOfTrainingQUuid]|reply_path %}
+		{% set whatKindOfTrainingReply = replies[whatKindOfTrainingPath]|reply_str_value %}
+		Training provided: ({{whatKindOfTrainingReply}}) 
+		</p>
+	{% elif expertiseReply == uuids.yesWeWillBeRecruitingNewPeopleWithAdditionalExpertiseAUuid %}
+		<p>We will be recruiting new people with additional expertise to get the specialist skills we need.
+		{% set whatKindOfExpertisePath = [expertisePath,uuids.yesWeWillBeRecruitingNewPeopleWithAdditionalExpertiseAUuid, uuids.whatKindOfExpertiseQUuid]|reply_path %}
+		{% set whatKindOfExpertiseReply = replies[whatKindOfExpertisePath]|reply_str_value %}
+		Expertise required: {{whatKindOfExpertiseReply}}
+		</p>
+	{% elif expertiseReply == uuids.yesWeWillBeSubcontractingSomeTasksAUuid %}
+		<p>We will be subcontracting some tasks to get the specialist skills we need. </p>
+	{% endif %}	
+
+	{# Hardware #}
+	{% set hardwarePath = [uuids.projectInformationCUuid, uuids.willYouRequireHardwareOrSoftwareInAdditionToWhatIsUsuallyAvailableQUuid]|reply_path %}
+	{% set hardwareReply = replies[hardwarePath]|reply_str_value %}
+
+	{% if hardwareReply == uuids.noAUuid %}
+		<p>We have all the hardware we need.</p>
+	{% elif hardwareReply == uuids.yesAUuid %}
+		{% set whatHardwareOrSoftwareWillYouRequirePath = [hardwarePath, uuids.yesAUuid, uuids.whatHardwareOrSoftwareWillYouRequireQUuid]|reply_path %}
+		{% set whatHardwareOrSoftwareWillYouRequireReply = replies[whatHardwareOrSoftwareWillYouRequirePath]|reply_str_value %}
+
+		{% set haveYouBudgetedForThisPath = [hardwarePath, uuids.yesAUuid, uuids.haveYouBudgetedForThisQUuid]|reply_path %}
+		{% set haveYouBudgetedForThisReply = replies[haveYouBudgetedForThisPath]|reply_str_value %}
+
+		{% if haveYouBudgetedForThisReply == uuids.no_2AUuid %}
+			<p>Hardware required but not budgeted for: {{whatHardwareOrSoftwareWillYouRequireReply}}</p>
+		{% elif haveYouBudgetedForThisReply == uuids. yes_2AUuid %}
+			<p>Hardware required and budgeted for: {{whatHardwareOrSoftwareWillYouRequireReply}}</p>
+		{% endif %}
+	{% endif %}
+
+
+	{# Data volume #}
+	{% set dataVolumePath = [uuids.projectInformationCUuid, uuids.whatVolumeOfDataYouWillBeWorkingWithQUuid]|reply_path %}
+	{% set dataVolumeReply = replies[dataVolumePath]|reply_str_value %}
+
+	{% if dataVolumeReply == uuids.totalDataVolumeIs1TbAUuid %}
+		The total volume of data this project will collect is >1Tb. 
+
+		{% set storageLimitationsOfDataVolumePath = [dataVolumePath, uuids.totalDataVolumeIs1TbAUuid, uuids.haveYouConsideredTheStorageLimitationsOfWorkingWithThisVolumeOfDataQUuid]|reply_path %}
+		{% set storageLimitationsOfDataVolumeReply = replies[storageLimitationsOfDataVolumePath]|reply_str_value %}
+		
+		{% if storageLimitationsOfDataVolumeReply == uuids.yes_40AUuid %}
+			{% set arrangementsToAvoidStorageProblemsPath = [storageLimitationsOfDataVolumePath, uuids.yes_40AUuid, uuids.specifyAnyArrangementsYouHaveMadeToAvoidProblemsQUuid]|reply_path %}
+			{% set arrangementsToAvoidStorageProblemsReply = replies[arrangementsToAvoidStorageProblemsPath]|reply_str_value %}
+			Arrangements to avoid problems working with this volume of data: {{arrangementsToAvoidStorageProblemsReply}}
+
+		{% elif storageLimitationsOfDataVolumeReply == uuids.no_38AUuid %}
+			We haven't yet considered the storage limitations on working with this volume of data.
+		{% endif %}
+
+	{% elif dataVolumeReply == uuids.totalDataVolumeIsSmallEnoughThatItWontBeAProblemAUuid %}
+		<p>The total volume of data this project will collect is small enough (<1Tb) that it won't be a problem or pose storage constraints.</p> 
+	{% elif dataVolumeReply == uuids.dataVolumeIs100GbBut1TbSoMightCauseAnIssueWithStorageOrCosts_1AUuid %}
+		<p>Data volume is > 100 GB but < 1 TB so might cause an issue with storage or costs.</p>
+	{% endif %}
+
+
+	</dl>
+</div>
