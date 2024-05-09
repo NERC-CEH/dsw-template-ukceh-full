@@ -22,11 +22,6 @@
 	{% endif %}
 	<h5  style="text-align: center">NERC Grant number: {{grantNumberReplyText}}</h5>
 
-
-
-	<dl>
-		<dt style="text-align: center">NERC Grant number</dt> <dd>{{grantNumberReplyText}}</dd>
-	</dl>
 	{% endif %}
 {% endfor %}
 {% endif %}
@@ -63,10 +58,6 @@
 			This Data Management Plan (DMP) summarises the data management tasks and responsibilities in your science project.  
 			It is a live document to be updated with content as required and reviewed during the lifetime of the project.
 		</dd>
-	<dt>Copyright of DMP</dt> 
-		<dd>
-			UK Centre for Ecology & Hydrology (UKCEH)
-		</dd>	
 	<dt>Scope of DMP</dt> 
 		<dd>
 			<em>This Data Management Plan document summarises staff responsibilities, data collection policies, resourcing of data management, data quality, IPR considerations, policies on access to data and data dissemination during the project and arrangements for long-term management of data beyond the project. 
@@ -112,10 +103,6 @@
 <P style="page-break-before: always">
 <h4>Timeline</h4>
 <dl>
-	<dt>Before submitting the proposal</dt>
-		<dd>
-			We will generate an outline DMP based on key aspects of our planned approach.
-		</dd>
 	<dt>First 3-6 months of project</dt>
 		<dd>
 			We will identify what datasets will be generated and, where applicable, will work with a NERC data centre to update the proposal DMP to fully consider all planned data activities during the project.
@@ -139,7 +126,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 {# ---- Section ---- #}
 <P style="page-break-before: always">
 <div class="question">
-	<h3>1. Project Information</h3>
+	<h3>1. Grant Information</h3>
 
 	{% set projectNamePath = [uuids.projectInformationCUuid, uuids.projectTitleQUuid]|reply_path %}
 	{% set projectName = replies[projectNamePath]|reply_str_value %}
@@ -155,6 +142,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 	{% set projectProposalReply = replies[projectProposalPath]|reply_str_value %}
 
 	<dl>
+	{#
 		<dt>Project Title</dt>
 			<dd>
 				{{projectName}}
@@ -179,6 +167,7 @@ comply with legal data-sharing obligations under UK law and can ensure their reu
 					{{missingInformationText}}
 				{% endif%}
 			</dd>
+	#}
 
 	{% set projectStartDatePath = [uuids.projectInformationCUuid, uuids.dateTheProjectWillStartQUuid]|reply_path %}
 	{% set projectStartDateReply = replies[projectStartDatePath]|reply_str_value %}
