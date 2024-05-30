@@ -50,7 +50,7 @@
 <dl>
 
 	<dt>Creation Date</dt>	
-		<dd>{{ ctx.createdAt|datetime_format("%B %d, %Y") }}</dd>
+		<dd>{{ ctx.createdAt|datetime_format("%H:%M, %B %d, %Y") }}</dd>
 	<dt>Based on</dt>
         <dd>{{ ctx.package.name }}, {{ ctx.package.version }} (<span class="package-id"><span class="organization-id">{{ ctx.package.organizationId }}</span>:<span class="km-id">{{ ctx.package.kmId }}</span>:<span class="version">{{ ctx.package.version }}</span></span>)</dd>
 	<dt>Description</dt> 
@@ -118,7 +118,7 @@
 		</dd>
 </dl>
 
-<p>*<i>Datasets can and should be deposited to the EIDC as soon as they are complete. The EIDC will issue a Digital Object Identifier (DOI) and implement any agreed embargo on data access. </i></p>
+<p>*<i>Datasets can and should be deposited to the EIDC (or agreed alternative) as soon as they are complete. The EIDC will issue a Digital Object Identifier (DOI) and implement any agreed embargo on data access. </i></p>
 DOIs issued for datasets archived at the EIDC can be used as a persistent citation reference and link to discover information about the dataset.  
 Archiving data at the EIDC (or agreed alternative) will help you meet NERC Data Policy, satisfy the requirements of science journals and UKCEH, 
 comply with legal data-sharing obligations under UK law and can ensure their reusability in the future for you and the scientific community as a whole.
