@@ -19,7 +19,7 @@
 <dl>
 
 	<dt>Creation Date</dt>	
-		<dd>{{ ctx.createdAt|datetime_format("%B %d, %Y") }}</dd>
+		<dd>{{ ctx.createdAt|datetime_format("%H:%M, %B %d, %Y") }}</dd>
 	<dt>Based on</dt>
         <dd>{{ ctx.package.name }}, {{ ctx.package.version }} (<span class="package-id"><span class="organization-id">{{ ctx.package.organizationId }}</span>:<span class="km-id">{{ ctx.package.kmId }}</span>:<span class="version">{{ ctx.package.version }}</span></span>)</dd>
 	<dt>Description</dt> 
